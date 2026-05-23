@@ -383,14 +383,7 @@
 
 <script src="sets.js"></script>
 <script>
-  /* ── Guard: ตอบคำถาม requires login ── */
   function goToAnswer() {
-    if (!localStorage.getItem('littlebylittle_logged_in')) {
-      localStorage.setItem('littlebylittle_redirect', 'answer.html'); /* after login → Desktop3 */
-      localStorage.setItem('littlebylittle_back', 'prompt.html');     /* close X → back to Desktop2 */
-      window.location.href = 'login.html';
-      return;
-    }
     window.location.href = 'answer.html';
   }
 

@@ -671,13 +671,6 @@
   }
 
   function toggleBookmark() {
-    /* ── Guard: require login ── */
-    if (!localStorage.getItem('littlebylittle_logged_in')) {
-      localStorage.setItem('littlebylittle_redirect', 'index.html'); /* after login → Desktop1 */
-      localStorage.setItem('littlebylittle_back', 'index.html');     /* close X → back to Desktop1 */
-      window.location.href = 'login.html';
-      return;
-    }
     try {
       _booked = !_booked;
       document.getElementById('bookmark-icon').src = _booked ? _bookmarkBooked : _bookmarkNormal;
