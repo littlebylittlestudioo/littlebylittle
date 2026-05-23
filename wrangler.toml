@@ -1,3 +1,6 @@
 name = "liftapp"
-pages_build_output_dir = "public"
+main = "worker.js"
 compatibility_date = "2024-09-23"
+
+[assets]
+directory = "./public"
