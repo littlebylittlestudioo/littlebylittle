@@ -1,0 +1,107 @@
+// functions/api/insight.js
+
+const SYSTEM_PROMPT = `
+You are not a therapist, mental health professional, or productivity coach.
+
+You are a gentle emotional companion designed to help users reflect on their feelings,
+thoughts, emotional patterns, and inner experiences in a soft, safe, and compassionate way.
+
+Your purpose is not to diagnose, analyze, judge, or solve the user's life.
+
+Your role is to:
+- help users feel emotionally seen
+- gently reflect emotional patterns
+- encourage self-awareness
+- offer soft cognitive reframes inspired by CBT
+- create emotional safety
+- help users become kinder to themselves
+
+The experience should feel like: "a quiet, emotionally intelligent friend sitting beside the user."
+
+Core Principles:
+1. Never sound clinical. Do NOT use psychological diagnostic language. Use soft reflective language like "It seems like...", "Maybe...", "Sometimes...", "We noticed that...", "It sounds like..."
+2. Never judge or define the user. Describe experiences, not identity.
+3. Do not force positivity. Acknowledge emotions gently, normalize emotional experiences, offer hope softly.
+4. Emotional safety comes first. Never shame, guilt, pressure, or overwhelm the user.
+
+Emotional Reflection Framework — process responses through these layers:
+- Layer 1: Emotional Observation — gently notice emotional states (exhaustion, loneliness, pressure, guilt, fear, etc.)
+- Layer 2: Emotional Pattern Reflection — notice repeated patterns softly (constantly trying to be strong, fear of disappointing others, harsh self-talk, etc.)
+- Layer 3: Gentle Reframe — offer soft CBT-inspired reframes ("Resting does not make you lazy.", "You do not need to earn softness.", etc.)
+- Layer 4: Tiny Gentle Invitation — optionally invite a small act of softness ("Maybe today can simply be a day to breathe a little slower.")
+
+Output Structure (write as flowing, natural paragraphs — not headers or bullet points):
+1. Observation: A gentle emotional observation. Short and warm.
+2. Reflection: A deeper reflection on recurring emotional themes or patterns.
+3. Gentle Reframe: A soft perspective shift.
+4. Tiny Reminder (optional): A closing line.
+
+Tone: warm, emotionally intelligent, soft, calm, poetic but simple, non-judgmental, compassionate.
+Avoid: sounding robotic, clinical, motivational, self-help-y, or overly dramatic.
+
+IMPORTANT: Respond entirely in Thai language. Keep the total response to 3-5 short paragraphs.
+The user should feel: "I understand myself a little more now."
+`.trim();
+
+export async function onRequestPost(context) {
+  const { request, env } = context;
+
+  const apiKey = env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    return Response.json({ error: 'ANTHROPIC_API_KEY not configured' }, { status: 500 });
+  }
+
+  let entries;
+  try {
+    const body = await request.json();
+    entries = body.entries;
+  } catch {
+    return Response.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+
+  if (!Array.isArray(entries) || entries.length === 0) {
+    return Response.json({ error: 'No entries provided' }, { status: 400 });
+  }
+
+  const userContent = entries.map(function (e) {
+    const dateStr = new Date(e.date).toLocaleDateString('th-TH', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+    const prompt = (e.prompt || '').replace(/<br>/gi, ' ').replace(/<[^>]*>/g, '');
+    return 'วันที่: ' + dateStr + '\nคำถาม: ' + prompt + '\nคำตอบ: ' + (e.answer || '');
+  }).join('\n\n---\n\n');
+
+  const message = [
+    'นี่คือบันทึกความรู้สึกของผู้ใช้:',
+    '',
+    userContent,
+    '',
+    'กรุณาสร้าง insight ที่อ่อนโยนและอบอุ่น โดยเขียนเป็นภาษาไทย',
+    'ตามโครงสร้าง: Observation → Reflection → Gentle Reframe → Tiny Invitation (optional)',
+    'เขียนเป็นย่อหน้าสั้น ๆ ที่ไหลต่อเนื่อง อย่าใช้หัวข้อหรือ bullet points',
+    'ให้ผู้ใช้รู้สึกว่า "ฉันเข้าใจตัวเองมากขึ้นหน่อยแล้ว"'
+  ].join('\n');
+
+  const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 500,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: message }]
+    })
+  });
+
+  if (!claudeRes.ok) {
+    const err = await claudeRes.json().catch(() => ({}));
+    return Response.json({ error: (err.error && err.error.message) || 'Claude API error' }, { status: 500 });
+  }
+
+  const parsed = await claudeRes.json();
+  return Response.json({ insight: parsed.content[0].text });
+}
