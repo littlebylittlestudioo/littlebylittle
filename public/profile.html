@@ -227,12 +227,14 @@
     <div class="card-border"></div>
 
     <!-- Profile photo + edit icon -->
-    <div class="photo-wrap">
+    <div class="photo-wrap" onclick="document.getElementById('photo-input').click()" style="cursor:pointer;">
       <img id="profile-photo" alt="profile" src="" />
       <div class="edit-icon">
         <img alt="edit" src="https://www.figma.com/api/mcp/asset/961b6604-0bb3-45ae-be2d-e6fca1b98098" />
       </div>
     </div>
+    <input id="photo-input" type="file" accept="image/*" style="display:none"
+           onchange="handlePhotoChange(event)" />
 
     <!-- Name + menu -->
     <div class="name-section">
@@ -309,6 +311,36 @@
       if (row) row.style.display = 'none';
     }
   })();
+
+  /* ── Profile photo picker ── */
+  function handlePhotoChange(event) {
+    var file = event.target.files && event.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var img = new Image();
+      img.onload = function () {
+        /* Resize to max 300×300 to keep localStorage small */
+        var MAX = 300;
+        var scale = Math.min(MAX / img.width, MAX / img.height, 1);
+        var canvas = document.createElement('canvas');
+        canvas.width  = Math.round(img.width  * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        document.getElementById('profile-photo').src = dataUrl;
+        try {
+          var raw  = localStorage.getItem('littlebylittle_user');
+          var user = raw ? JSON.parse(raw) : {};
+          user.photo = dataUrl;
+          localStorage.setItem('littlebylittle_user', JSON.stringify(user));
+        } catch (e) {}
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    event.target.value = '';
+  }
 
   /* ── Editable name ── */
   function startEditName() {
