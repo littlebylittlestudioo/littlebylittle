@@ -2,12 +2,12 @@
 
 // Local storage keys
 export const STORAGE_KEYS = {
-  LOGGED_IN: 'liftapp_logged_in',
-  USER: 'liftapp_user',
-  REDIRECT: 'liftapp_redirect',
-  BACK: 'liftapp_back',
-  SET_INDEX: 'liftapp_set_index',
-  BOOKMARK: 'liftapp_bookmark'
+  LOGGED_IN: 'littlebylittle_logged_in',
+  USER: 'littlebylittle_user',
+  REDIRECT: 'littlebylittle_redirect',
+  BACK: 'littlebylittle_back',
+  SET_INDEX: 'littlebylittle_set_index',
+  BOOKMARK: 'littlebylittle_bookmark'
 };
 
 // Page routes (lowercase convention)

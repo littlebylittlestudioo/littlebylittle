@@ -502,7 +502,7 @@ var _sets = [
   }
 ];
 
-var _LIFT_KEY = 'liftapp_set_index';
+var _LIFT_KEY = 'littlebylittle_set_index';
 
 function _liftIdx() {
   var i = parseInt(localStorage.getItem(_LIFT_KEY) || '0', 10);

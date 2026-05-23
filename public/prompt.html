@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Liftapp — คำถามประจำวัน</title>
+  <title>Little by Little — คำถามประจำวัน</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
@@ -385,9 +385,9 @@
 <script>
   /* ── Guard: ตอบคำถาม requires login ── */
   function goToAnswer() {
-    if (!localStorage.getItem('liftapp_logged_in')) {
-      localStorage.setItem('liftapp_redirect', 'answer.html'); /* after login → Desktop3 */
-      localStorage.setItem('liftapp_back', 'prompt.html');     /* close X → back to Desktop2 */
+    if (!localStorage.getItem('littlebylittle_logged_in')) {
+      localStorage.setItem('littlebylittle_redirect', 'answer.html'); /* after login → Desktop3 */
+      localStorage.setItem('littlebylittle_back', 'prompt.html');     /* close X → back to Desktop2 */
       window.location.href = 'login.html';
       return;
     }

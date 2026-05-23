@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Liftapp — ช่วงนี้ฉันดูเป็นไงบ้าง</title>
+  <title>Little by Little — ช่วงนี้ฉันดูเป็นไงบ้าง</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     @font-face {
@@ -435,7 +435,7 @@
 
   /* ── AI Insight: fetch from local proxy, cache for 30 min ── */
   function fetchInsight() {
-    var CACHE_KEY = 'liftapp_insight_cache';
+    var CACHE_KEY = 'littlebylittle_insight_cache';
     var CACHE_TTL = 30 * 60 * 1000; /* 30 minutes */
 
     var el = document.getElementById('insight-text');
@@ -456,7 +456,7 @@
       }
     } catch (e) { /* ignore */ }
 
-    var entries = JSON.parse(localStorage.getItem('liftapp_entries') || '[]');
+    var entries = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
     if (!entries.length) return;
 
     fetch('/api/insight', {
@@ -498,7 +498,7 @@
 
   /* ── Day view: pick the right state for the selected date ── */
   function renderDayView() {
-    var all        = JSON.parse(localStorage.getItem('liftapp_entries') || '[]');
+    var all        = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
     var dayEntries = all.filter(function (e) {
       return new Date(e.date).toDateString() === _selectedDate;
     });

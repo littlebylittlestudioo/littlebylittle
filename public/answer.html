@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Liftapp — ตอบคำถาม</title>
+  <title>Little by Little — ตอบคำถาม</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
@@ -615,7 +615,7 @@
     var idx    = parseInt(params.get('edit'), 10);
     if (!isNaN(idx) && idx >= 0) {
       _editIndex = idx;
-      var entries = JSON.parse(localStorage.getItem('liftapp_entries') || '[]');
+      var entries = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
       var entry   = entries[idx];
       if (entry && ta) {
         ta.value        = entry.answer;
@@ -636,20 +636,20 @@
       return;
     }
     try {
-      var entries = JSON.parse(localStorage.getItem('liftapp_entries') || '[]');
+      var entries = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
       if (_editIndex >= 0) {
         /* Edit mode: update existing entry */
         if (entries[_editIndex]) {
           entries[_editIndex].answer = value;
-          localStorage.setItem('liftapp_entries', JSON.stringify(entries));
+          localStorage.setItem('littlebylittle_entries', JSON.stringify(entries));
         }
       } else {
         /* New entry */
         var idx   = _liftIdx();
         var entry = { date: new Date().toISOString(), setIndex: idx, prompt: _sets[idx].prompt, answer: value };
         entries.unshift(entry);
-        localStorage.setItem('liftapp_entries',     JSON.stringify(entries));
-        localStorage.setItem('liftapp_has_entries', 'true');
+        localStorage.setItem('littlebylittle_entries',     JSON.stringify(entries));
+        localStorage.setItem('littlebylittle_has_entries', 'true');
       }
       window.location.href = 'insight.html?toast=saved';
     } catch (e) {
@@ -668,10 +668,10 @@
 
   function confirmDelete() {
     try {
-      var entries = JSON.parse(localStorage.getItem('liftapp_entries') || '[]');
+      var entries = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
       entries.splice(_editIndex, 1);
-      localStorage.setItem('liftapp_entries', JSON.stringify(entries));
-      if (entries.length === 0) localStorage.removeItem('liftapp_has_entries');
+      localStorage.setItem('littlebylittle_entries', JSON.stringify(entries));
+      if (entries.length === 0) localStorage.removeItem('littlebylittle_has_entries');
       window.location.href = 'insight.html?toast=deleted';
     } catch (e) {
       closeDeleteModal();

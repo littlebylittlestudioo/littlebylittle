@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Liftapp — Home</title>
+  <title>Little by Little — Home</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;600&display=swap" rel="stylesheet" />
   <style>
@@ -672,9 +672,9 @@
 
   function toggleBookmark() {
     /* ── Guard: require login ── */
-    if (!localStorage.getItem('liftapp_logged_in')) {
-      localStorage.setItem('liftapp_redirect', 'index.html'); /* after login → Desktop1 */
-      localStorage.setItem('liftapp_back', 'index.html');     /* close X → back to Desktop1 */
+    if (!localStorage.getItem('littlebylittle_logged_in')) {
+      localStorage.setItem('littlebylittle_redirect', 'index.html'); /* after login → Desktop1 */
+      localStorage.setItem('littlebylittle_back', 'index.html');     /* close X → back to Desktop1 */
       window.location.href = 'login.html';
       return;
     }
@@ -702,14 +702,14 @@
 
   /* ── Non-login icon → go to login page ── */
   function goToLogin() {
-    localStorage.setItem('liftapp_redirect', 'index.html');
-    localStorage.setItem('liftapp_back', 'index.html');
+    localStorage.setItem('littlebylittle_redirect', 'index.html');
+    localStorage.setItem('littlebylittle_back', 'index.html');
     window.location.href = 'login.html';
   }
 
   /* ── Greeting + avatar: update based on login state ── */
   (function () {
-    var raw = localStorage.getItem('liftapp_user');
+    var raw = localStorage.getItem('littlebylittle_user');
     if (!raw) return;
     try {
       var user = JSON.parse(raw);

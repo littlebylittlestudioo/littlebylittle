@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Liftapp — เข้าสู่ระบบ</title>
+  <title>Little by Little — เข้าสู่ระบบ</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;600&family=Plus+Jakarta+Sans&display=swap" rel="stylesheet" />
 
   <!-- ══ Firebase SDK (Google + Facebook) ══ -->
@@ -239,16 +239,16 @@
   }
 
   function _afterLogin(user, provider) {
-    localStorage.setItem('liftapp_logged_in', '1');
-    localStorage.setItem('liftapp_user', JSON.stringify({
+    localStorage.setItem('littlebylittle_logged_in', '1');
+    localStorage.setItem('littlebylittle_user', JSON.stringify({
       name:     user.name     || '',
       email:    user.email    || '',
       photo:    user.photo    || '',
       provider: provider
     }));
-    var redirect = localStorage.getItem('liftapp_redirect') || 'index.html';
-    localStorage.removeItem('liftapp_redirect');
-    localStorage.removeItem('liftapp_back');
+    var redirect = localStorage.getItem('littlebylittle_redirect') || 'index.html';
+    localStorage.removeItem('littlebylittle_redirect');
+    localStorage.removeItem('littlebylittle_back');
     window.location.href = redirect;
   }
 
@@ -332,9 +332,9 @@
 
   /* ── Close button ── */
   function goBack() {
-    var back = localStorage.getItem('liftapp_back') || 'index.html';
-    localStorage.removeItem('liftapp_back');
-    localStorage.removeItem('liftapp_redirect');
+    var back = localStorage.getItem('littlebylittle_back') || 'index.html';
+    localStorage.removeItem('littlebylittle_back');
+    localStorage.removeItem('littlebylittle_redirect');
     window.location.href = back;
   }
 </script>

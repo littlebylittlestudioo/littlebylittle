@@ -1,5 +1,5 @@
 /**
- * Liftapp — local dev server
+ * Little by Little — local dev server
  * Usage:  node server.js YOUR_ANTHROPIC_API_KEY
  *    or:  ANTHROPIC_API_KEY=sk-... node server.js
  */
@@ -195,7 +195,7 @@ var server = http.createServer(function (req, res) {
 });
 
 server.listen(PORT, function () {
-  console.log('\n  🌱  Liftapp is running!');
+  console.log('\n  🌱  Little by Little is running!');
   console.log('      Open → http://localhost:' + PORT);
   console.log('      Stop → Ctrl + C\n');
 });

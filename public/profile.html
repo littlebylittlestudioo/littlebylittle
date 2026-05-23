@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Liftapp — โปรไฟล์</title>
+  <title>Little by Little — โปรไฟล์</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root { --cream-100: #f8ebdb; --cream-200: #efcca4; --text: #1e1e1e; }
@@ -270,7 +270,7 @@
 <script>
   /* ── Load user info from localStorage ── */
   (function () {
-    var raw = localStorage.getItem('liftapp_user');
+    var raw = localStorage.getItem('littlebylittle_user');
     if (!raw) { window.location.href = 'index.html'; return; }
     try {
       var user = JSON.parse(raw);
@@ -285,9 +285,9 @@
 
   /* ── Logout ── */
   function logout() {
-    localStorage.removeItem('liftapp_logged_in');
-    localStorage.removeItem('liftapp_user');
-    localStorage.removeItem('liftapp_provider');
+    localStorage.removeItem('littlebylittle_logged_in');
+    localStorage.removeItem('littlebylittle_user');
+    localStorage.removeItem('littlebylittle_provider');
     window.location.href = 'index.html';
   }
 </script>
