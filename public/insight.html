@@ -295,10 +295,10 @@
 
   <!-- ── Clouds ── -->
   <div class="cloud cloud-left">
-    <img alt="" src="https://www.figma.com/api/mcp/asset/6bd5c4f1-f5c5-4cd2-b32a-d650bcad23db" />
+    <img alt="" src="assets/icons/6bd5c4f1-f5c5-4cd2-b32a-d650bcad23db.png" />
   </div>
   <div class="cloud cloud-right">
-    <img alt="" src="https://www.figma.com/api/mcp/asset/6bd5c4f1-f5c5-4cd2-b32a-d650bcad23db" />
+    <img alt="" src="assets/icons/6bd5c4f1-f5c5-4cd2-b32a-d650bcad23db.png" />
   </div>
 
   <!-- ══════════════════════════════════════════
@@ -307,7 +307,7 @@
   <div class="page-header">
     <p class="month-title" id="month-title">กันยายน 2569</p>
     <a class="icon-btn" href="index.html" aria-label="ปิด">
-      <img alt="ปิด" src="https://www.figma.com/api/mcp/asset/c9692b6f-ebb5-4fb4-b1f4-537656a97c07" />
+      <img alt="ปิด" src="assets/icons/c9692b6f-ebb5-4fb4-b1f4-537656a97c07.png" />
     </a>
   </div>
 
@@ -316,12 +316,12 @@
        ══════════════════════════════════════════ -->
   <div class="week-nav">
     <button class="icon-btn" onclick="changeWeek(-1)" aria-label="สัปดาห์ก่อนหน้า">
-      <img alt="ย้อนหลัง" src="https://www.figma.com/api/mcp/asset/9ca7dd47-e790-4e4f-8353-797a1a220fb7"
+      <img alt="ย้อนหลัง" src="assets/icons/arrow-right.svg"
            style="transform: rotate(180deg);" />
     </button>
     <div class="week-strip" id="week-strip"></div>
     <button class="icon-btn" onclick="changeWeek(1)" aria-label="สัปดาห์ถัดไป">
-      <img alt="ถัดไป" src="https://www.figma.com/api/mcp/asset/9ca7dd47-e790-4e4f-8353-797a1a220fb7" />
+      <img alt="ถัดไป" src="assets/icons/arrow-right.svg" />
     </button>
   </div>
 
@@ -353,13 +353,13 @@
     <div class="insight-inner">
       <div class="insight-content">
         <div class="insight-label">
-          <img alt="" src="https://www.figma.com/api/mcp/asset/8093d59e-0332-4b94-85f3-1f3969718069" />
+          <img alt="" src="assets/icons/icon-insight.svg" />
           <span class="insight-label-text">สังเกตการณ์จากแง่งขิง</span>
         </div>
         <p class="insight-text" id="insight-text">กำลังวิเคราะห์…</p>
       </div>
       <div class="insight-char">
-        <img alt="" src="https://www.figma.com/api/mcp/asset/63b5b62f-ec99-4e29-87f4-7ebefc867fe7" />
+        <img alt="" src="assets/icons/63b5b62f-ec99-4e29-87f4-7ebefc867fe7.png" />
       </div>
     </div>
   </div>
@@ -382,7 +382,7 @@
 
   /* ── Landscape image (same asset for both states) ── */
   document.getElementById('landscape').innerHTML =
-    '<img alt="" src="https://www.figma.com/api/mcp/asset/5682a229-6e42-41dc-af1d-41d0e9c46965" />';
+    '<img alt="" src="assets/icons/5682a229-6e42-41dc-af1d-41d0e9c46965.png" />';
 
   /* ── Week navigator ── */
   function getMonday(date) {
@@ -512,8 +512,8 @@
 
   /* ── Entry cards (receives pre-filtered entries) ── */
   function renderEntries(all, saved) {
-    var archSrc = 'https://www.figma.com/api/mcp/asset/e4f8ef40-111e-4fe4-9131-7106648a8f6e';
-    var editSrc = 'https://www.figma.com/api/mcp/asset/068231a2-f61b-401c-9a40-1efa21f89a84';
+    var archSrc = 'assets/icons/e4f8ef40-111e-4fe4-9131-7106648a8f6e.png';
+    var editSrc = 'assets/icons/068231a2-f61b-401c-9a40-1efa21f89a84.png';
 
     var list = document.getElementById('entries-list');
     list.innerHTML = '';
