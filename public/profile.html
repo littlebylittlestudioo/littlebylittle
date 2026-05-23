@@ -271,16 +271,28 @@
   /* ── Load user info from localStorage ── */
   (function () {
     var raw = localStorage.getItem('littlebylittle_user');
-    if (!raw) { window.location.href = 'index.html'; return; }
-    try {
-      var user = JSON.parse(raw);
-      /* Name */
-      document.getElementById('profile-name').textContent = user.name || '—';
-      /* Photo */
-      if (user.photo) {
-        document.getElementById('profile-photo').src = user.photo;
+    var isGuest = !raw;
+
+    if (!isGuest) {
+      try {
+        var user = JSON.parse(raw);
+        document.getElementById('profile-name').textContent = user.name || '—';
+        if (user.photo) {
+          document.getElementById('profile-photo').src = user.photo;
+        }
+      } catch (e) { isGuest = true; }
+    }
+
+    if (isGuest) {
+      document.getElementById('profile-name').textContent = 'ผู้ใช้ทั่วไป';
+      /* Swap logout → login button */
+      var row = document.querySelector('.logout-row');
+      if (row) {
+        row.onclick = function () { window.location.href = 'login.html'; };
+        var label = row.querySelector('.logout-label');
+        if (label) label.textContent = 'เข้าสู่ระบบ / สมัครสมาชิก';
       }
-    } catch (e) {}
+    }
   })();
 
   /* ── Logout ── */
