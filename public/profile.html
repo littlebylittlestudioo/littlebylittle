@@ -285,13 +285,8 @@
 
     if (isGuest) {
       document.getElementById('profile-name').textContent = 'ผู้ใช้ทั่วไป';
-      /* Swap logout → login button */
       var row = document.querySelector('.logout-row');
-      if (row) {
-        row.onclick = function () { window.location.href = 'login.html'; };
-        var label = row.querySelector('.logout-label');
-        if (label) label.textContent = 'เข้าสู่ระบบ / สมัครสมาชิก';
-      }
+      if (row) row.style.display = 'none';
     }
   })();
 
