@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liftapp — ช่วงนี้ฉันดูเป็นไงบ้าง</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'PG Picasso';
+      src: url('fonts/PG PicassoV2.ttf') format('truetype');
+    }
+    :root {
+      --cream-100: #f8ebdb;
+      --cream-200: #efcca4;
+      --cream-400: #d6892c;
+      --text: #1e1e1e;
+    }
+    * { font-family: 'IBM Plex Sans Thai', sans-serif; box-sizing: border-box; }
+    body { margin: 0; }
+
+    /* ══════════════════════════════════════════
+       PAGE ROOT
+       ══════════════════════════════════════════ */
+    .page-root {
+      position: relative;
+      width: 100%;
+      min-height: 1283px;
+      overflow-x: hidden;
+      background: linear-gradient(to bottom, #aacae5, #edeef0);
+    }
+    /* expand only when showing entries */
+    .page-root.has-entries { min-height: 1650px; }
+
+    /* ── Clouds ── */
+    .cloud { position: absolute; overflow: hidden; pointer-events: none; z-index: 1; }
+    .cloud img { position: absolute; max-width: none; width: 292.24%; height: 861.86%; left: -172.98%; top: -256.19%; }
+    .cloud-left  { left: -66px; top: -14px; width: 532px; height: 320px; }
+    .cloud-right { left: calc(75% + 39px); top: 146px; width: 352px; height: 213px; transform: scaleX(-1); }
+
+    /* ── Generic icon button ── */
+    .icon-btn {
+      background: white; border-radius: 100px;
+      width: 40px; height: 40px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      border: none; cursor: pointer; text-decoration: none;
+    }
+    .icon-btn img { width: 24px; height: 24px; object-fit: contain; display: block; }
+
+    /* ══════════════════════════════════════════
+       HEADER  (month title + close)
+       ══════════════════════════════════════════ */
+    .page-header {
+      position: absolute;
+      left: calc(16.67% + 102px); top: 88px; width: 813px;
+      display: flex; align-items: center; justify-content: space-between;
+      z-index: 10;
+    }
+    .month-title {
+      font-size: 32px; font-weight: 600; line-height: 40px;
+      color: var(--text); margin: 0;
+    }
+
+    /* ══════════════════════════════════════════
+       WEEK NAVIGATOR
+       ══════════════════════════════════════════ */
+    .week-nav {
+      position: absolute;
+      left: calc(16.67% + 45px); top: 144px; width: 870px;
+      display: flex; align-items: center; gap: 16px;
+      z-index: 10;
+    }
+    .week-strip {
+      flex: 1; height: 122px;
+      background: var(--cream-100);
+      border-radius: 24px;
+      display: flex; align-items: center;
+      padding: 16px; gap: 16px;
+      overflow: hidden;
+    }
+    .day-cell {
+      flex: 1; height: 90px;
+      background: transparent;
+      border-radius: 16px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .day-cell.selected { background: var(--cream-200); }
+    .day-name { font-size: 14px; font-weight: 600; line-height: 22px; color: var(--text); }
+    .day-num  { font-size: 40px; font-weight: 600; line-height: 48px; color: var(--text); }
+
+    /* ══════════════════════════════════════════
+       EMPTY STATE  (no entries ever)
+       NOT-TODAY STATE  (entries exist but not on this date)
+       — both share the same absolute position —
+       ══════════════════════════════════════════ */
+    .empty-state,
+    .not-today-state {
+      position: absolute;
+      left: calc(16.67% + 133px); top: 485px; width: 694px;
+      z-index: 10; text-align: center; color: #121212;
+    }
+    .not-today-state {
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .not-today-title {
+      font-size: 32px; font-weight: 600; line-height: 40px;
+      color: #121212; margin: 0; width: 100%;
+    }
+    .not-today-subtitle {
+      font-size: 16px; font-weight: 500; line-height: 24px;
+      letter-spacing: -0.048px; color: #121212; margin: 0; width: 100%;
+    }
+    .empty-state {
+      position: absolute;
+      left: calc(16.67% + 133px); top: 485px; width: 694px;
+      display: flex; flex-direction: column; align-items: center; gap: 48px;
+      z-index: 10;
+    }
+    .empty-text {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      width: 100%; text-align: center;
+    }
+    .empty-title {
+      font-size: 32px; font-weight: 600; line-height: 40px;
+      color: #121212; margin: 0; width: 100%;
+    }
+    .empty-subtitle {
+      font-size: 16px; font-weight: 500; line-height: 24px;
+      letter-spacing: -0.048px; color: #121212; margin: 0; width: 100%;
+    }
+    .btn-cta {
+      width: 343px; height: 48px;
+      background: #000; color: white;
+      border: none; border-radius: 100px; cursor: pointer;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      font-size: 14px; font-weight: 600; line-height: 22px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      white-space: nowrap;
+    }
+
+    /* ══════════════════════════════════════════
+       WITH-CONTENT STATE
+       ══════════════════════════════════════════ */
+
+    /* AI insight band */
+    .insight-band {
+      position: absolute;
+      left: 0; top: 282px; width: 100%; height: 235px;
+      background: linear-gradient(to right,
+        rgba(248,235,219,0) 0%,
+        #f8ebdb 25%,
+        #f8ebdb 75%,
+        rgba(248,235,219,0) 100%);
+      z-index: 6;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .insight-inner { display: flex; align-items: center; gap: 29px; }
+    .insight-content { width: 516px; display: flex; flex-direction: column; gap: 16px; }
+    .insight-label { display: flex; align-items: center; gap: 8px; }
+    .insight-label img { width: 32px; height: 32px; object-fit: contain; }
+    .insight-label-text {
+      font-size: 14px; font-weight: 600; line-height: 22px;
+      color: var(--text); white-space: nowrap;
+    }
+    .insight-text {
+      font-size: 16px; font-weight: 500; line-height: 24px;
+      letter-spacing: -0.048px; color: #121212; margin: 0;
+      white-space: pre-line;
+    }
+    @keyframes insight-pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+    .insight-text.loading {
+      animation: insight-pulse 1.4s ease-in-out infinite;
+      color: #9e8f82;
+    }
+    .insight-char { width: 212px; height: 203px; position: relative; overflow: hidden; flex-shrink: 0; }
+    .insight-char img {
+      position: absolute; max-width: none;
+      width: 400%; height: 278.26%; left: -201.56%; top: -145.92%;
+    }
+
+    /* Journal entry cards */
+    .entries-list {
+      position: absolute;
+      left: calc(16.67% + 101px); top: 573px; width: 758px;
+      display: flex; flex-direction: column; gap: 16px;
+      z-index: 10;
+    }
+    .entry-card {
+      background: var(--cream-100);
+      border-radius: 24px; height: 314px; overflow: hidden;
+      position: relative; flex-shrink: 0; width: 100%;
+    }
+    .entry-inner-border {
+      position: absolute;
+      border: 2px solid var(--cream-200); border-radius: 12.667px;
+      top: 16px; left: 16px; right: 16px; bottom: 16px;
+      pointer-events: none;
+    }
+    .entry-content {
+      position: absolute;
+      top: 30px; left: 30px; right: 30px;
+      display: flex; flex-direction: column; gap: 24px;
+    }
+    .entry-header { display: flex; flex-direction: column; }
+    .entry-arch-wrap { width: 66px; height: 66px; overflow: hidden; position: relative; flex-shrink: 0; }
+    .entry-arch-inner { position: absolute; width: 66px; height: 54px; left: 0; top: 6px; overflow: hidden; }
+    .entry-arch-inner img {
+      position: absolute; max-width: none;
+      width: 465.52%; height: 1024%; left: -251.72%; top: -924%;
+    }
+    .entry-question-row {
+      display: flex; align-items: center; justify-content: space-between; width: 100%;
+    }
+    .entry-question-row .icon-btn {
+      flex-shrink: 0;
+    }
+    .entry-question {
+      font-size: 24px; font-weight: 600; line-height: 32px;
+      letter-spacing: -0.3px; color: var(--cream-400);
+      margin: 0; flex: 1; min-width: 0; padding-right: 8px;
+    }
+    .entry-answer {
+      font-size: 16px; font-weight: 500; line-height: 24px;
+      letter-spacing: -0.048px; color: #121212; margin: 0;
+      display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Landscape */
+    .landscape-wrap {
+      position: absolute; overflow: hidden; z-index: 5;
+      left: calc(50% + 2.5px); transform: translateX(-50%);
+      width: 1151px; height: 446px;
+    }
+    .landscape-wrap img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; pointer-events: none;
+    }
+    /* landscape position adapts to state */
+    .landscape-empty   { top: 837px; }
+    .landscape-content { top: 1230px; }
+
+    /* ── Green toast ── */
+    .toast-success {
+      position: fixed;
+      top: 59px;
+      left: 50%; transform: translateX(-50%) translateY(-12px);
+      z-index: 200;
+      background: #7e8c60; color: white;
+      border-radius: 100px; padding: 8px 24px;
+      font-size: 15px; font-weight: 600;
+      line-height: normal; letter-spacing: -0.3px;
+      white-space: nowrap;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .toast-success.show {
+      opacity: 1; pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+  /* ══════════════════════════════════════════
+     LARGE SCREEN CENTERING (> 1440 px)
+     At 1440 px every element already sits at
+     calc(50% – halfWidth), so the rules below
+     are a no-op there and kick in only for wider
+     viewports (e.g. iMac 24" ~2240 CSS px).
+     ══════════════════════════════════════════ */
+  @media (min-width: 1441px) {
+    .page-header     { left: calc(50% - 378px); }
+    .week-nav        { left: calc(50% - 435px); }
+    .empty-state,
+    .not-today-state { left: calc(50% - 347px); }
+    .entries-list    { left: calc(50% - 379px); }
+  }
+  </style>
+</head>
+<body>
+<div class="page-root" id="page-root">
+
+  <!-- ── Green toasts ── -->
+  <div class="toast-success" id="toast-saved" role="status" aria-live="polite">
+    บันทึกคำตอบสำเร็จ (-:
+  </div>
+  <div class="toast-success" id="toast-deleted" role="status" aria-live="polite">
+    ลบคำถามสำเร็จ (-:
+  </div>
+
+  <!-- ── Clouds ── -->
+  <div class="cloud cloud-left">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/6bd5c4f1-f5c5-4cd2-b32a-d650bcad23db" />
+  </div>
+  <div class="cloud cloud-right">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/6bd5c4f1-f5c5-4cd2-b32a-d650bcad23db" />
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       HEADER
+       ══════════════════════════════════════════ -->
+  <div class="page-header">
+    <p class="month-title" id="month-title">กันยายน 2569</p>
+    <a class="icon-btn" href="Desktop1.html" aria-label="ปิด">
+      <img alt="ปิด" src="https://www.figma.com/api/mcp/asset/00338946-b4e4-4fd2-9f2b-bcb0162bf6d1" />
+    </a>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       WEEK NAVIGATOR
+       ══════════════════════════════════════════ -->
+  <div class="week-nav">
+    <button class="icon-btn" onclick="changeWeek(-1)" aria-label="สัปดาห์ก่อนหน้า">
+      <img alt="ย้อนหลัง" src="https://www.figma.com/api/mcp/asset/a263dd08-437e-4f69-af22-f88602f14375"
+           style="transform: rotate(-90deg);" />
+    </button>
+    <div class="week-strip" id="week-strip"></div>
+    <button class="icon-btn" onclick="changeWeek(1)" aria-label="สัปดาห์ถัดไป">
+      <img alt="ถัดไป" src="https://www.figma.com/api/mcp/asset/d254523b-db11-4141-8de2-925122984152"
+           style="transform: rotate(90deg);" />
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       EMPTY STATE
+       ══════════════════════════════════════════ -->
+  <div class="empty-state" id="empty-state">
+    <div class="empty-text">
+      <p class="empty-title">ยังไม่มีการตอบคำถามประจำวัน (-:</p>
+      <p class="empty-subtitle">ลองสุ่มคำถามประจำวันของคุณดูสิ !</p>
+    </div>
+    <button class="btn-cta" onclick="window.location.href='Desktop2.html'">สุ่มคำถามประจำวัน</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       NOT-TODAY STATE  (selected date has no entries)
+       ══════════════════════════════════════════ -->
+  <div class="not-today-state" id="not-today-state" style="display:none;">
+    <p class="not-today-title">ไม่มีการตอบคำถามประจำวัน (-:</p>
+    <p class="not-today-subtitle">วันที่นี้คุณไม่ได้ตอบคำถามไว้</p>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       WITH-CONTENT STATE
+       ══════════════════════════════════════════ -->
+
+  <!-- AI Insight band -->
+  <div class="insight-band" id="insight-band">
+    <div class="insight-inner">
+      <div class="insight-content">
+        <div class="insight-label">
+          <img alt="" src="https://www.figma.com/api/mcp/asset/2228b6dd-1b84-4276-b4e0-df50d3e1bb10" />
+          <span class="insight-label-text">สังเกตการณ์จากแง่งขิง</span>
+        </div>
+        <p class="insight-text" id="insight-text">กำลังวิเคราะห์…</p>
+      </div>
+      <div class="insight-char">
+        <img alt="" src="https://www.figma.com/api/mcp/asset/63b5b62f-ec99-4e29-87f4-7ebefc867fe7" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Journal entries -->
+  <div class="entries-list" id="entries-list"></div>
+
+  <!-- ── Landscape ── -->
+  <div class="landscape-wrap landscape-empty" id="landscape"></div>
+
+</div>
+
+<script src="sets.js"></script>
+<script>
+  var _thaiDays   = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+  var _thaiMonths = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
+                     'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+  var _weekOffset   = 0;
+  var _selectedDate = new Date().toDateString(); /* tracks which day is active */
+
+  /* ── Landscape image (same asset for both states) ── */
+  document.getElementById('landscape').innerHTML =
+    '<img alt="" src="https://www.figma.com/api/mcp/asset/5682a229-6e42-41dc-af1d-41d0e9c46965" />';
+
+  /* ── Week navigator ── */
+  function getMonday(date) {
+    var d = new Date(date);
+    var day = d.getDay();
+    var diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    return new Date(d.setDate(diff));
+  }
+
+  function renderWeek() {
+    var today  = new Date();
+    var monday = getMonday(today);
+    monday.setDate(monday.getDate() + _weekOffset * 7);
+
+    var buddhistYear = monday.getFullYear() + 543;
+    document.getElementById('month-title').textContent =
+      _thaiMonths[monday.getMonth()] + ' ' + buddhistYear;
+
+    var strip    = document.getElementById('week-strip');
+    strip.innerHTML = '';
+    var todayStr = today.toDateString();
+
+    for (var i = 0; i < 7; i++) {
+      var day = new Date(monday);
+      day.setDate(monday.getDate() + i);
+      var isToday = day.toDateString() === todayStr;
+      var cell = document.createElement('div');
+      cell.className = 'day-cell' + (isToday ? ' selected' : '');
+      cell.innerHTML =
+        '<span class="day-name">' + _thaiDays[day.getDay()] + '</span>' +
+        '<span class="day-num">'  + day.getDate()            + '</span>';
+      cell.dataset.date = day.toDateString();
+      cell.addEventListener('click', function () {
+        document.querySelectorAll('.day-cell').forEach(function (c) {
+          c.classList.remove('selected');
+        });
+        this.classList.add('selected');
+        _selectedDate = this.dataset.date;
+        renderDayView();
+      });
+      strip.appendChild(cell);
+    }
+  }
+
+  function changeWeek(dir) {
+    _weekOffset += dir;
+    renderWeek();
+  }
+
+  /* ── AI Insight: fetch from local proxy, cache for 30 min ── */
+  function fetchInsight() {
+    var CACHE_KEY = 'liftapp_insight_cache';
+    var CACHE_TTL = 30 * 60 * 1000; /* 30 minutes */
+
+    var el = document.getElementById('insight-text');
+    if (!el) return;
+
+    function showInsight(text) {
+      el.textContent = text;
+      document.getElementById('insight-band').style.display   = 'flex';
+      document.getElementById('entries-list').style.top       = '533px'; /* 282 insight top + 235 height + 16 gap */
+    }
+
+    /* Use cache if still fresh → show band immediately */
+    try {
+      var cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      if (cached && (Date.now() - cached.ts) < CACHE_TTL) {
+        showInsight(cached.text);
+        return;
+      }
+    } catch (e) { /* ignore */ }
+
+    var entries = JSON.parse(localStorage.getItem('liftapp_entries') || '[]');
+    if (!entries.length) return;
+
+    fetch('/api/insight', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ entries: entries })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data.insight) {
+        showInsight(data.insight);
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), text: data.insight }));
+      }
+      /* no insight → entries stay at 282px, band stays hidden */
+    })
+    .catch(function () {
+      /* error → entries stay at 282px, band stays hidden */
+    });
+  }
+
+  /* ── Section switcher ── */
+  function showSection(state) {
+    document.getElementById('empty-state').style.display     = state === 'global-empty' ? 'flex' : 'none';
+    document.getElementById('not-today-state').style.display = state === 'not-today'    ? 'flex' : 'none';
+    document.getElementById('insight-band').style.display    = 'none'; /* hidden until AI responds */
+    document.getElementById('entries-list').style.display    = state === 'content' ? 'flex' : 'none';
+    document.getElementById('entries-list').style.top        = '282px'; /* reset: right below calendar */
+    var landscape = document.getElementById('landscape');
+    var root      = document.getElementById('page-root');
+    if (state === 'content') {
+      landscape.className = 'landscape-wrap landscape-content';
+      root.classList.add('has-entries');
+      fetchInsight();
+    } else {
+      landscape.className = 'landscape-wrap landscape-empty';
+      root.classList.remove('has-entries');
+    }
+  }
+
+  /* ── Day view: pick the right state for the selected date ── */
+  function renderDayView() {
+    var all        = JSON.parse(localStorage.getItem('liftapp_entries') || '[]');
+    var dayEntries = all.filter(function (e) {
+      return new Date(e.date).toDateString() === _selectedDate;
+    });
+    if (dayEntries.length === 0) {
+      var isToday = _selectedDate === new Date().toDateString();
+      showSection(isToday ? 'global-empty' : 'not-today');
+    } else {
+      showSection('content');
+      renderEntries(all, dayEntries);
+    }
+  }
+
+  /* ── Entry cards (receives pre-filtered entries) ── */
+  function renderEntries(all, saved) {
+    var archSrc = 'https://www.figma.com/api/mcp/asset/e4f8ef40-111e-4fe4-9131-7106648a8f6e';
+    var editSrc = 'https://www.figma.com/api/mcp/asset/9d6254d4-3f79-4370-b091-9ac9e6ff5108';
+
+    var list = document.getElementById('entries-list');
+    list.innerHTML = '';
+
+    saved.forEach(function (entry) {
+      /* Find the index in the full (unfiltered) array so the edit page can look it up */
+      var origIndex = all.findIndex(function (e) { return e.date === entry.date; });
+      var editUrl   = 'Desktop3.html?edit=' + origIndex;
+
+      var card = document.createElement('div');
+      card.className = 'entry-card';
+      card.innerHTML =
+        '<div class="entry-inner-border"></div>' +
+        '<div class="entry-content">' +
+          '<div class="entry-header">' +
+            '<div class="entry-arch-wrap">' +
+              '<div class="entry-arch-inner"><img alt="" src="' + archSrc + '" /></div>' +
+            '</div>' +
+            '<div class="entry-question-row">' +
+              '<p class="entry-question">' + entry.prompt + '</p>' +
+              '<button class="icon-btn" aria-label="แก้ไข"' +
+                ' onclick="window.location.href=\'' + editUrl + '\'">' +
+                '<img alt="แก้ไข" src="' + editSrc + '" />' +
+              '</button>' +
+            '</div>' +
+          '</div>' +
+          '<p class="entry-answer">' + entry.answer + '</p>' +
+        '</div>';
+      list.appendChild(card);
+    });
+  }
+
+  /* ══════════════════════════════════════════
+     INITIAL STATE
+     ══════════════════════════════════════════ */
+  function applyState() {
+    renderDayView();
+  }
+
+  renderWeek();
+  applyState();
+
+  /* Show green toast on arrival from Desktop3 (save or delete) */
+  (function () {
+    var params    = new URLSearchParams(window.location.search);
+    var toastType = params.get('toast');
+    var toastId   = toastType === 'saved'   ? 'toast-saved'   :
+                    toastType === 'deleted' ? 'toast-deleted' : null;
+    if (toastId) {
+      var toast = document.getElementById(toastId);
+      if (toast) {
+        requestAnimationFrame(function () {
+          toast.classList.add('show');
+          setTimeout(function () { toast.classList.remove('show'); }, 3000);
+        });
+        history.replaceState(null, '', window.location.pathname);
+      }
+    }
+  })();
+</script>
+</body>
+</html>

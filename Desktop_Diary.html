@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liftapp — วันนี้เป็นไงบ้าง</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'PG Picasso';
+      src: url('fonts/PG PicassoV2.ttf') format('truetype');
+    }
+
+    :root { --text: #1e1e1e; }
+    * { font-family: 'IBM Plex Sans Thai', sans-serif; box-sizing: border-box; }
+    body { margin: 0; }
+
+    /* ══ PAGE ROOT ══ */
+    .page-root {
+      position: relative;
+      width: 100%;
+      overflow-x: hidden;
+      min-height: max(1283px, calc(837px + 31vw));
+      background: linear-gradient(to bottom, #aacae5, #edeef0);
+    }
+
+    /* ══ CLOUDS ══ */
+    .cloud { position: absolute; overflow: hidden; pointer-events: none; z-index: 1; }
+    .cloud img { position: absolute; max-width: none; width: 292.24%; height: 861.86%; left: -172.98%; top: -256.19%; }
+    .cloud-left  { left: -66px; top: -14px; width: 532px; height: 320px; }
+    .cloud-right { left: calc(75% + 39px); top: 146px; width: 352px; height: 213px; transform: scaleX(-1); }
+
+    /* ══ CLOSE BUTTON ══ */
+    .close-btn {
+      position: absolute;
+      left: calc(75% + 34px); top: 120px;
+      width: 40px; height: 40px;
+      background: white; border-radius: 100px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 20;
+    }
+    .close-btn img { width: 24px; height: 24px; object-fit: contain; display: block; }
+
+    /* ══ CENTRED EMPTY STATE ══ */
+    .empty-wrap {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, calc(-50% - 40px));
+      display: flex; flex-direction: column;
+      align-items: center; gap: 16px;
+      width: 694px;
+      z-index: 10;
+    }
+
+    /* Blob character sprite */
+    .blob-wrap {
+      position: relative;
+      width: 222px; height: 237px;
+      overflow: hidden; flex-shrink: 0;
+      pointer-events: none;
+    }
+    .blob-wrap img {
+      position: absolute; max-width: none;
+      width: 438.86%; height: 273.8%;
+      left: -164%; top: -34.22%;
+    }
+
+    /* Text + button column */
+    .empty-body {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 48px;
+      width: 100%;
+    }
+    .empty-texts {
+      display: flex; flex-direction: column;
+      gap: 8px; text-align: center; color: #121212;
+      width: 100%;
+    }
+    .empty-title {
+      font-size: 32px; font-weight: 600;
+      line-height: 40px; margin: 0;
+    }
+    .empty-subtitle {
+      font-size: 16px; font-weight: 500;
+      line-height: 24px; letter-spacing: -0.048px; margin: 0;
+    }
+    .share-btn {
+      background: #000;
+      width: 343px; height: 48px;
+      border-radius: 100px; border: none; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .share-btn span {
+      font-size: 14px; font-weight: 600;
+      line-height: 22px; color: white;
+      white-space: nowrap;
+    }
+
+    /* ══ LANDSCAPE ══ */
+    .landscape-wrap {
+      position: absolute;
+      left: 0; right: 0; width: 100%;
+      overflow: hidden; z-index: 5;
+      top: 837px; height: max(446px, 31vw);
+    }
+    .landscape-wrap img {
+      position: absolute;
+      top: 0; left: 50%; transform: translateX(-50%);
+      width: max(1151px, 80vw); height: 100%;
+      object-fit: fill; pointer-events: none;
+    }
+
+    /* ══ TABLET ══ */
+    @media (min-width: 768px) and (max-width: 1199px) {
+      .page-root {
+        min-height: 100vh;
+        background: linear-gradient(to bottom, #abcbe6, #ebedef);
+      }
+      .cloud-left  { left: -66px; top: 0; width: 432px; height: 260px; }
+      .cloud-right { left: calc(66.67% + 4px); top: 130px; width: 296px; height: 178px; }
+      .close-btn { left: calc(83.33% - 13px); top: 88px; }
+      .empty-wrap { width: 90%; max-width: 600px; transform: translate(-50%, -55%); }
+      .landscape-wrap { top: calc(100vh - 220px); height: 446px; }
+      .landscape-wrap img { width: 1151px; object-fit: fill; }
+    }
+
+    /* ══ MOBILE ══ */
+    @media (max-width: 767px) {
+      .page-root {
+        min-height: max(100vh, 870px);
+        background: linear-gradient(to bottom, #a9cae5, #e4e7e8);
+      }
+      .cloud-left  { left: -87px; top: -4px; width: 255px; height: 154px; }
+      .cloud-right { left: calc(50% + 51.5px); top: 60px; width: 169px; height: 102px; }
+      .close-btn { left: auto; right: 16px; top: 16px; }
+      .empty-wrap { width: calc(100% - 32px); transform: translate(-50%, -55%); gap: 12px; }
+      .blob-wrap { width: 160px; height: 170px; }
+      .blob-wrap img { width: 438.86%; height: 273.8%; }
+      .empty-title { font-size: 24px; line-height: 32px; }
+      .share-btn { width: 280px; }
+      .empty-body { gap: 32px; }
+      .landscape-wrap { top: calc(100vh - 213px); height: 213px; }
+      .landscape-wrap img { width: 551px; object-fit: fill; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-root">
+
+  <!-- Clouds -->
+  <div class="cloud cloud-left">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/cb1fe19d-d7ba-4c32-a438-6df8aed7b4b9" />
+  </div>
+  <div class="cloud cloud-right">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/cb1fe19d-d7ba-4c32-a438-6df8aed7b4b9" />
+  </div>
+
+  <!-- Close → back to Desktop1 -->
+  <button class="close-btn" onclick="window.location.href='Desktop1.html'" aria-label="ปิด">
+    <img alt="close" src="https://www.figma.com/api/mcp/asset/35bf4632-c3e6-442b-a180-b2c58c5fa1b1" />
+  </button>
+
+  <!-- Empty state (centred) -->
+  <div class="empty-wrap">
+    <!-- Blob character -->
+    <div class="blob-wrap">
+      <img alt="" src="https://www.figma.com/api/mcp/asset/9b2780ec-e959-4c6b-a6ba-9b71da7718e8" />
+    </div>
+
+    <!-- Text + button -->
+    <div class="empty-body">
+      <div class="empty-texts">
+        <p class="empty-title">ฟีเจอร์นี้ยังไม่เปิดใช้งาน..</p>
+        <p class="empty-subtitle">ถ้าคุณมีไอเดียอยากเสริมตรงไหนบอกเราได้นะ (-:</p>
+      </div>
+      <button class="share-btn" onclick="window.open('https://forms.gle/Bg4tTuAvMZqPfoMW9', '_blank')">
+        <span>แชร์ความเห็นของคุณ</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Green mountain -->
+  <div class="landscape-wrap">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/966dadc1-42f4-4ab7-b169-2e91c12b6f7b" />
+  </div>
+
+</div>
+</body>
+</html>

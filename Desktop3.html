@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liftapp — ตอบคำถาม</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'PG Picasso';
+      src: url('fonts/PG PicassoV2.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+  </style>
+  <style>
+    :root {
+      --cream-100: #f8ebdb;
+      --cream-200: #efcca4;
+      --text: #1e1e1e;
+    }
+    * { font-family: 'IBM Plex Sans Thai', sans-serif; box-sizing: border-box; }
+    body { margin: 0; }
+
+    /* ══════════════════════════════════════════
+       PAGE ROOT
+       ══════════════════════════════════════════ */
+    .page-root {
+      position: relative; width: 100%;
+      overflow-x: hidden;
+      min-height: 100vh;
+      background: linear-gradient(to bottom, #a9cae5, #e4e7e8);
+    }
+
+    /* ── Clouds ── */
+    .cloud { position: absolute; overflow: hidden; pointer-events: none; z-index: 1; }
+    .cloud img {
+      position: absolute; max-width: none;
+      width: 292.24%; height: 861.86%; left: -172.98%; top: -256.19%;
+    }
+    .cloud-left  { left: -87px; top: -4px;             width: 255px; height: 154px; }
+    .cloud-right { left: calc(50% + 51.5px); top: 60px; width: 169px; height: 102px; transform: scaleX(-1); }
+
+    /* ══════════════════════════════════════════
+       CLOSE BUTTON — MOBILE (outside card)
+       ══════════════════════════════════════════ */
+    .close-btn-mobile {
+      position: fixed; /* fixed so it always floats above card stacking */
+      right: 16px; top: 59px;
+      z-index: 99;
+      background: white; border-radius: 100px;
+      width: 40px; height: 40px;
+      overflow: hidden; box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      border: none; cursor: pointer; display: block; text-decoration: none;
+    }
+    .close-btn-mobile img { position: absolute; width: 24px; height: 24px; left: 8px; top: 8px; }
+
+    /* ══════════════════════════════════════════
+       ANSWER CARD
+       ══════════════════════════════════════════ */
+    .answer-card {
+      position: absolute; z-index: 8;
+      background: var(--cream-100);
+      border-radius: 25.333px;
+      box-shadow: 0 6.333px 63.333px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      /* mobile: pinned top:60px → bottom:16px so height is bounded for scrolling */
+      left: 16px; right: 16px;
+      top: 60px; bottom: 16px;
+      max-width: 342px;
+      margin-left: auto; margin-right: auto;
+    }
+    .card-inner-border {
+      position: absolute; pointer-events: none;
+      border: 2px solid var(--cream-200);
+      border-radius: 12.667px;
+      inset: 13px;
+      z-index: 10; /* above card-content (z:2) so all 4 edges always visible on scroll */
+    }
+
+    /* ── Close button inside card (tablet/desktop only) ── */
+    .close-btn-card {
+      display: none;
+      position: absolute; top: 28px; right: 28px;
+      z-index: 15; /* above card-inner-border (z:10) */
+      background: white; border-radius: 100px;
+      width: 40px; height: 40px;
+      overflow: hidden; box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      border: none; cursor: pointer; text-decoration: none;
+    }
+    .close-btn-card img { position: absolute; width: 24px; height: 24px; left: 8px; top: 8px; }
+
+    /* ── "your daily prompt" label ── */
+    .daily-label {
+      font-family: 'PG Picasso', sans-serif;
+      font-size: 14px; line-height: 1.5; letter-spacing: -0.154px;
+      color: var(--cream-200);
+      white-space: nowrap; margin: 0;
+      position: relative; z-index: 2;
+    }
+
+    /* ── Sticky card header: label + question (never scrolls) ── */
+    .card-header {
+      flex-shrink: 0;
+      background: var(--cream-100); /* cream bg blocks textarea text scrolling behind */
+      padding: 28px 29px 16px;
+      position: relative; z-index: 5;
+    }
+    .card-header-inner {
+      display: flex; flex-direction: column; gap: 16px;
+    }
+
+    /* ── Scrollable content area (textarea only) ── */
+    .card-content {
+      flex: 1; min-height: 0; /* min-height:0 lets flex child overflow */
+      display: flex; flex-direction: column;
+      padding: 0 29px 16px;
+      position: relative; z-index: 2;
+      overflow-y: auto; overflow-x: hidden;
+    }
+    /* Scrollbar: thin cream track matching the design */
+    .card-content::-webkit-scrollbar { width: 4px; }
+    .card-content::-webkit-scrollbar-track { background: transparent; }
+    .card-content::-webkit-scrollbar-thumb {
+      background: var(--cream-200);
+      border-radius: 2px;
+    }
+    /* Firefox */
+    .card-content { scrollbar-width: thin; scrollbar-color: var(--cream-200) transparent; }
+
+    /* ── Question text H5 ── */
+    .question-text {
+      font-size: 24px; font-weight: 600;
+      line-height: 32px; letter-spacing: -0.3px;
+      color: var(--text); margin: 0;
+    }
+
+    /* ── Free-text answer textarea ── */
+    .answer-area {
+      /* no flex:1 — sized by content so underline stays directly under text */
+      display: flex; flex-direction: column; gap: 0;
+    }
+    .answer-textarea {
+      /* no flex:1 — auto-grows via JS as user types */
+      background: transparent;
+      border: none; outline: none;
+      width: 100%;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      font-size: 16px; font-weight: 500;
+      line-height: 24px; letter-spacing: -0.048px;
+      color: #121212;
+      resize: none;
+      caret-color: #fdba74; /* orange-300 — visible typing cursor */
+      padding: 0; margin: 0;
+      min-height: 28px; /* at least one line */
+      overflow: hidden;
+    }
+    .answer-underline {
+      /* sits immediately below the typed text, never pushed to card bottom */
+      width: 100%; height: 1.5px;
+      background: var(--cream-200);
+      border: none; flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ── Save button wrap ── */
+    .save-wrap {
+      padding: 20px 29px 28px;
+      position: relative; z-index: 2;
+    }
+    .save-btn {
+      width: 100%;
+      background: #000; color: white;
+      border: none; cursor: pointer;
+      border-radius: 100px; height: 48px;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      font-size: 14px; font-weight: 600; line-height: 22px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+
+    /* ══════════════════════════════════════════
+       CONFIRMATION MODAL
+       ══════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 50;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .modal-overlay.show { opacity: 1; pointer-events: auto; }
+
+    /* Popup container: holds decorations + orange card */
+    .popup-card {
+      position: relative;
+      width: min(406px, calc(100vw - 32px));
+      flex-shrink: 0;
+    }
+
+    /* Cloud sprites peeking above the orange card */
+    .popup-cloud {
+      position: absolute;
+      overflow: hidden; pointer-events: none;
+    }
+    .popup-cloud img {
+      position: absolute; max-width: none;
+      width: 292.24%; height: 861.86%;
+      left: -172.98%; top: -256.19%;
+    }
+    .popup-cloud-left  { left: 30.3%; right: 41.63%; top: 0;    aspect-ratio: 322/194; }
+    .popup-cloud-right { left: 71.92%; right: 0;     top: 24px; aspect-ratio: 322/194; transform: scaleX(-1); }
+
+    /* Blob character peeking above card (top-center-right) */
+    .popup-char {
+      position: absolute;
+      left: 42.61%; right: 21.43%; top: 42px;
+      aspect-ratio: 188/127;
+      overflow: hidden; pointer-events: none; z-index: 2;
+    }
+    .popup-char img {
+      position: absolute; max-width: none;
+      width: 355.85%; height: 351.18%;
+      left: -226.06%; top: -70.87%;
+    }
+
+    /* Orange card body */
+    .popup-body {
+      background: #f2bd65;
+      border-radius: 32px;
+      padding: 24px;
+      margin-top: 92px;
+      position: relative; z-index: 1;
+    }
+    .popup-title {
+      font-size: 20px; font-weight: 600; line-height: 28px;
+      color: black; margin: 0 0 8px;
+    }
+    .popup-desc {
+      font-size: 16px; font-weight: 400; line-height: 24px;
+      color: black; margin: 0 0 24px;
+    }
+    .popup-btns { display: flex; flex-direction: column; gap: 9px; }
+    .popup-btn-outline, .popup-btn-fill {
+      width: 100%; padding: 8px 16px;
+      border-radius: 8px; cursor: pointer;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      font-size: 16px; font-weight: 500; line-height: 24px;
+      letter-spacing: -0.048px;
+    }
+    .popup-btn-outline { border: 1.5px solid black; background: transparent; color: black; }
+    .popup-btn-fill    { border: none; background: black; color: white; }
+
+    /* ══════════════════════════════════════════
+       TOAST — warning (empty field)
+       position: fixed so it floats above everything,
+       centred at top:48px matching Figma spec.
+       ══════════════════════════════════════════ */
+    .toast-warning {
+      position: fixed;
+      top: 48px;
+      left: 50%; transform: translateX(-50%) translateY(-12px);
+      z-index: 200;
+      background: #e88b4e;
+      color: white;
+      border-radius: 100px;
+      padding: 8px 24px;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      font-size: 16px; font-weight: 500;
+      line-height: 24px; letter-spacing: -0.048px;
+      white-space: nowrap;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .toast-warning.show {
+      opacity: 1; pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── TOAST — error (save failed) ── */
+    .toast-error {
+      position: fixed;
+      top: 59px;
+      left: 50%; transform: translateX(-50%) translateY(-12px);
+      z-index: 200;
+      background: #e88b4e;
+      color: white;
+      border-radius: 100px;
+      padding: 8px 24px;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      font-size: 15px; font-weight: 600;
+      line-height: normal; letter-spacing: -0.3px;
+      white-space: nowrap;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .toast-error.show {
+      opacity: 1; pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ══════════════════════════════════════════
+       LANDSCAPE  (desktop only)
+       ══════════════════════════════════════════ */
+    .landscape-wrap {
+      display: none;
+      position: absolute; overflow: hidden; z-index: 5;
+    }
+    .landscape-wrap img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%; object-fit: cover; pointer-events: none;
+    }
+
+
+    /* ══════════════════════════════════════════
+       TABLET  768px – 1199px
+       ══════════════════════════════════════════ */
+    @media (min-width: 768px) and (max-width: 1199px) {
+      .page-root {
+        background: linear-gradient(to bottom, #abcbe6, #ebedef);
+      }
+      .cloud-left  { left: -66px; top: 0; width: 432px; height: 260px; }
+      .cloud-right { left: calc(66.67% + 4px); top: 130px; width: 296px; height: 178px; }
+
+      /* Mobile close btn hidden; card close btn shown */
+      .close-btn-mobile { display: none; }
+      .close-btn-card   { display: block; }
+
+      /* Card: 612px wide, centered, pinned top+bottom for bounded scrolling */
+      .answer-card {
+        left: 50%; right: auto;
+        transform: translateX(-50%);
+        top: 60px; bottom: 40px;
+        width: 612px; max-width: 612px;
+        margin: 0;
+      }
+      .card-header  { padding: 28px 28px 16px; }
+      .card-content { padding: 0 28px 0; }
+      .save-wrap    { padding: 20px 28px 28px; }
+      .save-btn     { width: 100%; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       DESKTOP  ≥ 1200px
+       ══════════════════════════════════════════ */
+    @media (min-width: 1200px) {
+      .page-root {
+        min-height: 1283px;
+        background: linear-gradient(to bottom, #aacae5, #edeef0);
+      }
+      .cloud-left  { left: -66px; top: -14px; width: 532px; height: 320px; }
+      .cloud-right { left: calc(75% + 39px); top: 146px; width: 352px; height: 213px; }
+
+      /* Mobile close btn hidden; card close btn shown */
+      .close-btn-mobile { display: none; }
+      .close-btn-card   { display: block; }
+
+      /* Card: 868px wide, centered, 777px tall */
+      .answer-card {
+        left: 50%; right: auto;
+        transform: translateX(-50%);
+        top: 60px;
+        width: 868px; max-width: 868px;
+        height: 777px; min-height: 0;
+        margin: 0;
+      }
+      .card-header  { padding: 28px 28px 16px; }
+      .card-content { padding: 0 28px 0; }
+
+      /* Save button: 650px wide centered */
+      .save-wrap { padding: 20px 109px 44px; }
+      .save-btn  { width: 650px; max-width: 100%; }
+
+      /* Landscape */
+      .landscape-wrap {
+        display: block;
+        left: calc(50% + 2.5px); transform: translateX(-50%);
+        top: 837px; width: 1151px; height: 446px;
+      }
+    }
+
+    /* ── Delete link (edit mode only) ── */
+    .delete-link {
+      display: none;
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      top: 877px;
+      font-size: 16px; font-weight: 500; line-height: 24px;
+      letter-spacing: -0.048px;
+      color: #e00200; text-decoration: underline;
+      cursor: pointer; white-space: nowrap;
+      z-index: 10; margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-root">
+
+  <!-- ── Toast: shows when บันทึก clicked with empty field ── -->
+  <div class="toast-warning" id="toast" role="alert" aria-live="polite">
+    คุณยังไม่ได้ตอบคำถามประจำวัน (-:
+  </div>
+
+  <!-- ── Toast: shows when save fails ── -->
+  <div class="toast-error" id="toast-error" role="alert" aria-live="polite">
+    กรุณาลองใหม่อีกครั้ง :-(
+  </div>
+
+  <!-- ── Clouds ── -->
+  <div class="cloud cloud-left">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/b2a3d36f-ac0f-4bc6-a817-0f5584baca39" />
+  </div>
+  <div class="cloud cloud-right">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/b2a3d36f-ac0f-4bc6-a817-0f5584baca39" />
+  </div>
+
+  <!-- ── Close button (mobile: outside card) ── -->
+  <a class="close-btn-mobile" href="#" onclick="handleClose(event)" aria-label="ปิด">
+    <img alt="close" src="https://www.figma.com/api/mcp/asset/c9692b6f-ebb5-4fb4-b1f4-537656a97c07" />
+  </a>
+
+  <!-- ══════════════════════════════════════════
+       ANSWER CARD
+       ══════════════════════════════════════════ -->
+  <div class="answer-card">
+    <div class="card-inner-border"></div>
+
+    <!-- Close button (tablet/desktop: inside card, top-right) -->
+    <a class="close-btn-card" href="#" onclick="handleClose(event)" aria-label="ปิด">
+      <img alt="close" src="https://www.figma.com/api/mcp/asset/c9692b6f-ebb5-4fb4-b1f4-537656a97c07" />
+    </a>
+
+    <!-- Sticky header: label + question (cream bg blocks scrolling text) -->
+    <div class="card-header">
+      <div class="card-header-inner">
+        <p class="daily-label">your daily prompt</p>
+        <p class="question-text">ช่วงนี้คุณกำลังพยายาม "ไหว" เรื่องอะไรอยู่บ้างไหม</p>
+      </div>
+    </div>
+
+    <!-- Scrollable area: textarea only -->
+    <div class="card-content">
+      <div class="answer-area">
+        <textarea
+          class="answer-textarea"
+          rows="1"
+          placeholder=""
+          autofocus
+          oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'"
+        ></textarea>
+        <div class="answer-underline"></div>
+      </div>
+    </div>
+
+    <!-- Save button -->
+    <div class="save-wrap">
+      <button class="save-btn" onclick="handleSave()">บันทึก</button>
+    </div>
+  </div>
+
+  <!-- ── Landscape (desktop only) ── -->
+  <div class="landscape-wrap">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/069ce8d9-5796-40da-914a-3e739a74b826" />
+  </div>
+
+  <!-- ── Delete link (edit mode only, hidden by default) ── -->
+  <p class="delete-link" id="delete-link" onclick="handleDelete()">ลบคำถามนี้</p>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     CONFIRMATION MODAL (outside page-root so it's truly fixed)
+     ══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
+  <div class="popup-card" onclick="event.stopPropagation()">
+
+    <!-- Cloud left -->
+    <div class="popup-cloud popup-cloud-left">
+      <img alt="" src="https://www.figma.com/api/mcp/asset/b2a3d36f-ac0f-4bc6-a817-0f5584baca39" />
+    </div>
+    <!-- Cloud right (mirrored) -->
+    <div class="popup-cloud popup-cloud-right">
+      <img alt="" src="https://www.figma.com/api/mcp/asset/b2a3d36f-ac0f-4bc6-a817-0f5584baca39" />
+    </div>
+    <!-- Blob character -->
+    <div class="popup-char">
+      <img alt="" src="https://www.figma.com/api/mcp/asset/373572ec-48c9-44fe-a426-8f94bf31e6d3" />
+    </div>
+
+    <!-- Orange card -->
+    <div class="popup-body">
+      <h3 class="popup-title">ต้องออกจากการ<br>ตอบคำถามประจำวัน</h3>
+      <p class="popup-desc">ข้อมูลจะถูกลบออกจากระบบ ไม่สามารถย้อนกลับหรือแก้ไขได้อีก</p>
+      <div class="popup-btns">
+        <button class="popup-btn-outline" onclick="confirmExit()">ยืนยัน</button>
+        <button class="popup-btn-fill"    onclick="closeModal()">ยกเลิก</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DELETE CONFIRMATION MODAL
+     ══════════════════════════════════════════ -->
+<div class="modal-overlay" id="delete-modal-overlay" onclick="closeDeleteModal()">
+  <div class="popup-card" onclick="event.stopPropagation()">
+
+    <!-- Cloud left -->
+    <div class="popup-cloud popup-cloud-left">
+      <img alt="" src="https://www.figma.com/api/mcp/asset/b2a3d36f-ac0f-4bc6-a817-0f5584baca39" />
+    </div>
+    <!-- Cloud right (mirrored) -->
+    <div class="popup-cloud popup-cloud-right">
+      <img alt="" src="https://www.figma.com/api/mcp/asset/b2a3d36f-ac0f-4bc6-a817-0f5584baca39" />
+    </div>
+    <!-- Blob character -->
+    <div class="popup-char">
+      <img alt="" src="https://www.figma.com/api/mcp/asset/53e92ee3-9170-4309-90c6-7effc5bab25c" />
+    </div>
+
+    <!-- Orange card -->
+    <div class="popup-body">
+      <h3 class="popup-title">ต้องการลบคำถาม<br>ประจำวันนี้หรือไม่?</h3>
+      <p class="popup-desc">ข้อมูลจะถูกลบออกจากระบบ ไม่สามารถย้อนกลับหรือแก้ไขได้อีก</p>
+      <div class="popup-btns">
+        <button class="popup-btn-outline" onclick="confirmDelete()">ยืนยัน</button>
+        <button class="popup-btn-fill"    onclick="closeDeleteModal()">ยกเลิก</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     UNDO EDIT CONFIRMATION MODAL
+     ══════════════════════════════════════════ -->
+<div class="modal-overlay" id="undo-modal-overlay" onclick="closeUndoModal()">
+  <div class="popup-card" onclick="event.stopPropagation()">
+
+    <!-- Cloud left -->
+    <div class="popup-cloud popup-cloud-left">
+      <img alt="" src="https://www.figma.com/api/mcp/asset/b2a3d36f-ac0f-4bc6-a817-0f5584baca39" />
+    </div>
+    <!-- Cloud right (mirrored) -->
+    <div class="popup-cloud popup-cloud-right">
+      <img alt="" src="https://www.figma.com/api/mcp/asset/b2a3d36f-ac0f-4bc6-a817-0f5584baca39" />
+    </div>
+    <!-- Blob character -->
+    <div class="popup-char">
+      <img alt="" src="https://www.figma.com/api/mcp/asset/ca327450-4e59-4f84-acf4-614388694626" />
+    </div>
+
+    <!-- Orange card -->
+    <div class="popup-body">
+      <h3 class="popup-title">ยกเลิกการแก้ไข<br>หรือไม่?</h3>
+      <p class="popup-desc">ข้อความจะไม่ถูกอัพเดท จะถูกคืนเหมือนเดิม<br>ไม่มีการบันทึกใหม่</p>
+      <div class="popup-btns">
+        <button class="popup-btn-outline" onclick="confirmUndo()">ยืนยัน</button>
+        <button class="popup-btn-fill"    onclick="closeUndoModal()">ยกเลิก</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="sets.js"></script>
+<script>
+  /* Init question text from the current shared set on load */
+  (function () {
+    var qEl = document.querySelector('.question-text');
+    if (qEl) qEl.innerHTML = _sets[_liftIdx()].prompt;
+  })();
+
+  /* Auto-grow textarea */
+  const ta = document.querySelector('.answer-textarea');
+  if (ta) {
+    ta.addEventListener('input', function () {
+      this.style.height = 'auto';
+      this.style.height = this.scrollHeight + 'px';
+    });
+  }
+
+  /* Toast logic */
+  let _toastTimer = null;
+
+  function showToast() {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.classList.add('show');
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  /* Error toast */
+  let _errorTimer = null;
+  function showErrorToast() {
+    const toast = document.getElementById('toast-error');
+    if (!toast) return;
+    toast.classList.add('show');
+    clearTimeout(_errorTimer);
+    _errorTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  /* ── Edit mode: detect ?edit=INDEX in URL and pre-fill ── */
+  var _editIndex    = -1;
+  var _originalAnswer = '';
+  (function () {
+    var params = new URLSearchParams(window.location.search);
+    var idx    = parseInt(params.get('edit'), 10);
+    if (!isNaN(idx) && idx >= 0) {
+      _editIndex = idx;
+      var entries = JSON.parse(localStorage.getItem('liftapp_entries') || '[]');
+      var entry   = entries[idx];
+      if (entry && ta) {
+        ta.value        = entry.answer;
+        _originalAnswer = entry.answer; /* remember original to detect changes */
+        ta.style.height = 'auto';
+        ta.style.height = ta.scrollHeight + 'px';
+      }
+      var delLink = document.getElementById('delete-link');
+      if (delLink) delLink.style.display = 'block';
+    }
+  })();
+
+  function handleSave() {
+    const value = ta ? ta.value.trim() : '';
+    if (!value) {
+      showToast();
+      if (ta) ta.focus();
+      return;
+    }
+    try {
+      var entries = JSON.parse(localStorage.getItem('liftapp_entries') || '[]');
+      if (_editIndex >= 0) {
+        /* Edit mode: update existing entry */
+        if (entries[_editIndex]) {
+          entries[_editIndex].answer = value;
+          localStorage.setItem('liftapp_entries', JSON.stringify(entries));
+        }
+      } else {
+        /* New entry */
+        var idx   = _liftIdx();
+        var entry = { date: new Date().toISOString(), setIndex: idx, prompt: _sets[idx].prompt, answer: value };
+        entries.unshift(entry);
+        localStorage.setItem('liftapp_entries',     JSON.stringify(entries));
+        localStorage.setItem('liftapp_has_entries', 'true');
+      }
+      window.location.href = 'Desktop4.html?toast=saved';
+    } catch (e) {
+      showErrorToast();
+    }
+  }
+
+  /* ── Delete entry: show confirmation modal first ── */
+  function handleDelete() {
+    document.getElementById('delete-modal-overlay').classList.add('show');
+  }
+
+  function closeDeleteModal() {
+    document.getElementById('delete-modal-overlay').classList.remove('show');
+  }
+
+  function confirmDelete() {
+    try {
+      var entries = JSON.parse(localStorage.getItem('liftapp_entries') || '[]');
+      entries.splice(_editIndex, 1);
+      localStorage.setItem('liftapp_entries', JSON.stringify(entries));
+      if (entries.length === 0) localStorage.removeItem('liftapp_has_entries');
+      window.location.href = 'Desktop4.html?toast=deleted';
+    } catch (e) {
+      closeDeleteModal();
+      showErrorToast();
+    }
+  }
+
+  /* ── Close / confirmation modal ── */
+  function handleClose(e) {
+    e.preventDefault();
+    if (_editIndex >= 0) {
+      /* Edit mode: show undo confirmation only if content changed */
+      var current = ta ? ta.value : '';
+      if (current !== _originalAnswer) {
+        showUndoModal();
+      } else {
+        window.location.href = 'Desktop4.html';
+      }
+      return;
+    }
+    const value = ta ? ta.value.trim() : '';
+    if (value) {
+      showModal();
+    } else {
+      window.location.href = 'Desktop2.html';
+    }
+  }
+
+  function showModal() {
+    document.getElementById('modal-overlay').classList.add('show');
+  }
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('show');
+  }
+  function confirmExit() {
+    window.location.href = _editIndex >= 0 ? 'Desktop4.html' : 'Desktop1.html';
+  }
+
+  /* ── Undo edit modal ── */
+  function showUndoModal() {
+    document.getElementById('undo-modal-overlay').classList.add('show');
+  }
+  function closeUndoModal() {
+    document.getElementById('undo-modal-overlay').classList.remove('show');
+  }
+  function confirmUndo() {
+    window.location.href = 'Desktop4.html';
+  }
+</script>
+</body>
+</html>

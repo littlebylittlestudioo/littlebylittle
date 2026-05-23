@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liftapp — โปรไฟล์</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --cream-100: #f8ebdb; --cream-200: #efcca4; --text: #1e1e1e; }
+    * { font-family: 'IBM Plex Sans Thai', sans-serif; box-sizing: border-box; }
+    body { margin: 0; }
+
+    /* ══ PAGE ROOT ══ */
+    .page-root {
+      position: relative; width: 100%; overflow-x: hidden;
+      min-height: max(1283px, calc(837px + 31vw));
+      background: linear-gradient(to bottom, #aacae5, #edeef0);
+    }
+
+    /* ══ CLOUDS ══ */
+    .cloud { position: absolute; overflow: hidden; pointer-events: none; z-index: 1; }
+    .cloud img { position: absolute; max-width: none; width: 292.24%; height: 861.86%; left: -172.98%; top: -256.19%; }
+    .cloud-left  { left: -66px; top: -14px; width: 532px; height: 320px; }
+    .cloud-right { left: calc(75% + 39px); top: 146px; width: 352px; height: 213px; transform: scaleX(-1); }
+
+    /* ══ CLOSE BUTTON ══ */
+    .close-btn {
+      position: absolute;
+      left: calc(50% + 191px); top: 120px;
+      width: 40px; height: 40px;
+      background: white; border-radius: 100px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 20;
+    }
+    .close-btn img { width: 24px; height: 24px; object-fit: contain; display: block; }
+
+    /* ══ PROFILE CARD ══ */
+    .profile-card {
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      top: 184px;
+      width: 461px; height: 653px;
+      background: var(--cream-100);
+      border-radius: 25.333px;
+      box-shadow: 0 6.333px 63.333px rgba(0,0,0,0.1);
+      overflow: hidden;
+      z-index: 10;
+    }
+    .card-border {
+      position: absolute;
+      inset: 16px;
+      border: 2px solid var(--cream-200);
+      border-radius: 12.667px;
+      pointer-events: none;
+    }
+
+    /* ── Profile photo ── */
+    .photo-wrap {
+      position: absolute;
+      left: 174px; top: 48px;
+      width: 120px; height: 120px;
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .photo-wrap img#profile-photo {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      border-radius: 100px;
+    }
+    .edit-icon {
+      position: absolute;
+      left: 40px; top: 40px;
+      width: 40px; height: 40px;
+      background: white; border-radius: 100px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .edit-icon img { width: 24px; height: 24px; object-fit: contain; display: block; }
+
+    /* ── Name section ── */
+    .name-section {
+      position: absolute;
+      left: 89px; top: 200px;
+      width: 284px;
+      display: flex; flex-direction: column; gap: 32px;
+    }
+    .name-block { display: flex; flex-direction: column; gap: 8px; }
+    .name-label {
+      font-size: 24px; font-weight: 600;
+      line-height: 32px; letter-spacing: -0.3px;
+      color: var(--text); text-align: center; margin: 0;
+    }
+    .name-value-wrap {
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .name-value {
+      font-size: 16px; font-weight: 500;
+      line-height: 24px; letter-spacing: -0.048px;
+      color: #121212; margin: 0; white-space: nowrap;
+    }
+    .name-line {
+      width: 100%; height: 1px;
+      background: #d6bb99; margin-top: 2px;
+    }
+
+    /* ── Menu items ── */
+    .menu-list {
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .menu-item {
+      display: flex; align-items: center; gap: 11px;
+      cursor: pointer;
+    }
+    .menu-item:hover { opacity: 0.75; }
+    .menu-icon {
+      width: 40px; height: 40px; flex-shrink: 0;
+      background: white; border-radius: 100px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .menu-icon img { width: 24px; height: 24px; object-fit: contain; display: block; }
+    .menu-label {
+      font-size: 16px; font-weight: 500;
+      line-height: 24px; letter-spacing: -0.048px;
+      color: #121212; margin: 0; white-space: nowrap;
+    }
+
+    /* ── Logout ── */
+    .logout-row {
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      top: 565px;
+      display: flex; align-items: center; gap: 11px;
+      cursor: pointer;
+    }
+    .logout-row:hover { opacity: 0.75; }
+    .logout-icon {
+      width: 40px; height: 40px;
+      background: white; border-radius: 100px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; flex-shrink: 0;
+    }
+    .logout-icon img { width: 24px; height: 24px; object-fit: contain; display: block; }
+    .logout-label {
+      font-size: 16px; font-weight: 500;
+      line-height: 24px; letter-spacing: -0.048px;
+      color: #121212; margin: 0; white-space: nowrap;
+    }
+
+    /* ══ LANDSCAPE ══ */
+    .landscape-wrap {
+      position: absolute; left: 0; right: 0; width: 100%;
+      overflow: hidden; z-index: 5;
+      top: 837px; height: max(446px, 31vw);
+    }
+    .landscape-wrap img {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: max(1151px, 80vw); height: 100%;
+      object-fit: fill; pointer-events: none;
+    }
+
+    /* ══ TABLET ══ */
+    @media (min-width: 768px) and (max-width: 1199px) {
+      .page-root { min-height: 100vh; background: linear-gradient(to bottom, #abcbe6, #ebedef); }
+      .cloud-left  { left: -66px; top: 0; width: 432px; height: 260px; }
+      .cloud-right { left: calc(66.67% + 4px); top: 130px; width: 296px; height: 178px; }
+      .close-btn { left: calc(50% + 191px); top: 80px; }
+      .landscape-wrap { top: calc(100vh - 220px); height: 446px; }
+      .landscape-wrap img { width: 1151px; object-fit: fill; }
+    }
+
+    /* ══ MOBILE ══ */
+    @media (max-width: 767px) {
+      .page-root { min-height: max(100vh, 870px); background: linear-gradient(to bottom, #a9cae5, #e4e7e8); }
+      .cloud-left  { left: -87px; top: -4px; width: 255px; height: 154px; }
+      .cloud-right { left: calc(50% + 51.5px); top: 60px; width: 169px; height: 102px; }
+      .close-btn { left: auto; right: 16px; top: 16px; }
+      .profile-card { width: calc(100% - 32px); height: auto; top: 72px; padding-bottom: 40px; }
+      .photo-wrap { left: 50%; transform: translateX(-50%); }
+      .name-section { left: 50%; transform: translateX(-50%); top: 200px; width: calc(100% - 80px); align-items: center; }
+      .landscape-wrap { top: calc(100vh - 213px); height: 213px; }
+      .landscape-wrap img { width: 551px; object-fit: fill; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-root">
+
+  <!-- Clouds -->
+  <div class="cloud cloud-left">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/78d83ed4-a0dc-4e60-a4cd-94e01f7849b6" />
+  </div>
+  <div class="cloud cloud-right">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/78d83ed4-a0dc-4e60-a4cd-94e01f7849b6" />
+  </div>
+
+  <!-- Close → back to Desktop1 -->
+  <button class="close-btn" onclick="window.location.href='Desktop1.html'" aria-label="ปิด">
+    <img alt="close" src="https://www.figma.com/api/mcp/asset/003dd41d-af02-4a6f-9618-fe5d4029f9f6" />
+  </button>
+
+  <!-- Profile card -->
+  <div class="profile-card">
+    <div class="card-border"></div>
+
+    <!-- Profile photo + edit icon -->
+    <div class="photo-wrap">
+      <img id="profile-photo" alt="profile" src="" />
+      <div class="edit-icon">
+        <img alt="edit" src="https://www.figma.com/api/mcp/asset/961b6604-0bb3-45ae-be2d-e6fca1b98098" />
+      </div>
+    </div>
+
+    <!-- Name + menu -->
+    <div class="name-section">
+      <!-- Name block -->
+      <div class="name-block">
+        <p class="name-label">ชื่อผู้ใช้งาน</p>
+        <div class="name-value-wrap">
+          <p class="name-value" id="profile-name">—</p>
+          <div class="name-line"></div>
+        </div>
+      </div>
+
+      <!-- Menu items -->
+      <div class="menu-list">
+        <div class="menu-item" onclick="window.location.href='Desktop4.html'">
+          <div class="menu-icon">
+            <img alt="" src="https://www.figma.com/api/mcp/asset/8a8d25d0-2f6b-4a49-9cdf-79b7ba37cfbf" />
+          </div>
+          <p class="menu-label">ข้อความที่บันทึกไว้</p>
+        </div>
+        <div class="menu-item" onclick="window.open('https://forms.gle/Bg4tTuAvMZqPfoMW9','_blank')">
+          <div class="menu-icon">
+            <img alt="" src="https://www.figma.com/api/mcp/asset/477aeb67-879a-4f99-93a4-c2149aef119b" />
+          </div>
+          <p class="menu-label">ฟีดเบคงานใช้งาน</p>
+        </div>
+        <div class="menu-item" onclick="window.location.href='Desktop_Donate.html'">
+          <div class="menu-icon">
+            <img alt="" src="https://www.figma.com/api/mcp/asset/16fcd9c6-806f-4ee4-ba4d-9d4ffca4012d" />
+          </div>
+          <p class="menu-label">สนับสนุนทีมงาน Littlebylittle</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logout -->
+    <div class="logout-row" onclick="logout()">
+      <div class="logout-icon">
+        <img alt="logout" src="https://www.figma.com/api/mcp/asset/f29cd87f-36a4-42b5-9f0f-8edcfb3b58be" />
+      </div>
+      <p class="logout-label">ลงชื่อออก</p>
+    </div>
+  </div>
+
+  <!-- Green mountain -->
+  <div class="landscape-wrap">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/8019edb6-39ed-4ad0-af05-500b0e660659" />
+  </div>
+
+</div>
+
+<script>
+  /* ── Load user info from localStorage ── */
+  (function () {
+    var raw = localStorage.getItem('liftapp_user');
+    if (!raw) { window.location.href = 'Desktop1.html'; return; }
+    try {
+      var user = JSON.parse(raw);
+      /* Name */
+      document.getElementById('profile-name').textContent = user.name || '—';
+      /* Photo */
+      if (user.photo) {
+        document.getElementById('profile-photo').src = user.photo;
+      }
+    } catch (e) {}
+  })();
+
+  /* ── Logout ── */
+  function logout() {
+    localStorage.removeItem('liftapp_logged_in');
+    localStorage.removeItem('liftapp_user');
+    localStorage.removeItem('liftapp_provider');
+    window.location.href = 'Desktop1.html';
+  }
+</script>
+</body>
+</html>

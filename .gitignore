@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Environment & secrets
+.env
+.env.*
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# Temp / lock files
+~$*
+
+# Non-source Desktop clutter
+*.webloc
+*.key
+*.numbers
+*.pptx
+*.png
+*.jpg
+*.zip
+*.HEIC
+BG/
+test-claude/
+The terrace/
+.localized
+
+# Logs
+*.log
+npm-debug.log*

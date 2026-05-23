@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liftapp — คำถามประจำวัน</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'PG Picasso';
+      src: url('fonts/PG PicassoV2.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+  </style>
+  <style>
+    /* ── Design tokens ── */
+    :root {
+      --cream-100: #f8ebdb;
+      --cream-200: #efcca4;
+      --text: #1e1e1e;
+    }
+    * { font-family: 'IBM Plex Sans Thai', sans-serif; box-sizing: border-box; }
+    body { margin: 0; }
+
+    /* ══════════════════════════════════════════
+       PAGE ROOT
+       ══════════════════════════════════════════ */
+    .page-root {
+      position: relative; width: 100%;
+      overflow-x: hidden;          /* clip wide clouds/landscape horizontally */
+      min-height: max(100vh, 924px); /* always tall enough for bottom section; SE scrolls */
+      background: linear-gradient(to bottom, #a9cae5, #e4e7e8);
+    }
+
+    /* ── Clouds ── */
+    .cloud { position: absolute; overflow: hidden; pointer-events: none; z-index: 1; }
+    .cloud img {
+      position: absolute; max-width: none;
+      width: 292.24%; height: 861.86%; left: -172.98%; top: -256.19%;
+    }
+    /* mobile */
+    .cloud-left  { left: -87px; top: -4px;           width: 255px; height: 154px; }
+    .cloud-right { left: calc(50% + 51.5px); top: 60px; width: 169px; height: 102px; transform: scaleX(-1); }
+
+    /* ══════════════════════════════════════════
+       BACK CARDS (peek from sides)
+       No rotation — flat, just positionally offset
+       ══════════════════════════════════════════ */
+    .prompt-back {
+      position: absolute;
+      width: 216px; height: 306.475px;
+      background: var(--cream-100);
+      border-radius: 16px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      overflow: hidden;
+      z-index: 7;
+    }
+    .prompt-back::after {
+      content: '';
+      position: absolute;
+      border: 1px solid #d6bb99;
+      inset: 8px; border-radius: 8px;
+    }
+    /* mobile: Figma exact — fixed peek: 8px left, 9px right, screen-width-independent */
+    .prompt-back-left  { left: -208px;             top: 264px; }
+    .prompt-back-right { left: calc(100% - 9px);   top: 264px; }
+
+    /* ══════════════════════════════════════════
+       MAIN PROMPT CARD
+       ══════════════════════════════════════════ */
+    @keyframes card-flip-out {
+      0%   { transform: translateX(-50%) perspective(800px) rotateY(0deg); }
+      100% { transform: translateX(-50%) perspective(800px) rotateY(90deg); }
+    }
+    @keyframes card-flip-in {
+      0%   { transform: translateX(-50%) perspective(800px) rotateY(-90deg); }
+      100% { transform: translateX(-50%) perspective(800px) rotateY(0deg); }
+    }
+
+    @keyframes card-drop-in {
+      0%   { transform: translateX(-50%) translateY(-120%); opacity: 0; }
+      100% { transform: translateX(-50%) translateY(0);     opacity: 1; }
+    }
+
+    .prompt-card {
+      position: absolute; z-index: 8;
+      background: var(--cream-100);
+      border-radius: 25.333px;
+      box-shadow: 0 6.333px 63.333px rgba(0,0,0,0.1);
+      overflow: hidden;
+      /* mobile: fills screen width with 16px margins */
+      left: 50%; transform: translateX(-50%);
+      width: calc(100% - 32px); max-width: 342px;
+      height: 530.417px;
+      top: 123px;
+      animation: card-drop-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) 1s both;
+    }
+    .prompt-inner-border {
+      position: absolute;
+      border: 2px solid var(--cream-200);
+      border-radius: 12.667px;
+      top: 12.67px; left: 12.67px; right: 12.67px; bottom: 12.67px;
+    }
+
+    /* "your daily prompt" handwritten label */
+    .daily-label {
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      top: 29px;
+      font-family: 'PG Picasso', sans-serif;
+      font-weight: 400;
+      font-size: 14px; line-height: 22px; letter-spacing: 0;
+      color: #efcca4;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    /* Content column: arch sprite + question text + body text */
+    .prompt-content {
+      position: absolute;
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+      left: 29px; top: 130px; width: 284px;
+    }
+    .prompt-main-group {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      width: 100%;
+    }
+    .prompt-body {
+      font-size: 14px; font-weight: 400; line-height: 22px;
+      color: var(--text); text-align: center; margin: 0; width: 100%;
+    }
+
+    /* Arch character (sprite crop) */
+    .arch-wrap {
+      position: relative; flex-shrink: 0;
+      width: 128px; height: 103px;
+      overflow: hidden;
+    }
+    .arch-wrap img {
+      position: absolute; max-width: none;
+      width: 465.52%; height: 1024%;
+      left: -251.72%; top: -924%;
+    }
+
+    /* Question text — H5 */
+    .prompt-question {
+      font-size: 24px; font-weight: 600;
+      line-height: 32px; letter-spacing: -0.3px;
+      color: var(--text); text-align: center; margin: 0;
+    }
+
+    /* Action buttons row */
+    .prompt-actions {
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      top: 385px;
+      display: flex; gap: 30px; align-items: center;
+    }
+    .action-item {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 8px; width: 78px;
+    }
+    .action-btn {
+      background: white; border-radius: 100px;
+      width: 40px; height: 40px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      border: none; cursor: pointer;
+    }
+    .action-btn img { width: 24px; height: 24px; object-fit: contain; display: block; }
+    .action-label {
+      font-size: 14px; font-weight: 600; line-height: 22px;
+      color: var(--text); text-decoration: underline;
+      text-align: center; margin: 0; white-space: nowrap;
+    }
+
+    /* ── Close button (Icon/Close) ── */
+    .close-btn {
+      position: absolute;
+      z-index: 20;
+      background: white;
+      border-radius: 100px;
+      width: 40px; height: 40px;
+      overflow: hidden;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      border: none; cursor: pointer;
+      display: block; text-decoration: none;
+      /* mobile: left: calc(75%+36.75px), top: 59px */
+      left: calc(75% + 36.75px); top: 59px;
+    }
+    .close-btn img {
+      position: absolute;
+      width: 24px; height: 24px;
+      left: 8px; top: 8px;
+      object-fit: contain; display: block;
+    }
+
+    /* ══════════════════════════════════════════
+       LANDSCAPE
+       ══════════════════════════════════════════ */
+    .landscape-wrap {
+      position: absolute; overflow: hidden; z-index: 5;
+      /* mobile */
+      left: calc(37.5% + 18.88px); transform: translateX(-50%);
+      top: 711px; width: 551px; height: 213px;
+    }
+    .landscape-wrap img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%; object-fit: cover; pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════
+       HOUSE CHARACTER (sprite crop)
+       ══════════════════════════════════════════ */
+    .char-house {
+      position: absolute; overflow: hidden; pointer-events: none; z-index: 9;
+      /* mobile */
+      left: 16px; top: 608px; width: 164px; height: 191px;
+    }
+    .char-house img {
+      position: absolute; max-width: none;
+      width: 369.74%; height: 564.4%;
+      left: -14.75%; top: -275.92%;
+    }
+
+
+    /* ══════════════════════════════════════════
+       TABLET  768px – 1199px
+       ══════════════════════════════════════════ */
+    @media (min-width: 768px) and (max-width: 1199px) {
+      .page-root {
+        min-height: 100vh;
+        background: linear-gradient(to bottom, #abcbe6, #ebedef);
+      }
+
+      /* clouds */
+      .cloud-left  { left: -66px; top: 0;             width: 432px; height: 260px; }
+      .cloud-right { left: calc(66.67% + 4px); top: 130px; width: 296px; height: 178px; }
+
+      /* Back cards: 2px border, symmetric 70px peek, top = card_top + 141px */
+      .prompt-back { border-radius: 18.675px; box-shadow: 0 4.669px 46.687px rgba(0,0,0,0.1); }
+      .prompt-back::after { border-width: 2px; border-color: var(--cream-200); inset: 9.33px; border-radius: 9.337px; }
+      .prompt-back-left  { left: calc(50% - 241px); top: calc(22vh + 141px); }
+      .prompt-back-right { left: calc(50% + 25px);  top: calc(22vh + 141px); }
+
+      /* Main card: fixed width, centered, top = 22vh */
+      .prompt-card { width: 342px; max-width: none; top: 22vh; }
+
+      /* Action label: 16px / 24px */
+      .action-label { font-size: 16px; line-height: 24px; font-weight: 500; }
+
+      /* Close button: left: calc(83.33%−13px), top: 88px */
+      .close-btn { left: calc(83.33% - 13px); top: 88px; }
+
+      /* Landscape */
+      .landscape-wrap {
+        left: calc(41.67% + 40px); transform: translateX(-50%);
+        top: calc(100vh - 220px); width: 1151px; height: 446px;
+      }
+
+      /* House: sits 87px above landscape */
+      .char-house { left: 65px; top: calc(100vh - 307px); width: 210px; height: 245px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       DESKTOP  ≥ 1200px
+       ══════════════════════════════════════════ */
+    @media (min-width: 1200px) {
+      .page-root {
+        min-height: 1283px;
+        background: linear-gradient(to bottom, #aacae5, #edeef0);
+      }
+
+      /* clouds */
+      .cloud-left  { left: -66px; top: -14px; width: 532px; height: 320px; }
+      .cloud-right { left: calc(75% + 39px);  top: 146px;   width: 352px; height: 213px; }
+
+      /* Back cards: 2px border, symmetric 60px peek on each side */
+      .prompt-back { border-radius: 18.675px; box-shadow: 0 4.669px 46.687px rgba(0,0,0,0.1); }
+      .prompt-back::after { border-width: 2px; border-color: var(--cream-200); inset: 9.33px; border-radius: 9.337px; }
+      .prompt-back-left  { left: calc(50% - 231px); top: 286px; }
+      .prompt-back-right { left: calc(50% + 15px);  top: 286px; }
+
+      /* Main card: centered, top: 145px */
+      .prompt-card { width: 342px; max-width: none; top: 145px; }
+
+      /* Action label: 16px / 24px */
+      .action-label { font-size: 16px; line-height: 24px; font-weight: 500; letter-spacing: -0.048px; }
+
+      /* Close button: left: calc(75%+34px), top: 88px */
+      .close-btn { left: calc(75% + 34px); top: 88px; }
+
+      /* Content + actions: per desktop Figma */
+      .prompt-content { top: 67px; }
+      .prompt-actions { top: 421px; }
+
+      /* Landscape */
+      .landscape-wrap {
+        left: calc(50% + 2.5px); transform: translateX(-50%);
+        top: 837px; width: 1151px; height: 446px;
+      }
+
+      /* House */
+      .char-house { left: calc(25% + 41px); top: 740px; width: 210px; height: 245px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-root">
+
+  <!-- ── Clouds ── -->
+  <div class="cloud cloud-left">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/b220e294-8076-438f-95c4-474110d291b7" />
+  </div>
+  <div class="cloud cloud-right">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/b220e294-8076-438f-95c4-474110d291b7" />
+  </div>
+
+  <!-- ── Close button (Icon/Close) — positioned top-right per Figma ── -->
+  <a class="close-btn" href="Desktop1.html" aria-label="ปิด">
+    <img alt="close" src="https://www.figma.com/api/mcp/asset/2e35e7b7-176e-4213-970b-4ac0e87dedbc" />
+  </a>
+
+  <!-- ══════════════════════════════════════════
+       MAIN PROMPT CARD
+       ══════════════════════════════════════════ -->
+  <div class="prompt-card">
+    <div class="prompt-inner-border"></div>
+
+    <!-- "your daily prompt" handwritten label -->
+    <p class="daily-label">your daily prompt</p>
+
+    <!-- Arch character + question + body text -->
+    <div class="prompt-content">
+      <div class="prompt-main-group">
+        <div class="arch-wrap">
+          <img alt="" src="https://www.figma.com/api/mcp/asset/046fea9b-5613-41df-a2ad-a8e657fd7c5b" />
+        </div>
+        <p class="prompt-question">ช่วงนี้คุณกำลังพยายาม "ไหว" เรื่องอะไรอยู่บ้างไหม</p>
+      </div>
+      <p class="prompt-body">
+        บางทีเราอาจเหนื่อย<br>
+        ไม่ใช่เพราะอ่อนแอ<br>
+        แต่เพราะพยายามเข้มแข็งมานานเกินไปแล้ว
+      </p>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="prompt-actions">
+      <!-- เปลี่ยนคำถาม -->
+      <div class="action-item">
+        <button class="action-btn" onclick="changeQuestion()">
+          <img alt="เปลี่ยนคำถาม" src="https://www.figma.com/api/mcp/asset/068231a2-f61b-401c-9a40-1efa21f89a84" />
+        </button>
+        <p class="action-label" onclick="changeQuestion()" style="cursor:pointer;">เปลี่ยนคำถาม</p>
+      </div>
+      <!-- ตอบคำถาม -->
+      <div class="action-item">
+        <button class="action-btn" onclick="goToAnswer()">
+          <img alt="ตอบคำถาม" src="https://www.figma.com/api/mcp/asset/d5988470-1428-4738-a7d0-adf1219ef46d" />
+        </button>
+        <p class="action-label" onclick="goToAnswer()" style="cursor:pointer;">ตอบคำถาม</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       LANDSCAPE + HOUSE CHARACTER
+       ══════════════════════════════════════════ -->
+  <div class="landscape-wrap">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/b28afbdd-f079-4de7-a8f8-e6596da2fe50" />
+  </div>
+
+  <div class="char-house">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/046fea9b-5613-41df-a2ad-a8e657fd7c5b" />
+  </div>
+
+</div>
+
+<script src="sets.js"></script>
+<script>
+  /* ── Guard: ตอบคำถาม requires login ── */
+  function goToAnswer() {
+    if (!localStorage.getItem('liftapp_logged_in')) {
+      localStorage.setItem('liftapp_redirect', 'Desktop3.html'); /* after login → Desktop3 */
+      localStorage.setItem('liftapp_back', 'Desktop2.html');     /* close X → back to Desktop2 */
+      window.location.href = 'Desktop_Login.html';
+      return;
+    }
+    window.location.href = 'Desktop3.html';
+  }
+
+  /* ── Change question: cycles to next set, updates prompt + reflection ── */
+  var _flipping = false;
+
+  function changeQuestion() {
+    if (_flipping) return;
+    _flipping = true;
+    var card = document.querySelector('.prompt-card');
+    var qEl  = document.querySelector('.prompt-question');
+    var rEl  = document.querySelector('.prompt-body');
+
+    card.style.animation = 'card-flip-out 0.28s ease-in forwards';
+
+    setTimeout(function () {
+      var s = _sets[_liftNext()];
+      qEl.innerHTML = s.prompt;
+      rEl.innerHTML = s.reflection;
+
+      card.style.animation = 'none';
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          card.style.animation = 'card-flip-in 0.28s ease-out forwards';
+          setTimeout(function () { _flipping = false; }, 280);
+        });
+      });
+    }, 280);
+  }
+
+  /* Init prompt + reflection from the current shared set on load */
+  (function () {
+    var s = _sets[_liftIdx()];
+    document.querySelector('.prompt-question').innerHTML = s.prompt;
+    document.querySelector('.prompt-body').innerHTML     = s.reflection;
+  })();
+</script>
+</body>
+</html>

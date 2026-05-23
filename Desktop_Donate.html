@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liftapp — ส่งกำลังใจ</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;600&family=Playwrite+US+Trad&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'PG Picasso';
+      src: url('fonts/PG PicassoV2.ttf') format('truetype');
+    }
+
+    :root {
+      --cream-100: #f8ebdb;
+      --cream-200: #efcca4;
+      --text: #1e1e1e;
+    }
+
+    * { font-family: 'IBM Plex Sans Thai', sans-serif; box-sizing: border-box; }
+    body { margin: 0; }
+
+    /* ══ PAGE ROOT ══ */
+    .page-root {
+      position: relative;
+      width: 100%;
+      overflow-x: hidden;
+      min-height: max(1283px, calc(837px + 31vw));
+      background: linear-gradient(to bottom, #aacae5, #edeef0);
+    }
+
+    /* ══ CLOUDS ══ */
+    .cloud { position: absolute; overflow: hidden; pointer-events: none; z-index: 1; }
+    .cloud img { position: absolute; max-width: none; width: 292.24%; height: 861.86%; left: -172.98%; top: -256.19%; }
+    .cloud-left  { left: -66px; top: -14px; width: 532px; height: 320px; }
+    .cloud-right { left: calc(75% + 39px); top: 146px; width: 352px; height: 213px; transform: scaleX(-1); }
+
+    /* ══ CLOSE BUTTON ══ */
+    .close-btn {
+      position: absolute;
+      /* aligns with the top-right corner of the book card */
+      left: calc(50% + 394px);
+      top: 120px;
+      width: 40px; height: 40px;
+      background: white;
+      border-radius: 100px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      border: none;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 20;
+      flex-shrink: 0;
+    }
+    .close-btn img { width: 24px; height: 24px; object-fit: contain; display: block; }
+
+    /* ══ BOOK CARD ══ */
+    .book-card {
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      top: 184px;
+      width: 868px; height: 653px;
+      background: var(--cream-100);
+      border-radius: 25.333px;
+      box-shadow: 0 6.333px 63.333px rgba(0,0,0,0.1);
+      overflow: hidden;
+      z-index: 10;
+    }
+    .book-border {
+      position: absolute;
+      inset: 16px;
+      border: 2px solid var(--cream-200);
+      border-radius: 12.667px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ── Left page ── */
+    .left-page {
+      position: absolute;
+      left: 40px; top: 93px;
+      width: 349px;
+      display: flex; flex-direction: column; gap: 24px;
+    }
+    .logo-section { display: flex; flex-direction: column; gap: 32px; }
+    .logo-wrap { position: relative; display: inline-block; }
+    .logo-text {
+      font-family: 'Playwrite US Trad', cursive;
+      font-size: 25.749px; font-weight: 400;
+      line-height: 27.895px; color: #000;
+      display: block; margin-top: 22.4px; width: 105px;
+    }
+    .logo-bird {
+      position: absolute; top: 0; left: 60px;
+      width: 38px; height: 51px; display: block;
+    }
+    .book-heading {
+      font-size: 32px; font-weight: 600;
+      line-height: 40px; color: var(--text); margin: 0;
+    }
+    .book-body {
+      font-size: 14px; font-weight: 400;
+      line-height: 22px; color: var(--text); margin: 0;
+    }
+
+    /* ── Book spine — pure CSS, no image needed ── */
+    .book-spine {
+      position: absolute;
+      top: 0; bottom: 0; left: 421px;
+      width: 26px; z-index: 3; pointer-events: none;
+      background: linear-gradient(to right,
+        rgba(0,0,0,0.06) 0%,
+        rgba(0,0,0,0.01) 45%,
+        rgba(0,0,0,0.01) 55%,
+        rgba(0,0,0,0.07) 100%
+      );
+    }
+
+    /* ── Right page — QR + thanks stacked with 24px gap ── */
+    .right-page {
+      position: absolute;
+      left: 434px; right: 0;
+      top: 0; bottom: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 24px 16px;
+      gap: 24px; /* exactly 24px between QR image and thanks text */
+    }
+    .qr-image {
+      width: 304px;
+      flex-shrink: 1;
+      border-radius: 16px;
+      display: block;
+      object-fit: contain;
+    }
+
+    /* ── Thank-you text (inside right-page, 24px below QR via gap) ── */
+    .thanks-text {
+      font-size: 14px; font-weight: 600;
+      line-height: 22px; color: var(--text);
+      text-align: center; margin: 0;
+      flex-shrink: 0;
+    }
+
+    /* ══ FLOWER — in front of everything ══ */
+    .flower-wrap {
+      position: absolute;
+      left: calc(41.67% + 49px); top: 727px;
+      width: 134px; height: 189px; z-index: 15;
+    }
+    .flower-wrap img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; display: block; }
+
+    /* ══ LANDSCAPE ══ */
+    .landscape-wrap {
+      position: absolute;
+      left: 0; right: 0; width: 100%;
+      overflow: hidden; z-index: 5;
+      top: 837px; height: max(446px, 31vw);
+    }
+    .landscape-wrap img {
+      position: absolute;
+      top: 0; left: 50%; transform: translateX(-50%);
+      width: max(1151px, 80vw); height: 100%;
+      object-fit: fill; pointer-events: none;
+    }
+
+    /* ══ TABLET ══ */
+    @media (min-width: 768px) and (max-width: 1199px) {
+      .page-root {
+        min-height: 100vh;
+        background: linear-gradient(to bottom, #abcbe6, #ebedef);
+      }
+      .cloud-left  { left: -66px; top: 0; width: 432px; height: 260px; }
+      .cloud-right { left: calc(66.67% + 4px); top: 130px; width: 296px; height: 178px; }
+
+      .close-btn { left: calc(50% + 45vw - 50px); top: 80px; }
+
+      .book-card { width: 90vw; max-width: 700px; height: auto; min-height: 520px; top: 120px; }
+      .right-page { left: auto; right: 24px; width: 260px; top: 50%; transform: translateY(-50%); }
+      .qr-image { width: 260px; }
+      .left-page { width: calc(100% - 300px); }
+      .thanks-text { left: calc(50% - 16px); right: 16px; font-size: 12px; bottom: 16px; }
+      .book-spine { left: 50%; width: 20px; transform: translateX(-50%); }
+
+      .landscape-wrap { top: calc(100vh - 220px); height: 446px; }
+      .landscape-wrap img { width: 1151px; object-fit: fill; }
+      .flower-wrap { left: calc(41.67% + 20px); top: auto; bottom: 270px; }
+    }
+
+    /* ══ MOBILE ══ */
+    @media (max-width: 767px) {
+      .page-root {
+        min-height: max(100vh, 900px);
+        background: linear-gradient(to bottom, #a9cae5, #e4e7e8);
+      }
+      .cloud-left  { left: -87px; top: -4px; width: 255px; height: 154px; }
+      .cloud-right { left: calc(50% + 51.5px); top: 60px; width: 169px; height: 102px; }
+
+      .close-btn { left: auto; right: 16px; top: 16px; }
+
+      .book-card {
+        left: 16px; right: 16px;
+        transform: none; width: auto;
+        height: auto; top: 72px;
+        border-radius: 16px;
+        overflow: visible;
+      }
+      .book-border { inset: 8px; border-radius: 8px; }
+      .left-page { position: relative; left: auto; top: auto; width: auto; padding: 24px 24px 0; }
+      .right-page {
+        position: relative; left: auto; top: auto; transform: none;
+        width: auto; padding: 16px 24px;
+        align-items: center;
+      }
+      .qr-image { width: 100%; max-width: 280px; border-radius: 12px; }
+      .book-spine { display: none; }
+      .thanks-text {
+        position: relative; left: auto; right: auto; bottom: auto;
+        padding: 0 24px 24px; text-align: center; display: block;
+      }
+
+      .landscape-wrap { top: 730px; height: 213px; }
+      .landscape-wrap img { width: 551px; height: 100%; object-fit: fill; }
+      .flower-wrap { left: calc(40% + 10px); top: 640px; width: 100px; height: 140px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-root">
+
+  <!-- Clouds -->
+  <div class="cloud cloud-left">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/95f80303-37e8-4852-be1d-6affcfb7ec84" />
+  </div>
+  <div class="cloud cloud-right">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/95f80303-37e8-4852-be1d-6affcfb7ec84" />
+  </div>
+
+  <!-- Close button -->
+  <button class="close-btn" onclick="window.location.href='Desktop1.html'" aria-label="ปิด">
+    <img alt="close" src="https://www.figma.com/api/mcp/asset/4bef2f33-3c0b-4323-8c5e-74e354150706" />
+  </button>
+
+  <!-- Book card -->
+  <div class="book-card">
+    <div class="book-border"></div>
+
+    <!-- Left page: text -->
+    <div class="left-page">
+      <div class="logo-section">
+        <div class="logo-wrap">
+          <span class="logo-text">little<br>by little</span>
+          <img class="logo-bird" alt="" src="https://www.figma.com/api/mcp/asset/d597ef9e-bf34-4b84-a3f9-1cd2f8530dd0" />
+        </div>
+        <h1 class="book-heading">ส่งกำลังใจเล็ก ๆ<br>ให้เราเติบโตต่อไป</h1>
+      </div>
+      <p class="book-body">ถ้างานของ Little by Little เคยทำให้คุณใจเย็นลงสักนิด เคยช่วยให้คุณกลับมาฟังตัวเองอีกครั้ง หรือทำให้วันธรรมดารู้สึกอ่อนโยนขึ้น
+<br><br>คุณสามารถส่งกำลังใจเล็ก ๆ ให้เราได้ที่หน้านี้นะคะ ทุกการสนับสนุนจะช่วยให้เรามีแรงทำคอนเทนต์ สมุด ภาพประกอบ และพื้นที่ฮีลใจเล็ก ๆ นี้ต่อไป
+<br><br>ไม่จำเป็นต้องมากมายเลย แค่คุณอยู่ตรงนี้ อ่านงานของเรา และดูแลใจตัวเองไปด้วยกัน นั่นก็มีความหมายมากแล้ว</p>
+    </div>
+
+    <!-- Book spine (CSS only) -->
+    <div class="book-spine"></div>
+
+    <!-- Right page: QR code + thanks text (24px gap between them) -->
+    <div class="right-page">
+      <img class="qr-image" alt="Thai QR Payment" src="https://www.figma.com/api/mcp/asset/d79737d5-62c3-42e3-8715-32ccc5765a40" />
+      <p class="thanks-text">
+        ขอบคุณที่ทำให้ Little by Little ไม่ได้เป็นแค่งานของเรา<br>
+        แต่เป็นพื้นที่เล็ก ๆ ที่ค่อย ๆ เติบโตไปพร้อมกับทุกคน (-:
+      </p>
+    </div>
+  </div>
+
+  <!-- Flower -->
+  <div class="flower-wrap">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/c0c7bedc-fd8a-4446-a265-4e31b22ee24d" />
+  </div>
+
+  <!-- Green mountain -->
+  <div class="landscape-wrap">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/79486c11-5aa9-4ae7-9e72-45a198abf3ae" />
+  </div>
+
+</div>
+</body>
+</html>

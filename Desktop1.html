@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liftapp — Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'PG Picasso';
+      src: url('fonts/PG PicassoV2.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+  </style>
+  <style>
+    /* ── Design tokens ── */
+    :root {
+      --cream-100: #f8ebdb;
+      --cream-200: #efcca4;
+      --yellow-800: #ffc14c;
+      --text: #1e1e1e;
+    }
+
+    * { font-family: 'IBM Plex Sans Thai', sans-serif; box-sizing: border-box; }
+    body { margin: 0; }
+
+    /* ══════════════════════════════════════════
+       PAGE ROOT
+       ══════════════════════════════════════════ */
+    .page-root {
+      position: relative;
+      width: 100%;
+      overflow-x: hidden; /* hide wide landscape/cloud overflow */
+      /* mobile: tall enough to scroll to bottom on short phones (SE=667px, S8+=740px) */
+      min-height: max(100vh, 870px);
+      background: linear-gradient(to bottom, #a9cae5, #e4e7e8);
+    }
+
+    /* ── Clouds ── */
+    .cloud {
+      position: absolute;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .cloud img {
+      position: absolute;
+      max-width: none;
+      width: 292.24%;
+      height: 861.86%;
+      left: -172.98%;
+      top: -256.19%;
+    }
+    /* mobile */
+    .cloud-left  { left: -87px;              top: -4px;  width: 255px; height: 154px; }
+    .cloud-right { left: calc(50% + 51.5px); top: 60px;  width: 169px; height: 102px; transform: scaleX(-1); }
+
+    /* ══════════════════════════════════════════
+       HEADER  (greeting + icons — all breakpoints)
+       ══════════════════════════════════════════ */
+    .page-header {
+      position: absolute;
+      left: 16px; right: 12px; top: 78px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      z-index: 10;
+    }
+    .hrow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .hrow--top  { align-items: center; }
+    .hrow--mid  { align-items: flex-start; }
+
+    .greeting {
+      font-size: 32px; font-weight: 600; line-height: 40px;
+      color: var(--text); margin: 0;
+    }
+    .avatar-wrap {
+      position: relative; width: 40px; height: 40px; flex-shrink: 0;
+    }
+    /* logged-in: profile photo fills the circle */
+    #avatar-photo {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      border-radius: 100px; object-fit: cover;
+      display: none;
+    }
+    /* not logged-in: white circle + person icon */
+    #avatar-nologin {
+      position: absolute; inset: 0;
+      background: white; border-radius: 100px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    #avatar-nologin img { width: 24px; height: 24px; object-fit: contain; display: block; }
+    .subtitle {
+      font-size: 20px; font-weight: 600; line-height: 28px;
+      color: var(--text); margin: 0; flex: 1;
+    }
+    .icon-pair { display: flex; gap: 8px; align-items: center; }
+    .icon-btn {
+      background: white; border-radius: 100px;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      border: none; cursor: pointer; flex-shrink: 0;
+    }
+    .icon-btn img { width: 24px; height: 24px; object-fit: contain; display: block; }
+
+    /* headline-centered no longer used */
+    .headline-centered { display: none; }
+
+    /* ══════════════════════════════════════════
+       CARD STACK
+       ══════════════════════════════════════════ */
+    .card-back {
+      position: absolute;
+      background: var(--cream-100);
+      overflow: hidden;
+      z-index: 8;
+    }
+    .card-back::after {
+      content: '';
+      position: absolute;
+      border: 2px solid var(--cream-200);
+    }
+
+    /* mobile back cards: 216×306
+       Both anchored symmetrically around 50%:
+       front-left = 50% - 108px; each back card offset ±63.5px from that edge.
+       back-left  = 50% - 108px - 63.5px = 50% - 171.5px
+       back-right = 50% - 108px + 63.5px = 50% - 44.5px               */
+    .card-back-left {
+      width: 216px; height: 306px; border-radius: 16px;
+      left: calc(50% - 171.5px); top: 264px;
+      transform: rotate(-4deg);
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+    }
+    .card-back-left::after  { inset: 8px; border-radius: 8px; }
+
+    .card-back-right {
+      width: 216px; height: 306px; border-radius: 16px;
+      left: calc(50% - 44.5px); top: 264px;
+      transform: rotate(4deg);
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+    }
+    .card-back-right::after { inset: 8px; border-radius: 8px; }
+
+    /* mobile front card: 216×335, centered */
+    .card-front {
+      position: absolute;
+      background: var(--cream-100);
+      overflow: hidden;
+      left: 50%; transform: translateX(-50%);
+      top: 250px;
+      width: 216px; height: 335px;
+      border-radius: 16px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      z-index: 9;
+    }
+    .card-inner-border {
+      position: absolute;
+      border: 2px solid var(--cream-200);
+      /* mobile */
+      inset: 8px; border-radius: 8px;
+    }
+    .card-content {
+      position: absolute;
+      display: flex; flex-direction: column;
+      align-items: center;
+      /* mobile */
+      gap: 16px; left: 46px; top: 58.5px; width: 125px;
+    }
+    .card-flower { object-fit: cover; display: block; width: 115px; height: 162px; }
+    .card-btn {
+      background: var(--yellow-800);
+      border-radius: 100px; border: none; cursor: pointer;
+      padding: 8px 16px;
+      box-shadow: 0 4.669px 23.343px rgba(0,0,0,0.15);
+      white-space: nowrap;
+    }
+    .card-btn span { font-size: 14px; font-weight: 600; line-height: 22px; color: var(--text); }
+
+    /* ══════════════════════════════════════════
+       FEATURE MENUS
+       ══════════════════════════════════════════ */
+    .feature {
+      position: absolute;
+      display: flex; gap: 8px; align-items: flex-start;
+      z-index: 10;
+    }
+    .feature-icon {
+      background: white; border-radius: 100px;
+      width: 40px; height: 40px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+    }
+    .feature-icon img { width: 24px; height: 24px; object-fit: contain; display: block; }
+    .feature-label { font-weight: 600; color: var(--text); }
+    .feature-label p { text-decoration: underline; margin: 0; font-size: 14px; line-height: 22px; }
+
+    /* mobile positions */
+    .feature-left  { left: 16px;               top: 622px; }
+    .feature-right { left: calc(50% + 20.5px); top: 644px; }
+
+    /* ══════════════════════════════════════════
+       LANDSCAPE  (z:5, below characters)
+       ══════════════════════════════════════════ */
+    .landscape-wrap {
+      position: absolute;
+      overflow: hidden;
+      z-index: 5;
+      /* full-width wrapper — image centered inside avoids iOS Safari left-clip bug */
+      left: 0; right: 0; width: 100%;
+      /* mobile: height 213px */
+      top: 711px; height: 213px;
+    }
+    .landscape-wrap img {
+      /* center the fixed-width image inside the full-width wrapper */
+      position: absolute;
+      top: 0; left: 50%; transform: translateX(-50%);
+      width: 551px; height: 100%;
+      object-fit: cover; pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════
+       CHARACTERS (sprite clipping)
+       ══════════════════════════════════════════ */
+    .char { position: absolute; overflow: hidden; pointer-events: none; z-index: 6; }
+    .char img { position: absolute; max-width: none; }
+
+    /* mobile blob: 144×120 */
+    .char-blob { left: 0; top: 672px; width: 144px; height: 120px; }
+    .char-blob img { width: 303.37%; height: 643.22%; left: -17.13%; top: -35.01%; }
+
+    /* mobile cactus: 80×123 */
+    .char-cactus { left: calc(75% + 6.75px); top: 688px; width: 80px; height: 123px; }
+    .char-cactus img { width: 715.23%; height: 834.78%; left: -439.07%; top: -604.13%; }
+
+
+    /* ══════════════════════════════════════════
+       MOBILE — taller phones (≥ 920px, e.g. iPhone 14 Pro Max 932px)
+       Push bottom section to the actual bottom of the screen.
+       ══════════════════════════════════════════ */
+    @media (max-width: 767px) and (min-height: 920px) {
+      .feature-left  { top: calc(100vh - 310px); }
+      .feature-right { top: calc(100vh - 288px); }
+      .landscape-wrap { top: calc(100vh - 221px); }
+      .char-blob   { top: calc(100vh - 260px); }
+      .char-cactus { top: calc(100vh - 244px); }
+    }
+
+    /* ══════════════════════════════════════════
+       TABLET  768px – 1199px
+       Covers iPad mini (1024px tall) → iPad Pro 12.9" (1366px tall).
+       Vertical positions use vh so bottom section always fills the screen.
+       ══════════════════════════════════════════ */
+    @media (min-width: 768px) and (max-width: 1199px) {
+      .page-root {
+        min-height: 100vh;
+        background: linear-gradient(to bottom, #abcbe6, #ebedef);
+      }
+
+      /* clouds */
+      .cloud-left  { left: -66px; top: 0;             width: 432px; height: 260px; }
+      .cloud-right { left: calc(66.67% + 4px); top: 130px; width: 296px; height: 178px; }
+
+      /* header: full-width with 40px margins */
+      .page-header { left: 40px; top: 64px; width: auto; right: 40px; }
+
+      /* ── Card stack: horizontally centered, top = 27vh ──
+         27vh gives ~85px gap after header on iPad mini,
+         ~127px on iPad Air, ~177px on iPad Pro 12.9". */
+      .card-back-left {
+        width: 252px; height: 358px; border-radius: 18.675px;
+        left: calc(50% - 186px); top: calc(27vh + 16px); /* 60px equal peek left */
+        box-shadow: 0 4.669px 46.687px rgba(0,0,0,0.1);
+      }
+      .card-back-left::after  { inset: 9.33px; border-radius: 9.337px; }
+
+      .card-back-right {
+        width: 252px; height: 358px; border-radius: 18.675px;
+        left: calc(50% - 66px); top: calc(27vh + 16px); /* 60px equal peek right */
+        box-shadow: 0 4.669px 46.687px rgba(0,0,0,0.1);
+      }
+      .card-back-right::after { inset: 9.33px; border-radius: 9.337px; }
+
+      .card-front {
+        width: 252px; height: 391px; border-radius: 18.675px;
+        left: 50%; transform: translateX(-50%);
+        top: 27vh;
+        box-shadow: 0 4.669px 46.687px rgba(0,0,0,0.1);
+      }
+      .card-inner-border { inset: 9.34px; border-radius: 9.337px; }
+      .card-content { gap: 19px; left: 53px; top: 68px; width: 146px; }
+      .card-flower  { width: 134px; height: 189px; }
+
+      /* ── Feature menus: percentage-based so they scale across all iPad sizes ── */
+      .feature-label p { font-size: 18px; line-height: 26px; }
+      .feature-left  { left: calc(10% + 8px);  top: calc(100vh - 335px); }
+      .feature-right { left: calc(57% + 16px); top: calc(100vh - 309px); }
+
+      /* ── Landscape: always 220px visible at screen bottom ── */
+      .landscape-wrap {
+        top: calc(100vh - 220px); height: 446px;
+      }
+      .landscape-wrap img { width: 1151px;
+      }
+
+      /* ── Characters: poke above the landscape ── */
+      .char-blob   { left: 55px;                  top: calc(100vh - 270px); width: 239px; height: 200px; }
+      .char-cactus { left: calc(66.67% + 77px);   top: calc(100vh - 280px); width: 137px; height: 209px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       DESKTOP  ≥ 1200px
+       ══════════════════════════════════════════ */
+    @media (min-width: 1200px) {
+      .page-root {
+        /* grows to contain the taller landscape on wider screens */
+        min-height: max(1283px, calc(837px + 31vw));
+        background: linear-gradient(to bottom, #aacae5, #edeef0);
+      }
+
+      /* clouds */
+      .cloud-left  { left: -66px; top: -14px; width: 532px; height: 320px; }
+      .cloud-right { left: calc(75% + 39px);  top: 146px;   width: 352px; height: 213px; }
+
+      /* header: expand to full width with 40px margins */
+      .page-header { left: 40px; top: 80px; width: auto; right: 40px; }
+
+      /* back cards: 252×358 — symmetric 60px peek on each side of the front card
+         front left edge = 50% − 126px
+         back-left  left = 50% − 126px − 60px = 50% − 186px  → 60px left peek
+         back-right left = 50% − 126px + 60px = 50% − 66px   → right edge at 50%+186px → 60px right peek */
+      .card-back-left {
+        width: 252px; height: 358px; border-radius: 18.675px;
+        left: calc(50% - 186px); top: 315px;
+        box-shadow: 0 4.669px 46.687px rgba(0,0,0,0.1);
+      }
+      .card-back-left::after  { inset: 9.33px; border-radius: 9.337px; }
+
+      .card-back-right {
+        width: 252px; height: 358px; border-radius: 18.675px;
+        left: calc(50% - 66px); top: 315px;
+        box-shadow: 0 4.669px 46.687px rgba(0,0,0,0.1);
+      }
+      .card-back-right::after { inset: 9.33px; border-radius: 9.337px; }
+
+      /* front card: 252×391 — centered on screen */
+      .card-front {
+        width: 252px; height: 391px; border-radius: 18.675px;
+        left: 50%; transform: translateX(-50%);
+        top: 299px;
+        box-shadow: 0 4.669px 46.687px rgba(0,0,0,0.1);
+      }
+      .card-inner-border { inset: 9.34px; border-radius: 9.337px; }
+      /* content centered within 252px card: (252-146)/2 = 53px */
+      .card-content { gap: 19px; left: 53px; top: 68px; width: 146px; }
+      .card-flower  { width: 134px; height: 189px; }
+
+      /* feature text: 18px/26px */
+      .feature-label p { font-size: 18px; line-height: 26px; }
+      .feature-left  { left: calc(25% + 37px);    top: 738px; }
+      .feature-right { left: calc(58.33% + 51px); top: 764px; }
+
+      /* landscape: width & height both scale at the same ratio (80vw / 31vw = 2.58:1)
+         so the image is never distorted or cropped — full image always visible */
+      .landscape-wrap {
+        top: 837px;
+        height: max(446px, 31vw); /* 31vw = 446/1440×100 — matches the 80vw width ratio */
+      }
+      .landscape-wrap img { width: max(1151px, 80vw); object-fit: fill; }
+
+      /* blob: 239×200 */
+      .char-blob { left: calc(16.67% + 106px); top: 806px; width: 239px; height: 200px; }
+      /* cactus: 137×209 */
+      .char-cactus { left: calc(66.67% + 44px); top: 797px; width: 137px; height: 209px; }
+
+    }
+
+    /* ── Extra-wide screens (iMac 24" = ~1920–2240px+) ──
+       All values derived from the 1440px reference so each element keeps
+       the same proportional position inside the 80vw landscape:
+         blob  right-of-landscape-left : 24vw  = 346px @1440 (17.5% from landscape left)
+         cactus right-edge             : 79.2vw = 1141px @1440 (13.5% from landscape right)
+         feature-left                  : 27.6vw = 397px @1440
+         feature-right                 : 61.9vw = 891px @1440
+    ── */
+    @media (min-width: 1800px) {
+      .feature-left  { left: 35vw; }
+      .feature-right { left: 58vw; }
+      .char-blob     { left: 32vw; }
+      .char-cactus   { left: calc(73vw - 137px); }
+    }
+    /* ══════════════════════════════════════════
+       DONATE BUTTON
+       ══════════════════════════════════════════ */
+    .donate-wrap {
+      position: absolute;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* always horizontally centered */
+      left: 50%;
+      transform: translateX(-50%);
+      /* mobile: half-visible at bottom edge */
+      top: 775px;
+    }
+    .donate-box {
+      background: #7b8d5b;
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      border: none;
+      width: 175px;
+    }
+    .donate-icon {
+      width: 40px; height: 40px;
+      background: white; border-radius: 100px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; overflow: hidden;
+    }
+    .donate-icon img { width: 24px; height: 24px; object-fit: contain; display: block; }
+    .donate-text { color: white; font-weight: 600; }
+    .donate-text p { margin: 0; text-decoration: underline; font-size: 14px; line-height: 22px; }
+    .donate-tail {
+      width: 0; height: 0;
+      border-left: 9.5px solid transparent;
+      border-right: 9.5px solid transparent;
+      border-top: 11px solid #7b8d5b;
+    }
+
+    @media (min-width: 768px) and (max-width: 1199px) {
+      .donate-wrap { top: calc(100vh - 233px); }
+      .donate-box { width: 197px; }
+      .donate-text p { font-size: 18px; line-height: 26px; }
+    }
+
+    @media (min-width: 1200px) {
+      .donate-wrap { top: 840px; }
+      .donate-box { width: 197px; }
+      .donate-text p { font-size: 18px; line-height: 26px; }
+    }
+
+    /* ── Card flip transition ── */
+    @keyframes card-flip {
+      0%   { transform: translateX(-50%) perspective(800px) rotateY(0deg); }
+      100% { transform: translateX(-50%) perspective(800px) rotateY(90deg); }
+    }
+
+    /* ── Success toast (shown after บันทึก) ── */
+    .toast-success {
+      position: fixed;
+      top: 59px;
+      left: 50%; transform: translateX(-50%) translateY(-12px);
+      z-index: 200;
+      background: #7e8c60;
+      color: white;
+      border-radius: 100px;
+      padding: 8px 24px;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      font-size: 15px; font-weight: 600;
+      line-height: normal; letter-spacing: -0.3px;
+      white-space: nowrap;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .toast-success.show {
+      opacity: 1; pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+    .toast-error {
+      position: fixed;
+      top: 59px;
+      left: 50%; transform: translateX(-50%) translateY(-12px);
+      z-index: 200;
+      background: #e88b4e;
+      color: white;
+      border-radius: 100px;
+      padding: 8px 24px;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      font-size: 15px; font-weight: 600;
+      line-height: normal; letter-spacing: -0.3px;
+      white-space: nowrap;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .toast-error.show {
+      opacity: 1; pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-root">
+
+  <!-- ── Clouds (z:1) ── -->
+  <div class="cloud cloud-left">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/cd9bdd6b-2ba7-4a4d-ade2-e0c58feab954" />
+  </div>
+  <div class="cloud cloud-right">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/cd9bdd6b-2ba7-4a4d-ade2-e0c58feab954" />
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       HEADER  (greeting + avatar + icons — all breakpoints)
+       ══════════════════════════════════════════ -->
+  <div class="page-header">
+    <!-- Row 1: greeting + avatar -->
+    <div class="hrow hrow--top">
+      <p class="greeting" id="greeting-text">ไง,</p>
+      <div class="avatar-wrap">
+        <!-- Not logged in: person icon (shown by default) -->
+        <div id="avatar-nologin" onclick="goToLogin()" style="cursor:pointer;">
+          <img alt="not logged in" src="https://www.figma.com/api/mcp/asset/3f961a2f-4909-4f08-b1cb-5ecd063b2b48" />
+        </div>
+        <!-- Logged in: profile photo (hidden until login) -->
+        <img id="avatar-photo" alt="avatar" src=""
+             onclick="window.location.href='Desktop_Profile.html'" style="cursor:pointer;" />
+      </div>
+    </div>
+    <!-- Row 2: subtitle + icon buttons -->
+    <div class="hrow hrow--mid">
+      <p class="subtitle">วันนี้คุณไม่ต้องเก่งก็ได้นะ<br>แค่อยู่ตรงนี้…ก็พอแล้ว</p>
+      <div class="icon-pair">
+        <button class="icon-btn" id="bookmark-btn" aria-label="บันทึก" onclick="toggleBookmark()">
+          <img id="bookmark-icon" alt="bookmark" src="https://www.figma.com/api/mcp/asset/2866fc30-209c-41a6-af88-ba3a1e229031" />
+        </button>
+        <button class="icon-btn" aria-label="ถัดไป" onclick="nextQuote()">
+          <img alt="next" src="https://www.figma.com/api/mcp/asset/9ca7dd47-e790-4e4f-8353-797a1a220fb7" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       CENTERED HEADLINE  (tablet + desktop only)
+       ══════════════════════════════════════════ -->
+  <p class="headline-centered">
+    วันนี้คุณไม่ต้องเก่งก็ได้นะ<br>&nbsp;แค่ยังอยู่ตรงนี้…ก็พอแล้ว
+  </p>
+
+  <!-- ══════════════════════════════════════════
+       CARD STACK
+       ══════════════════════════════════════════ -->
+  <div class="card-back card-back-left"></div>
+  <div class="card-back card-back-right"></div>
+
+  <div class="card-front">
+    <div class="card-inner-border"></div>
+    <div class="card-content">
+      <img class="card-flower" alt="flower"
+           src="https://www.figma.com/api/mcp/asset/59f6ba6a-99b5-4452-8592-8a567a712a0c" />
+      <button class="card-btn" onclick="expandAndNavigate()">
+        <span>คำถามประจำวัน</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       FEATURE MENUS
+       ══════════════════════════════════════════ -->
+  <div class="feature feature-left" onclick="window.location.href='Desktop_Diary.html'" style="cursor:pointer;">
+    <div class="feature-icon">
+      <img alt="add" src="https://www.figma.com/api/mcp/asset/91e998b8-8635-47af-8efa-c08d0d684b67" />
+    </div>
+    <div class="feature-label">
+      <p>วันนี้เป็นไงบ้าง</p>
+      <p>เล่าให้เราฟังได้นะ</p>
+    </div>
+  </div>
+
+  <div class="feature feature-right" onclick="window.location.href='Desktop4.html'" style="cursor:pointer;">
+    <div class="feature-icon">
+      <img alt="insight" src="https://www.figma.com/api/mcp/asset/8093d59e-0332-4b94-85f3-1f3969718069" />
+    </div>
+    <div class="feature-label">
+      <p>ช่วงนี้ฉันดู</p>
+      <p>เป็นยังไงบ้าง?</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       DONATE BUTTON
+       ══════════════════════════════════════════ -->
+  <div class="donate-wrap">
+    <button class="donate-box" onclick="window.location.href='Desktop_Donate.html'">
+      <div class="donate-icon">
+        <img alt="donate" src="https://www.figma.com/api/mcp/asset/c6825e8f-b6de-4bd7-ba2d-87c9df2ea92e" />
+      </div>
+      <div class="donate-text">
+        <p>อยากให้กำลังใจ</p>
+        <p>ทีมงานของเรา?</p>
+      </div>
+    </button>
+    <div class="donate-tail"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       LANDSCAPE + CHARACTERS  (z:5/6)
+       ══════════════════════════════════════════ -->
+  <div class="landscape-wrap">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/08afea19-b793-476c-a289-d58cac839b2e" />
+  </div>
+
+  <!-- Blob character (left) -->
+  <div class="char char-blob">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/bfd71aa4-751a-48b8-a2da-352508676b81" />
+  </div>
+
+  <!-- Cactus character (right) -->
+  <div class="char char-cactus">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/bfd71aa4-751a-48b8-a2da-352508676b81" />
+  </div>
+
+</div>
+
+<!-- ── Success toast — shown when navigated back from save ── -->
+<div class="toast-success" id="toast-success" role="status" aria-live="polite">
+  บันทึกคำตอบสำเร็จ (-:
+</div>
+
+<div class="toast-success" id="toast-bookmark" role="status" aria-live="polite">
+  บันทึกสำเร็จ (-:
+</div>
+
+<div class="toast-success" id="toast-unbookmark" role="status" aria-live="polite">
+  ยกเลิกบันทึกสำเร็จ (-:
+</div>
+
+<div class="toast-error" id="toast-bookmark-error" role="alert" aria-live="polite">
+  กรุณาลองใหม่อีกครั้ง :-(
+</div>
+
+<script src="sets.js"></script>
+<script>
+  /* Flip card then navigate */
+  function expandAndNavigate() {
+    var front = document.querySelector('.card-front');
+    front.style.animation = 'card-flip 0.4s ease-in forwards';
+    setTimeout(function () { window.location.href = 'Desktop2.html'; }, 400);
+  }
+
+  /* ── Bookmark toggle ── */
+  var _bookmarkNormal = 'https://www.figma.com/api/mcp/asset/2866fc30-209c-41a6-af88-ba3a1e229031';
+  var _bookmarkBooked = 'https://www.figma.com/api/mcp/asset/ddeb71aa-3076-41fc-8c52-a20009732618';
+  var _booked = false;
+  var _bookmarkTimer = null;
+
+  function _showToast(id) {
+    var toast = document.getElementById(id);
+    if (!toast) return;
+    toast.classList.add('show');
+    clearTimeout(_bookmarkTimer);
+    _bookmarkTimer = setTimeout(function () { toast.classList.remove('show'); }, 3000);
+  }
+
+  function toggleBookmark() {
+    /* ── Guard: require login ── */
+    if (!localStorage.getItem('liftapp_logged_in')) {
+      localStorage.setItem('liftapp_redirect', 'Desktop1.html'); /* after login → Desktop1 */
+      localStorage.setItem('liftapp_back', 'Desktop1.html');     /* close X → back to Desktop1 */
+      window.location.href = 'Desktop_Login.html';
+      return;
+    }
+    try {
+      _booked = !_booked;
+      document.getElementById('bookmark-icon').src = _booked ? _bookmarkBooked : _bookmarkNormal;
+      /* TODO: call actual bookmark API here — call _showToast('toast-bookmark-error') if it fails */
+      _showToast(_booked ? 'toast-bookmark' : 'toast-unbookmark');
+    } catch (e) {
+      /* Revert state on error */
+      _booked = !_booked;
+      document.getElementById('bookmark-icon').src = _booked ? _bookmarkBooked : _bookmarkNormal;
+      _showToast('toast-bookmark-error');
+    }
+  }
+
+  /* ── Next quote: cycles the shared set index ── */
+  function nextQuote() {
+    var idx = _liftNext();
+    document.querySelector('.subtitle').innerHTML = _sets[idx].quote;
+  }
+
+  /* Restore the active quote on load */
+  document.querySelector('.subtitle').innerHTML = _sets[_liftIdx()].quote;
+
+  /* ── Non-login icon → go to login page ── */
+  function goToLogin() {
+    localStorage.setItem('liftapp_redirect', 'Desktop1.html');
+    localStorage.setItem('liftapp_back', 'Desktop1.html');
+    window.location.href = 'Desktop_Login.html';
+  }
+
+  /* ── Greeting + avatar: update based on login state ── */
+  (function () {
+    var raw = localStorage.getItem('liftapp_user');
+    if (!raw) return;
+    try {
+      var user = JSON.parse(raw);
+
+      /* Greeting name */
+      var firstName = (user.name || '').split(' ')[0];
+      if (firstName) {
+        document.getElementById('greeting-text').textContent = 'ไง, ' + firstName;
+      }
+
+      /* Avatar: show profile photo if available, otherwise keep non-login icon */
+      if (user.photo) {
+        document.getElementById('avatar-nologin').style.display = 'none';
+        var photo = document.getElementById('avatar-photo');
+        photo.src = user.photo;
+        photo.style.display = 'block';
+      }
+    } catch (e) {}
+  })();
+
+  /* Show green toast if landing page was reached via บันทึก */
+  (function () {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('toast') === 'saved') {
+      const toast = document.getElementById('toast-success');
+      if (toast) {
+        /* Small delay so the page renders before the toast animates in */
+        requestAnimationFrame(function () {
+          toast.classList.add('show');
+          setTimeout(function () { toast.classList.remove('show'); }, 3000);
+        });
+        /* Clean the URL so refreshing doesn't re-show the toast */
+        history.replaceState(null, '', window.location.pathname);
+      }
+    }
+  })();
+</script>
+</body>
+</html>

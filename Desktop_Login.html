@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liftapp — เข้าสู่ระบบ</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;600&family=Plus+Jakarta+Sans&display=swap" rel="stylesheet" />
+
+  <!-- ══ Firebase SDK (Google + Facebook) ══ -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <!-- ══ LINE LIFF SDK ══ -->
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    :root { --cream-100: #f8ebdb; --cream-200: #efcca4; --text: #1e1e1e; }
+    * { font-family: 'IBM Plex Sans Thai', sans-serif; box-sizing: border-box; }
+    body { margin: 0; }
+
+    /* ══ PAGE ROOT ══ */
+    .page-root {
+      position: relative; width: 100%;
+      overflow-x: hidden;
+      min-height: max(1283px, calc(837px + 31vw));
+      background: linear-gradient(to bottom, #aacae5, #edeef0);
+    }
+
+    /* ══ CLOUDS ══ */
+    .cloud { position: absolute; overflow: hidden; pointer-events: none; z-index: 1; }
+    .cloud img { position: absolute; max-width: none; width: 292.24%; height: 861.86%; left: -172.98%; top: -256.19%; }
+    .cloud-left  { left: -66px; top: -14px; width: 532px; height: 320px; }
+    .cloud-right { left: calc(75% + 39px); top: 146px; width: 352px; height: 213px; transform: scaleX(-1); }
+
+    /* ══ CLOSE BUTTON ══ */
+    .close-btn {
+      position: absolute;
+      left: calc(50% + 191px); top: 120px;
+      width: 40px; height: 40px;
+      background: white; border-radius: 100px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 20;
+    }
+    .close-btn img { width: 24px; height: 24px; object-fit: contain; display: block; }
+
+    /* ══ LOGIN CARD ══ */
+    .login-card {
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      top: 184px;
+      width: 461px;
+      background: var(--cream-100);
+      border-radius: 25.333px;
+      box-shadow: 0 6.333px 63.333px rgba(0,0,0,0.1);
+      overflow: hidden;
+      z-index: 10;
+      padding: 40px;
+    }
+    .card-border {
+      position: absolute;
+      inset: 16px;
+      border: 2px solid var(--cream-200);
+      border-radius: 12.667px;
+      pointer-events: none;
+    }
+
+    /* ── Blob character ── */
+    .blob-wrap {
+      position: relative;
+      width: 222px; height: 237px;
+      overflow: hidden; pointer-events: none;
+      margin-bottom: 14px;
+    }
+    .blob-wrap img {
+      position: absolute; max-width: none;
+      width: 438.86%; height: 273.8%;
+      left: -103.19%; top: -144.77%;
+    }
+
+    /* ── Text section ── */
+    .card-texts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 40px; }
+    .card-heading {
+      font-size: 32px; font-weight: 600;
+      line-height: 40px; color: var(--text); margin: 0;
+    }
+    .card-body {
+      font-size: 14px; font-weight: 400;
+      line-height: 22px; color: var(--text); margin: 0;
+    }
+
+    /* ── Login buttons ── */
+    .btn-group { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+    .login-btn {
+      width: 100%; height: 47px;
+      background: white;
+      border: 1px solid #000;
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; cursor: pointer;
+      font-size: 13.8px; font-weight: 400; color: #000;
+      font-family: 'Plus Jakarta Sans', 'IBM Plex Sans Thai', sans-serif;
+      transition: background 0.15s;
+    }
+    .login-btn:hover { background: #f5f5f5; }
+    .login-btn img { width: 24px; height: 24px; object-fit: contain; flex-shrink: 0; }
+
+    /* ══ LANDSCAPE ══ */
+    .landscape-wrap {
+      position: absolute; left: 0; right: 0; width: 100%;
+      overflow: hidden; z-index: 5;
+      top: 837px; height: max(446px, 31vw);
+    }
+    .landscape-wrap img {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: max(1151px, 80vw); height: 100%;
+      object-fit: fill; pointer-events: none;
+    }
+
+    /* ══ TABLET ══ */
+    @media (min-width: 768px) and (max-width: 1199px) {
+      .page-root { min-height: 100vh; background: linear-gradient(to bottom, #abcbe6, #ebedef); }
+      .cloud-left  { left: -66px; top: 0; width: 432px; height: 260px; }
+      .cloud-right { left: calc(66.67% + 4px); top: 130px; width: 296px; height: 178px; }
+      .close-btn { left: calc(50% + 191px); top: 80px; }
+      .landscape-wrap { top: calc(100vh - 220px); height: 446px; }
+      .landscape-wrap img { width: 1151px; object-fit: fill; }
+    }
+
+    /* ══ MOBILE ══ */
+    @media (max-width: 767px) {
+      .page-root { min-height: max(100vh, 870px); background: linear-gradient(to bottom, #a9cae5, #e4e7e8); }
+      .cloud-left  { left: -87px; top: -4px; width: 255px; height: 154px; }
+      .cloud-right { left: calc(50% + 51.5px); top: 60px; width: 169px; height: 102px; }
+      .close-btn { left: auto; right: 16px; top: 16px; }
+      .login-card { width: calc(100% - 32px); top: 72px; }
+      .blob-wrap { width: 160px; height: 171px; }
+      .card-heading { font-size: 24px; line-height: 32px; }
+      .landscape-wrap { top: calc(100vh - 213px); height: 213px; }
+      .landscape-wrap img { width: 551px; object-fit: fill; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-root">
+
+  <!-- Clouds -->
+  <div class="cloud cloud-left">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/3dda61fa-1d5c-4693-aac2-32b4c04117ae" />
+  </div>
+  <div class="cloud cloud-right">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/3dda61fa-1d5c-4693-aac2-32b4c04117ae" />
+  </div>
+
+  <!-- Close → go back without logging in -->
+  <button class="close-btn" onclick="goBack()" aria-label="ปิด">
+    <img alt="close" src="https://www.figma.com/api/mcp/asset/6bb9ad69-b6c4-44a1-9521-4bb0a21bda79" />
+  </button>
+
+  <!-- Login card -->
+  <div class="login-card">
+    <div class="card-border"></div>
+
+    <!-- Blob reading a book -->
+    <div class="blob-wrap">
+      <img alt="" src="https://www.figma.com/api/mcp/asset/335fe2c4-fee9-44b6-8beb-0a80bdefc18c" />
+    </div>
+
+    <!-- Heading + body -->
+    <div class="card-texts">
+      <p class="card-heading">อยากเก็บสิ่งนี้ไว้ให้คุณ</p>
+      <p class="card-body">เข้าสู่ระบบหรือสมัครสมาชิกก่อนน้า<br>เพื่อให้เราช่วยบันทึกคำตอบและข้อความที่คุณชอบไว้ในพื้นที่ของคุณ</p>
+    </div>
+
+    <!-- Login buttons -->
+    <div class="btn-group">
+      <button class="login-btn" onclick="loginWith('line')">
+        <img alt="Line" src="https://www.figma.com/api/mcp/asset/7ab2c1f5-623a-4dae-a26a-3865771e6b85" />
+        เข้าสู่ระบบด้วย Line
+      </button>
+      <button class="login-btn" onclick="loginWith('google')">
+        <img alt="Google" src="https://www.figma.com/api/mcp/asset/18af3898-50ef-492c-a9dd-48253d4bef20" />
+        เข้าสู่ระบบด้วย Google
+      </button>
+      <button class="login-btn" onclick="loginWith('facebook')">
+        <img alt="Facebook" src="https://www.figma.com/api/mcp/asset/341924f1-09da-4875-935d-57307b82abdb" />
+        เข้าสู่ระบบด้วย Facebook
+      </button>
+    </div>
+  </div>
+
+  <!-- Green mountain -->
+  <div class="landscape-wrap">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/cf5be2bf-709e-4956-b4a0-f28576e148c7" />
+  </div>
+
+</div>
+
+<!-- Error toast -->
+<div id="login-error" style="
+  display:none; position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+  background:#e88b4e; color:white; border-radius:100px; padding:10px 24px;
+  font-size:14px; font-weight:600; z-index:999; white-space:nowrap;
+">เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง</div>
+
+<script>
+  /* ══════════════════════════════════════════════════════
+     STEP 1 — Paste your Firebase config from:
+     Firebase Console → Project Settings → Your apps → SDK setup
+  ══════════════════════════════════════════════════════ */
+  var FIREBASE_CONFIG = {
+    apiKey:            "REPLACE_WITH_YOUR_API_KEY",
+    authDomain:        "REPLACE_WITH_YOUR_AUTH_DOMAIN",
+    projectId:         "REPLACE_WITH_YOUR_PROJECT_ID",
+    storageBucket:     "REPLACE_WITH_YOUR_STORAGE_BUCKET",
+    messagingSenderId: "REPLACE_WITH_YOUR_MESSAGING_SENDER_ID",
+    appId:             "REPLACE_WITH_YOUR_APP_ID"
+  };
+
+  /* ══════════════════════════════════════════════════════
+     STEP 2 — Paste your LIFF ID from:
+     LINE Developers Console → Your channel → LIFF tab
+  ══════════════════════════════════════════════════════ */
+  var LIFF_ID = "REPLACE_WITH_YOUR_LIFF_ID";
+
+  /* ── Internal helpers ── */
+  var _firebaseReady = false;
+  var _liffReady = false;
+
+  function _isConfigured(cfg) {
+    return !Object.values(cfg).some(function(v){ return v.startsWith('REPLACE'); });
+  }
+
+  function _showError(msg) {
+    var el = document.getElementById('login-error');
+    el.textContent = msg || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
+    el.style.display = 'block';
+    setTimeout(function(){ el.style.display = 'none'; }, 4000);
+  }
+
+  function _afterLogin(user, provider) {
+    localStorage.setItem('liftapp_logged_in', '1');
+    localStorage.setItem('liftapp_user', JSON.stringify({
+      name:     user.name     || '',
+      email:    user.email    || '',
+      photo:    user.photo    || '',
+      provider: provider
+    }));
+    var redirect = localStorage.getItem('liftapp_redirect') || 'Desktop1.html';
+    localStorage.removeItem('liftapp_redirect');
+    localStorage.removeItem('liftapp_back');
+    window.location.href = redirect;
+  }
+
+  /* ── Init Firebase ── */
+  if (_isConfigured(FIREBASE_CONFIG)) {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    _firebaseReady = true;
+  }
+
+  /* ── Init LIFF + handle redirect-back from LINE ── */
+  if (LIFF_ID !== 'REPLACE_WITH_YOUR_LIFF_ID') {
+    liff.init({ liffId: LIFF_ID }).then(function() {
+      _liffReady = true;
+      /* If LINE redirected us back here after login */
+      if (liff.isLoggedIn()) {
+        liff.getProfile().then(function(profile) {
+          _afterLogin({
+            name:  profile.displayName,
+            email: '',
+            photo: profile.pictureUrl
+          }, 'line');
+        });
+      }
+    }).catch(function(e){ console.warn('LIFF init error', e); });
+  }
+
+  /* ══ LOGIN FUNCTIONS ══ */
+
+  function loginWith(provider) {
+    if (provider === 'line')     { loginWithLine();     return; }
+    if (provider === 'google')   { loginWithGoogle();   return; }
+    if (provider === 'facebook') { loginWithFacebook(); return; }
+  }
+
+  /* ── LINE (via LIFF) ── */
+  function loginWithLine() {
+    if (!_liffReady) {
+      _showError('LINE Login ยังไม่พร้อม — กรุณาตั้งค่า LIFF_ID ก่อนนะคะ');
+      return;
+    }
+    if (!liff.isLoggedIn()) {
+      liff.login({ redirectUri: window.location.href });
+    }
+  }
+
+  /* ── Google (via Firebase popup) ── */
+  function loginWithGoogle() {
+    if (!_firebaseReady) {
+      _showError('Google Login ยังไม่พร้อม — กรุณาตั้งค่า Firebase config ก่อนนะคะ');
+      return;
+    }
+    var provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider)
+      .then(function(result) {
+        var u = result.user;
+        _afterLogin({ name: u.displayName, email: u.email, photo: u.photoURL }, 'google');
+      })
+      .catch(function(e) {
+        console.error(e);
+        _showError('Google Login ล้มเหลว: ' + e.message);
+      });
+  }
+
+  /* ── Facebook (via Firebase popup) ── */
+  function loginWithFacebook() {
+    if (!_firebaseReady) {
+      _showError('Facebook Login ยังไม่พร้อม — กรุณาตั้งค่า Firebase config ก่อนนะคะ');
+      return;
+    }
+    var provider = new firebase.auth.FacebookAuthProvider();
+    firebase.auth().signInWithPopup(provider)
+      .then(function(result) {
+        var u = result.user;
+        _afterLogin({ name: u.displayName, email: u.email, photo: u.photoURL }, 'facebook');
+      })
+      .catch(function(e) {
+        console.error(e);
+        _showError('Facebook Login ล้มเหลว: ' + e.message);
+      });
+  }
+
+  /* ── Close button ── */
+  function goBack() {
+    var back = localStorage.getItem('liftapp_back') || 'Desktop1.html';
+    localStorage.removeItem('liftapp_back');
+    localStorage.removeItem('liftapp_redirect');
+    window.location.href = back;
+  }
+</script>
+</body>
+</html>
