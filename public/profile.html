@@ -80,6 +80,23 @@
     }
     .edit-icon img { width: 24px; height: 24px; object-fit: contain; display: block; }
 
+    /* ── Editable name ── */
+    .name-value-wrap { position: relative; }
+    .name-edit-hint {
+      font-size: 11px; color: #b0936e; margin-top: 2px;
+      text-align: center; display: block;
+    }
+    #name-input {
+      font-size: 16px; font-weight: 500;
+      line-height: 24px; letter-spacing: -0.048px;
+      color: #121212; background: transparent;
+      border: none; border-bottom: 2px solid var(--cream-400, #d6892c);
+      outline: none; text-align: center;
+      width: 100%; padding: 0;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      display: none;
+    }
+
     /* ── Name section ── */
     .name-section {
       position: absolute;
@@ -222,9 +239,12 @@
       <!-- Name block -->
       <div class="name-block">
         <p class="name-label">ชื่อผู้ใช้งาน</p>
-        <div class="name-value-wrap">
+        <div class="name-value-wrap" onclick="startEditName()">
           <p class="name-value" id="profile-name">—</p>
+          <input id="name-input" type="text" maxlength="40"
+                 onblur="saveEditName()" onkeydown="if(event.key==='Enter'){this.blur()}" />
           <div class="name-line"></div>
+          <span class="name-edit-hint" id="edit-hint">แตะเพื่อแก้ไขชื่อ</span>
         </div>
       </div>
 
@@ -289,6 +309,38 @@
       if (row) row.style.display = 'none';
     }
   })();
+
+  /* ── Editable name ── */
+  function startEditName() {
+    var p     = document.getElementById('profile-name');
+    var input = document.getElementById('name-input');
+    var hint  = document.getElementById('edit-hint');
+    if (input.style.display === 'block') return;
+    input.value = p.textContent === 'ผู้ใช้ทั่วไป' ? '' : p.textContent;
+    input.placeholder = 'ใส่ชื่อของคุณ';
+    p.style.display    = 'none';
+    hint.style.display = 'none';
+    input.style.display = 'block';
+    input.focus();
+  }
+
+  function saveEditName() {
+    var p     = document.getElementById('profile-name');
+    var input = document.getElementById('name-input');
+    var hint  = document.getElementById('edit-hint');
+    var name  = input.value.trim() || 'ผู้ใช้ทั่วไป';
+    p.textContent = name;
+    input.style.display = 'none';
+    hint.style.display  = 'block';
+    p.style.display     = 'block';
+    /* Save to localStorage */
+    try {
+      var raw  = localStorage.getItem('littlebylittle_user');
+      var user = raw ? JSON.parse(raw) : {};
+      user.name = name;
+      localStorage.setItem('littlebylittle_user', JSON.stringify(user));
+    } catch (e) {}
+  }
 
   /* ── Logout ── */
   function logout() {
