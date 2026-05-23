@@ -194,18 +194,17 @@
     }
     .entry-card {
       background: var(--cream-100);
-      border-radius: 24px; height: 314px; overflow: hidden;
-      position: relative; flex-shrink: 0; width: 100%;
+      border-radius: 24px;
+      flex-shrink: 0; width: 100%;
     }
     .entry-inner-border {
-      position: absolute;
+      display: block;
       border: 2px solid var(--cream-200); border-radius: 12.667px;
-      top: 16px; left: 16px; right: 16px; bottom: 16px;
+      margin: 16px;
       pointer-events: none;
     }
     .entry-content {
-      position: absolute;
-      top: 30px; left: 30px; right: 30px;
+      padding: 14px;
       display: flex; flex-direction: column; gap: 24px;
     }
     .entry-header { display: flex; flex-direction: column; }
@@ -229,8 +228,6 @@
     .entry-answer {
       font-size: 16px; font-weight: 500; line-height: 24px;
       letter-spacing: -0.048px; color: #121212; margin: 0;
-      display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
-      overflow: hidden;
     }
 
     /* Landscape */
@@ -526,21 +523,22 @@
       var card = document.createElement('div');
       card.className = 'entry-card';
       card.innerHTML =
-        '<div class="entry-inner-border"></div>' +
-        '<div class="entry-content">' +
-          '<div class="entry-header">' +
-            '<div class="entry-arch-wrap">' +
-              '<div class="entry-arch-inner"><img alt="" src="' + archSrc + '" /></div>' +
+        '<div class="entry-inner-border">' +
+          '<div class="entry-content">' +
+            '<div class="entry-header">' +
+              '<div class="entry-arch-wrap">' +
+                '<div class="entry-arch-inner"><img alt="" src="' + archSrc + '" /></div>' +
+              '</div>' +
+              '<div class="entry-question-row">' +
+                '<p class="entry-question">' + entry.prompt + '</p>' +
+                '<button class="icon-btn" aria-label="แก้ไข"' +
+                  ' onclick="window.location.href=\'' + editUrl + '\'">' +
+                  '<img alt="แก้ไข" src="' + editSrc + '" />' +
+                '</button>' +
+              '</div>' +
             '</div>' +
-            '<div class="entry-question-row">' +
-              '<p class="entry-question">' + entry.prompt + '</p>' +
-              '<button class="icon-btn" aria-label="แก้ไข"' +
-                ' onclick="window.location.href=\'' + editUrl + '\'">' +
-                '<img alt="แก้ไข" src="' + editSrc + '" />' +
-              '</button>' +
-            '</div>' +
+            '<p class="entry-answer">' + entry.answer + '</p>' +
           '</div>' +
-          '<p class="entry-answer">' + entry.answer + '</p>' +
         '</div>';
       list.appendChild(card);
     });
