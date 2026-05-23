@@ -102,12 +102,31 @@ async function handleInsight(request, env) {
   return Response.json({ insight: parsed.content[0].text });
 }
 
+function handleConfig(env) {
+  const cfg = {
+    firebase: {
+      apiKey:            env.FIREBASE_API_KEY             || '',
+      authDomain:        env.FIREBASE_AUTH_DOMAIN         || '',
+      projectId:         env.FIREBASE_PROJECT_ID          || '',
+      storageBucket:     env.FIREBASE_STORAGE_BUCKET      || '',
+      messagingSenderId: env.FIREBASE_MESSAGING_SENDER_ID || '',
+      appId:             env.FIREBASE_APP_ID              || ''
+    },
+    liffId: env.LINE_LIFF_ID || ''
+  };
+  return Response.json(cfg, { headers: { 'Cache-Control': 'no-store' } });
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     if (url.pathname === '/api/insight' && request.method === 'POST') {
       return handleInsight(request, env);
+    }
+
+    if (url.pathname === '/api/config' && request.method === 'GET') {
+      return handleConfig(env);
     }
 
     return env.ASSETS.fetch(request);

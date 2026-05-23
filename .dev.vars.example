@@ -1,0 +1,18 @@
+# Copy this file to .dev.vars and fill in real values for local development.
+# .dev.vars is git-ignored — never commit actual secrets.
+
+# ── Anthropic (AI insights) ──────────────────────────────────────────────────
+ANTHROPIC_API_KEY=sk-ant-...
+
+# ── Firebase (Google + Facebook login) ───────────────────────────────────────
+# Get these from: Firebase Console → Project Settings → Your apps → Web app
+FIREBASE_API_KEY=AIza...
+FIREBASE_AUTH_DOMAIN=your-project-id.firebaseapp.com
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_STORAGE_BUCKET=your-project-id.appspot.com
+FIREBASE_MESSAGING_SENDER_ID=000000000000
+FIREBASE_APP_ID=1:000000000000:web:abc123
+
+# ── LINE LIFF (LINE login) ────────────────────────────────────────────────────
+# Get this from: LINE Developers Console → Your channel → LIFF tab
+LINE_LIFF_ID=1234567890-abcdefgh
