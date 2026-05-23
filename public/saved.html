@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Little by Little — ข้อความที่บันทึกไว้</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --cream-100: #f8ebdb; --cream-200: #efcca4; --cream-400: #d6892c; --text: #1e1e1e; }
+    * { font-family: 'IBM Plex Sans Thai', sans-serif; box-sizing: border-box; }
+    body { margin: 0; }
+
+    .page-root {
+      position: relative; width: 100%; overflow-x: hidden;
+      min-height: max(1283px, calc(837px + 31vw));
+      background: linear-gradient(to bottom, #aacae5, #edeef0);
+    }
+
+    /* ── Clouds ── */
+    .cloud { position: absolute; overflow: hidden; pointer-events: none; z-index: 1; }
+    .cloud img { position: absolute; max-width: none; width: 292.24%; height: 861.86%; left: -172.98%; top: -256.19%; }
+    .cloud-left  { left: -66px; top: -14px; width: 532px; height: 320px; }
+    .cloud-right { left: calc(75% + 39px); top: 146px; width: 352px; height: 213px; transform: scaleX(-1); }
+
+    /* ── Close button ── */
+    .close-btn {
+      position: absolute;
+      left: calc(50% + 191px); top: 120px;
+      width: 40px; height: 40px;
+      background: white; border-radius: 100px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 20;
+    }
+    .close-btn img { width: 24px; height: 24px; object-fit: contain; display: block; }
+
+    /* ── Page title ── */
+    .page-title {
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      top: 120px;
+      font-size: 32px; font-weight: 600; line-height: 40px;
+      color: var(--text); margin: 0; white-space: nowrap;
+      z-index: 10;
+    }
+
+    /* ── Cards list ── */
+    .cards-wrap {
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      top: 200px;
+      width: 461px;
+      display: flex; flex-direction: column; gap: 16px;
+      z-index: 10;
+    }
+
+    .quote-card {
+      background: var(--cream-100);
+      border-radius: 24px;
+      padding: 24px;
+      position: relative;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.06);
+    }
+    .quote-card-border {
+      position: absolute; inset: 12px;
+      border: 2px solid var(--cream-200);
+      border-radius: 14px; pointer-events: none;
+    }
+    .quote-text {
+      font-size: 18px; font-weight: 600;
+      line-height: 28px; color: var(--cream-400);
+      margin: 0 0 16px 0;
+    }
+    .remove-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 13px; font-weight: 500; color: #b09070;
+      padding: 0; line-height: 20px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .remove-btn:hover { color: #8b6040; }
+
+    /* ── Empty state ── */
+    .empty-state {
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      top: 260px; width: 340px;
+      display: none; flex-direction: column;
+      align-items: center; gap: 12px; text-align: center;
+      z-index: 10;
+    }
+    .empty-state.visible { display: flex; }
+    .empty-title {
+      font-size: 24px; font-weight: 600;
+      line-height: 32px; color: #121212; margin: 0;
+    }
+    .empty-sub {
+      font-size: 16px; font-weight: 500;
+      line-height: 24px; letter-spacing: -0.048px;
+      color: #121212; margin: 0;
+    }
+
+    /* ── Landscape ── */
+    .landscape-wrap {
+      position: absolute; left: 0; right: 0; width: 100%;
+      overflow: hidden; z-index: 5;
+      top: 837px; height: max(446px, 31vw);
+    }
+    .landscape-wrap img {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: max(1151px, 80vw); height: 100%;
+      object-fit: fill; pointer-events: none;
+    }
+
+    /* ══ TABLET ══ */
+    @media (min-width: 768px) and (max-width: 1199px) {
+      .page-root { min-height: 100vh; }
+      .cloud-left  { left: -66px; top: 0; width: 432px; height: 260px; }
+      .cloud-right { left: calc(66.67% + 4px); top: 130px; width: 296px; height: 178px; }
+      .close-btn { left: calc(50% + 191px); top: 80px; }
+      .page-title { top: 80px; }
+      .landscape-wrap { top: calc(100vh - 220px); height: 446px; }
+      .landscape-wrap img { width: 1151px; object-fit: fill; }
+    }
+
+    /* ══ MOBILE ══ */
+    @media (max-width: 767px) {
+      .page-root { min-height: max(100vh, 870px); }
+      .cloud-left  { left: -87px; top: -4px; width: 255px; height: 154px; }
+      .cloud-right { left: calc(50% + 51.5px); top: 60px; width: 169px; height: 102px; }
+      .close-btn { left: auto; right: 16px; top: 16px; }
+      .page-title { top: 20px; font-size: 24px; }
+      .cards-wrap { width: calc(100% - 32px); top: 80px; }
+      .empty-state { top: 160px; width: calc(100% - 48px); }
+      .landscape-wrap { top: calc(100vh - 213px); height: 213px; }
+      .landscape-wrap img { width: 551px; object-fit: fill; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-root">
+
+  <!-- Clouds -->
+  <div class="cloud cloud-left">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/78d83ed4-a0dc-4e60-a4cd-94e01f7849b6" />
+  </div>
+  <div class="cloud cloud-right">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/78d83ed4-a0dc-4e60-a4cd-94e01f7849b6" />
+  </div>
+
+  <!-- Close → back to profile -->
+  <button class="close-btn" onclick="window.location.href='profile.html'" aria-label="ปิด">
+    <img alt="close" src="assets/icons/003dd41d-af02-4a6f-9618-fe5d4029f9f6.svg" />
+  </button>
+
+  <p class="page-title">ข้อความที่บันทึกไว้</p>
+
+  <!-- Empty state -->
+  <div class="empty-state" id="empty-state">
+    <p class="empty-title">ยังไม่มีข้อความที่บันทึก (-:</p>
+    <p class="empty-sub">กลับไปกดบันทึกข้อความที่ชอบได้เลยนะ</p>
+  </div>
+
+  <!-- Bookmarked quote cards -->
+  <div class="cards-wrap" id="cards-wrap"></div>
+
+  <!-- Green mountain -->
+  <div class="landscape-wrap">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/8019edb6-39ed-4ad0-af05-500b0e660659" />
+  </div>
+
+</div>
+
+<script src="sets.js"></script>
+<script>
+  var _BOOKMARKS_KEY = 'littlebylittle_bookmarks';
+
+  function _getBookmarks() {
+    try { return JSON.parse(localStorage.getItem(_BOOKMARKS_KEY) || '[]'); }
+    catch (e) { return []; }
+  }
+
+  function removeBookmark(idx) {
+    var list = _getBookmarks();
+    var pos  = list.indexOf(idx);
+    if (pos !== -1) list.splice(pos, 1);
+    localStorage.setItem(_BOOKMARKS_KEY, JSON.stringify(list));
+    render();
+  }
+
+  function render() {
+    var list = _getBookmarks();
+    var wrap  = document.getElementById('cards-wrap');
+    var empty = document.getElementById('empty-state');
+
+    wrap.innerHTML = '';
+
+    if (list.length === 0) {
+      empty.classList.add('visible');
+      return;
+    }
+    empty.classList.remove('visible');
+
+    list.forEach(function (idx) {
+      var set = _sets[idx];
+      if (!set) return;
+      var card = document.createElement('div');
+      card.className = 'quote-card';
+      card.innerHTML =
+        '<div class="quote-card-border"></div>' +
+        '<p class="quote-text">' + set.quote + '</p>' +
+        '<button class="remove-btn" onclick="removeBookmark(' + idx + ')">ลบออกจากรายการบันทึก</button>';
+      wrap.appendChild(card);
+    });
+  }
+
+  render();
+</script>
+</body>
+</html>

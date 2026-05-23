@@ -661,6 +661,12 @@
   var _bookmarkBooked = 'assets/icons/ddeb71aa-3076-41fc-8c52-a20009732618.svg';
   var _booked = false;
   var _bookmarkTimer = null;
+  var _BOOKMARKS_KEY = 'littlebylittle_bookmarks';
+
+  function _getBookmarks() {
+    try { return JSON.parse(localStorage.getItem(_BOOKMARKS_KEY) || '[]'); }
+    catch (e) { return []; }
+  }
 
   function _showToast(id) {
     var toast = document.getElementById(id);
@@ -670,28 +676,37 @@
     _bookmarkTimer = setTimeout(function () { toast.classList.remove('show'); }, 3000);
   }
 
+  function _syncBookmarkIcon() {
+    var idx = _liftIdx();
+    _booked = _getBookmarks().indexOf(idx) !== -1;
+    document.getElementById('bookmark-icon').src = _booked ? _bookmarkBooked : _bookmarkNormal;
+  }
+
   function toggleBookmark() {
     try {
-      _booked = !_booked;
+      var idx = _liftIdx();
+      var list = _getBookmarks();
+      var pos  = list.indexOf(idx);
+      if (pos === -1) { list.push(idx); _booked = true; }
+      else            { list.splice(pos, 1); _booked = false; }
+      localStorage.setItem(_BOOKMARKS_KEY, JSON.stringify(list));
       document.getElementById('bookmark-icon').src = _booked ? _bookmarkBooked : _bookmarkNormal;
-      /* TODO: call actual bookmark API here — call _showToast('toast-bookmark-error') if it fails */
       _showToast(_booked ? 'toast-bookmark' : 'toast-unbookmark');
     } catch (e) {
-      /* Revert state on error */
-      _booked = !_booked;
-      document.getElementById('bookmark-icon').src = _booked ? _bookmarkBooked : _bookmarkNormal;
       _showToast('toast-bookmark-error');
     }
   }
 
-  /* ── Next quote: cycles the shared set index ── */
+  /* ── Next quote: cycles the shared set index then syncs bookmark icon ── */
   function nextQuote() {
     var idx = _liftNext();
     document.querySelector('.subtitle').innerHTML = _sets[idx].quote;
+    _syncBookmarkIcon();
   }
 
-  /* Restore the active quote on load */
+  /* Restore the active quote on load + sync bookmark state */
   document.querySelector('.subtitle').innerHTML = _sets[_liftIdx()].quote;
+  _syncBookmarkIcon();
 
   /* ── Non-login icon → go to login page ── */
   function goToLogin() {
