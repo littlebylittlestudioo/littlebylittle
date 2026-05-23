@@ -321,7 +321,7 @@
   </div>
 
   <!-- ── Close button (Icon/Close) — positioned top-right per Figma ── -->
-  <a class="close-btn" href="Desktop1.html" aria-label="ปิด">
+  <a class="close-btn" href="index.html" aria-label="ปิด">
     <img alt="close" src="https://www.figma.com/api/mcp/asset/2e35e7b7-176e-4213-970b-4ac0e87dedbc" />
   </a>
 
@@ -386,12 +386,12 @@
   /* ── Guard: ตอบคำถาม requires login ── */
   function goToAnswer() {
     if (!localStorage.getItem('liftapp_logged_in')) {
-      localStorage.setItem('liftapp_redirect', 'Desktop3.html'); /* after login → Desktop3 */
-      localStorage.setItem('liftapp_back', 'Desktop2.html');     /* close X → back to Desktop2 */
-      window.location.href = 'Desktop_Login.html';
+      localStorage.setItem('liftapp_redirect', 'answer.html'); /* after login → Desktop3 */
+      localStorage.setItem('liftapp_back', 'prompt.html');     /* close X → back to Desktop2 */
+      window.location.href = 'login.html';
       return;
     }
-    window.location.href = 'Desktop3.html';
+    window.location.href = 'answer.html';
   }
 
   /* ── Change question: cycles to next set, updates prompt + reflection ── */

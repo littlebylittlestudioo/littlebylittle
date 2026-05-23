@@ -306,7 +306,7 @@
        ══════════════════════════════════════════ -->
   <div class="page-header">
     <p class="month-title" id="month-title">กันยายน 2569</p>
-    <a class="icon-btn" href="Desktop1.html" aria-label="ปิด">
+    <a class="icon-btn" href="index.html" aria-label="ปิด">
       <img alt="ปิด" src="https://www.figma.com/api/mcp/asset/00338946-b4e4-4fd2-9f2b-bcb0162bf6d1" />
     </a>
   </div>
@@ -334,7 +334,7 @@
       <p class="empty-title">ยังไม่มีการตอบคำถามประจำวัน (-:</p>
       <p class="empty-subtitle">ลองสุ่มคำถามประจำวันของคุณดูสิ !</p>
     </div>
-    <button class="btn-cta" onclick="window.location.href='Desktop2.html'">สุ่มคำถามประจำวัน</button>
+    <button class="btn-cta" onclick="window.location.href='prompt.html'">สุ่มคำถามประจำวัน</button>
   </div>
 
   <!-- ══════════════════════════════════════════
@@ -522,7 +522,7 @@
     saved.forEach(function (entry) {
       /* Find the index in the full (unfiltered) array so the edit page can look it up */
       var origIndex = all.findIndex(function (e) { return e.date === entry.date; });
-      var editUrl   = 'Desktop3.html?edit=' + origIndex;
+      var editUrl   = 'answer.html?edit=' + origIndex;
 
       var card = document.createElement('div');
       card.className = 'entry-card';

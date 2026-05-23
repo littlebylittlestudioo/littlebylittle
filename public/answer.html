@@ -651,7 +651,7 @@
         localStorage.setItem('liftapp_entries',     JSON.stringify(entries));
         localStorage.setItem('liftapp_has_entries', 'true');
       }
-      window.location.href = 'Desktop4.html?toast=saved';
+      window.location.href = 'insight.html?toast=saved';
     } catch (e) {
       showErrorToast();
     }
@@ -672,7 +672,7 @@
       entries.splice(_editIndex, 1);
       localStorage.setItem('liftapp_entries', JSON.stringify(entries));
       if (entries.length === 0) localStorage.removeItem('liftapp_has_entries');
-      window.location.href = 'Desktop4.html?toast=deleted';
+      window.location.href = 'insight.html?toast=deleted';
     } catch (e) {
       closeDeleteModal();
       showErrorToast();
@@ -688,7 +688,7 @@
       if (current !== _originalAnswer) {
         showUndoModal();
       } else {
-        window.location.href = 'Desktop4.html';
+        window.location.href = 'insight.html';
       }
       return;
     }
@@ -696,7 +696,7 @@
     if (value) {
       showModal();
     } else {
-      window.location.href = 'Desktop2.html';
+      window.location.href = 'prompt.html';
     }
   }
 
@@ -707,7 +707,7 @@
     document.getElementById('modal-overlay').classList.remove('show');
   }
   function confirmExit() {
-    window.location.href = _editIndex >= 0 ? 'Desktop4.html' : 'Desktop1.html';
+    window.location.href = _editIndex >= 0 ? 'insight.html' : 'index.html';
   }
 
   /* ── Undo edit modal ── */
@@ -718,7 +718,7 @@
     document.getElementById('undo-modal-overlay').classList.remove('show');
   }
   function confirmUndo() {
-    window.location.href = 'Desktop4.html';
+    window.location.href = 'insight.html';
   }
 </script>
 </body>

@@ -246,7 +246,7 @@
       photo:    user.photo    || '',
       provider: provider
     }));
-    var redirect = localStorage.getItem('liftapp_redirect') || 'Desktop1.html';
+    var redirect = localStorage.getItem('liftapp_redirect') || 'index.html';
     localStorage.removeItem('liftapp_redirect');
     localStorage.removeItem('liftapp_back');
     window.location.href = redirect;
@@ -332,7 +332,7 @@
 
   /* ── Close button ── */
   function goBack() {
-    var back = localStorage.getItem('liftapp_back') || 'Desktop1.html';
+    var back = localStorage.getItem('liftapp_back') || 'index.html';
     localStorage.removeItem('liftapp_back');
     localStorage.removeItem('liftapp_redirect');
     window.location.href = back;

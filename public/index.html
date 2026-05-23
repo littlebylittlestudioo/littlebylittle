@@ -531,7 +531,7 @@
         </div>
         <!-- Logged in: profile photo (hidden until login) -->
         <img id="avatar-photo" alt="avatar" src=""
-             onclick="window.location.href='Desktop_Profile.html'" style="cursor:pointer;" />
+             onclick="window.location.href='profile.html'" style="cursor:pointer;" />
       </div>
     </div>
     <!-- Row 2: subtitle + icon buttons -->
@@ -575,7 +575,7 @@
   <!-- ══════════════════════════════════════════
        FEATURE MENUS
        ══════════════════════════════════════════ -->
-  <div class="feature feature-left" onclick="window.location.href='Desktop_Diary.html'" style="cursor:pointer;">
+  <div class="feature feature-left" onclick="window.location.href='diary.html'" style="cursor:pointer;">
     <div class="feature-icon">
       <img alt="add" src="https://www.figma.com/api/mcp/asset/91e998b8-8635-47af-8efa-c08d0d684b67" />
     </div>
@@ -585,7 +585,7 @@
     </div>
   </div>
 
-  <div class="feature feature-right" onclick="window.location.href='Desktop4.html'" style="cursor:pointer;">
+  <div class="feature feature-right" onclick="window.location.href='insight.html'" style="cursor:pointer;">
     <div class="feature-icon">
       <img alt="insight" src="https://www.figma.com/api/mcp/asset/8093d59e-0332-4b94-85f3-1f3969718069" />
     </div>
@@ -599,7 +599,7 @@
        DONATE BUTTON
        ══════════════════════════════════════════ -->
   <div class="donate-wrap">
-    <button class="donate-box" onclick="window.location.href='Desktop_Donate.html'">
+    <button class="donate-box" onclick="window.location.href='donate.html'">
       <div class="donate-icon">
         <img alt="donate" src="https://www.figma.com/api/mcp/asset/c6825e8f-b6de-4bd7-ba2d-87c9df2ea92e" />
       </div>
@@ -653,7 +653,7 @@
   function expandAndNavigate() {
     var front = document.querySelector('.card-front');
     front.style.animation = 'card-flip 0.4s ease-in forwards';
-    setTimeout(function () { window.location.href = 'Desktop2.html'; }, 400);
+    setTimeout(function () { window.location.href = 'prompt.html'; }, 400);
   }
 
   /* ── Bookmark toggle ── */
@@ -673,9 +673,9 @@
   function toggleBookmark() {
     /* ── Guard: require login ── */
     if (!localStorage.getItem('liftapp_logged_in')) {
-      localStorage.setItem('liftapp_redirect', 'Desktop1.html'); /* after login → Desktop1 */
-      localStorage.setItem('liftapp_back', 'Desktop1.html');     /* close X → back to Desktop1 */
-      window.location.href = 'Desktop_Login.html';
+      localStorage.setItem('liftapp_redirect', 'index.html'); /* after login → Desktop1 */
+      localStorage.setItem('liftapp_back', 'index.html');     /* close X → back to Desktop1 */
+      window.location.href = 'login.html';
       return;
     }
     try {
@@ -702,9 +702,9 @@
 
   /* ── Non-login icon → go to login page ── */
   function goToLogin() {
-    localStorage.setItem('liftapp_redirect', 'Desktop1.html');
-    localStorage.setItem('liftapp_back', 'Desktop1.html');
-    window.location.href = 'Desktop_Login.html';
+    localStorage.setItem('liftapp_redirect', 'index.html');
+    localStorage.setItem('liftapp_back', 'index.html');
+    window.location.href = 'login.html';
   }
 
   /* ── Greeting + avatar: update based on login state ── */
