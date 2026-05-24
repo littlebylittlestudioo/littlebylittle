@@ -410,10 +410,13 @@
        ══════════════════════════════════════════ */
     .ll-insight-wrap {
       position: absolute;
-      display: none; /* desktop only */
+      display: flex;
       flex-direction: column;
       z-index: 10;
       cursor: pointer;
+    }
+    @media (max-width: 1199px) {
+      .ll-insight-wrap { display: none; }
     }
     .ll-insight-card {
       width: 222px; height: 221px;
