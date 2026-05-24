@@ -1,5 +1,8 @@
 // functions/api/insight.js
 
+const CLAUDE_MODEL   = 'claude-haiku-4-5-20251001';
+const DEEPSEEK_MODEL = 'deepseek-v4-flash';
+
 const SYSTEM_PROMPT = `
 You are not a therapist, mental health professional, or productivity coach.
 
@@ -43,13 +46,57 @@ IMPORTANT: Respond entirely in Thai language. Keep the total response to 3-5 sho
 The user should feel: "I understand myself a little more now."
 `.trim();
 
+async function callClaude(apiKey, userMessage) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({
+      model: CLAUDE_MODEL,
+      max_tokens: 500,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: userMessage }]
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err.error && err.error.message) || 'Claude API error');
+  }
+  const data = await res.json();
+  return data.content[0].text;
+}
+
+async function callDeepSeek(apiKey, userMessage) {
+  const res = await fetch('https://api.deepseek.com/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + apiKey
+    },
+    body: JSON.stringify({
+      model: DEEPSEEK_MODEL,
+      max_tokens: 500,
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user',   content: userMessage }
+      ]
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err.error && err.error.message) || 'DeepSeek API error');
+  }
+  const data = await res.json();
+  return data.choices[0].message.content;
+}
+
 export async function onRequestPost(context) {
   const { request, env } = context;
 
-  const apiKey = env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return Response.json({ error: 'ANTHROPIC_API_KEY not configured' }, { status: 500 });
-  }
+  const provider = env.AI_PROVIDER === 'deepseek' ? 'deepseek' : 'claude';
 
   let entries;
   try {
@@ -71,7 +118,7 @@ export async function onRequestPost(context) {
     return 'วันที่: ' + dateStr + '\nคำถาม: ' + prompt + '\nคำตอบ: ' + (e.answer || '');
   }).join('\n\n---\n\n');
 
-  const message = [
+  const userMessage = [
     'นี่คือบันทึกความรู้สึกของผู้ใช้:',
     '',
     userContent,
@@ -82,26 +129,19 @@ export async function onRequestPost(context) {
     'ให้ผู้ใช้รู้สึกว่า "ฉันเข้าใจตัวเองมากขึ้นหน่อยแล้ว"'
   ].join('\n');
 
-  const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01'
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 500,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: message }]
-    })
-  });
-
-  if (!claudeRes.ok) {
-    const err = await claudeRes.json().catch(() => ({}));
-    return Response.json({ error: (err.error && err.error.message) || 'Claude API error' }, { status: 500 });
+  try {
+    let insight;
+    if (provider === 'deepseek') {
+      const apiKey = env.DEEPSEEK_API_KEY;
+      if (!apiKey) return Response.json({ error: 'DEEPSEEK_API_KEY not configured' }, { status: 500 });
+      insight = await callDeepSeek(apiKey, userMessage);
+    } else {
+      const apiKey = env.ANTHROPIC_API_KEY;
+      if (!apiKey) return Response.json({ error: 'ANTHROPIC_API_KEY not configured' }, { status: 500 });
+      insight = await callClaude(apiKey, userMessage);
+    }
+    return Response.json({ insight });
+  } catch (e) {
+    return Response.json({ error: e.message || 'AI API error' }, { status: 500 });
   }
-
-  const parsed = await claudeRes.json();
-  return Response.json({ insight: parsed.content[0].text });
 }
