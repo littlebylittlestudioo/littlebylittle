@@ -386,6 +386,9 @@
       /* cactus: 137×209 */
       .char-cactus { left: calc(66.67% + 44px); top: 797px; width: 137px; height: 209px; }
 
+      /* LL Insight bubble */
+      .ll-insight-wrap { display: flex; left: calc(66.67% - 28px); top: 315px; }
+
     }
 
     /* ── Extra-wide screens (iMac 24" = ~1920–2240px+) ──
@@ -402,6 +405,75 @@
       .char-blob     { left: 32vw; }
       .char-cactus   { left: calc(73vw - 137px); }
     }
+    /* ══════════════════════════════════════════
+       LL INSIGHT BUBBLE
+       ══════════════════════════════════════════ */
+    .ll-insight-wrap {
+      position: absolute;
+      display: none; /* desktop only */
+      flex-direction: column;
+      z-index: 10;
+      cursor: pointer;
+    }
+    .ll-insight-card {
+      width: 222px; height: 221px;
+      background: #7b8d5b;
+      border-radius: 18.675px;
+      box-shadow: 0 4.669px 46.687px rgba(0,0,0,0.1);
+      overflow: hidden;
+      position: relative;
+    }
+    .ll-insight-gradient {
+      position: absolute;
+      left: -50px; top: 0;
+      width: 272px; height: 221px;
+      background: linear-gradient(89.86deg, rgba(248,235,219,0) 0%, #f8ebdb 98.85%, rgba(248,235,219,0) 116.09%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .ll-insight-char-bg {
+      position: absolute;
+      left: 209px; top: 236px;
+      width: 150px; height: 143px;
+      overflow: hidden;
+    }
+    .ll-insight-char-bg img {
+      position: absolute; max-width: none;
+      width: 400%; height: 278.26%;
+      left: -201.56%; top: -145.92%;
+    }
+    .ll-insight-label {
+      position: absolute;
+      left: 27px; top: 16px;
+      display: flex; flex-direction: column;
+      align-items: flex-start; gap: 8px;
+      z-index: 2;
+    }
+    .ll-insight-label-icon { width: 32px; height: 32px; object-fit: contain; display: block; }
+    .ll-insight-label-text {
+      font-size: 18px; font-weight: 600; line-height: 26px;
+      color: white; white-space: nowrap;
+    }
+    .ll-insight-char-fg {
+      position: absolute;
+      left: 0; top: 88px;
+      width: 136px; height: 133px;
+      overflow: hidden;
+      z-index: 2;
+    }
+    .ll-insight-char-fg img {
+      position: absolute; max-width: none;
+      width: 423.23%; height: 287.38%;
+      left: -98.4%; top: -156.61%;
+    }
+    .ll-insight-tail {
+      width: 0; height: 0;
+      border-left: 19.5px solid transparent;
+      border-right: 19.5px solid transparent;
+      border-top: 22px solid #7b8d5b;
+      margin-left: 16px;
+    }
+
     /* ══════════════════════════════════════════
        DONATE BUTTON
        ══════════════════════════════════════════ */
@@ -570,6 +642,26 @@
         <span>คำถามประจำวัน</span>
       </button>
     </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       LL INSIGHT BUBBLE  (desktop only)
+       ══════════════════════════════════════════ -->
+  <div class="ll-insight-wrap" onclick="window.location.href='insight.html'">
+    <div class="ll-insight-card">
+      <div class="ll-insight-gradient"></div>
+      <div class="ll-insight-char-bg">
+        <img alt="" src="https://www.figma.com/api/mcp/asset/e3719f42-ca8e-4940-ac9e-a92d1194e69b" />
+      </div>
+      <div class="ll-insight-label">
+        <img class="ll-insight-label-icon" alt="" src="assets/icons/icon-insight.svg" />
+        <span class="ll-insight-label-text">สังเกตการณ์จากแง่งขิง</span>
+      </div>
+      <div class="ll-insight-char-fg">
+        <img alt="" src="https://www.figma.com/api/mcp/asset/e3719f42-ca8e-4940-ac9e-a92d1194e69b" />
+      </div>
+    </div>
+    <div class="ll-insight-tail"></div>
   </div>
 
   <!-- ══════════════════════════════════════════
