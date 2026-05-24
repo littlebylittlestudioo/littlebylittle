@@ -402,8 +402,8 @@
        WITH-CONTENT STATE
        ══════════════════════════════════════════ -->
 
-  <!-- AI Insight band -->
-  <div class="insight-band" id="insight-band">
+  <!-- AI Insight band (moved to llinsight.html) -->
+  <div class="insight-band" id="insight-band" style="display:none !important">
     <div class="insight-inner">
       <div class="insight-content">
         <div class="insight-label">
@@ -550,7 +550,6 @@
   function showSection(state) {
     document.getElementById('empty-state').style.display     = state === 'global-empty' ? 'flex' : 'none';
     document.getElementById('not-today-state').style.display = state === 'not-today'    ? 'flex' : 'none';
-    document.getElementById('insight-band').style.display    = 'none'; /* hidden until AI responds */
     document.getElementById('entries-list').style.display    = state === 'content' ? 'flex' : 'none';
     document.getElementById('entries-list').style.top        = _isMobile ? '242px' : '282px';
     var landscape = document.getElementById('landscape');
@@ -558,7 +557,6 @@
     if (state === 'content') {
       landscape.className = 'landscape-wrap landscape-content';
       root.classList.add('has-entries');
-      fetchInsight();
     } else {
       landscape.className = 'landscape-wrap landscape-empty';
       root.classList.remove('has-entries');

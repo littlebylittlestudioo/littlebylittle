@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Little by Little — สังเกตการณ์จากแง่งขิง</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cream-100: #f8ebdb;
+      --cream-200: #efcca4;
+      --text: #1e1e1e;
+    }
+    * { font-family: 'IBM Plex Sans Thai', sans-serif; box-sizing: border-box; }
+    body { margin: 0; }
+
+    /* ══ PAGE ROOT ══ */
+    .page-root {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      background: #768758;
+      overflow-x: hidden;
+    }
+
+    /* Cream vertical gradient band */
+    .gradient-band {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom,
+        transparent 0%,
+        rgba(248,235,219,0.45) 30%,
+        rgba(248,235,219,0.45) 70%,
+        transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ══ CLOUDS ══ */
+    .cloud { position: absolute; overflow: hidden; pointer-events: none; z-index: 2; }
+    .cloud img { position: absolute; max-width: none; width: 292.24%; height: 861.86%; left: -172.98%; top: -256.19%; }
+    .cloud-left  { left: -66px; top: -14px; width: 532px; height: 320px; }
+    .cloud-right { left: calc(75% + 39px); top: 146px; width: 352px; height: 213px; transform: scaleX(-1); }
+
+    /* ══ CLOSE BUTTON ══ */
+    .close-btn {
+      position: absolute;
+      left: calc(75% + 34px); top: 72px;
+      width: 40px; height: 40px;
+      background: white; border-radius: 100px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 20;
+      text-decoration: none;
+    }
+    .close-btn img { width: 24px; height: 24px; object-fit: contain; display: block; }
+
+    /* ══ CHARACTER (top, reading a book) ══ */
+    .char-top {
+      position: absolute;
+      left: calc(50% - 133.5px); top: 72px;
+      width: 267px; height: 261px;
+      overflow: hidden; pointer-events: none;
+      z-index: 8;
+    }
+    .char-top img {
+      position: absolute; max-width: none;
+      width: 423.23%; height: 287.38%;
+      left: -98.4%; top: -156.61%;
+    }
+
+    /* ══ LANDSCAPE ══ */
+    .landscape-wrap {
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      top: 203px;
+      width: 2468px; height: 956px;
+      pointer-events: none; z-index: 5;
+    }
+    .landscape-wrap img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; pointer-events: none;
+    }
+
+    /* ══ MAIN CARD ══ */
+    .insight-card {
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      top: 342px;
+      width: 864px; height: 630px;
+      background: var(--cream-100);
+      border-radius: 24px;
+      box-shadow: 0 6.333px 63.333px rgba(0,0,0,0.1);
+      overflow: hidden;
+      z-index: 10;
+    }
+    .card-border {
+      position: absolute;
+      left: 16px; right: 16px; top: 16px; height: 598px;
+      border: 2px solid var(--cream-200);
+      border-radius: 12.667px;
+      pointer-events: none;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      position: absolute;
+      left: 85px; top: 183px; width: 694px;
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+    }
+    .char-small {
+      width: 156px; height: 167px;
+      overflow: hidden; position: relative; flex-shrink: 0;
+    }
+    .char-small img {
+      position: absolute; max-width: none;
+      width: 438.86%; height: 273.8%;
+      left: -164%; top: -34.22%;
+    }
+    .empty-text {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      text-align: center; width: 100%;
+    }
+    .empty-title {
+      font-size: 32px; font-weight: 600; line-height: 40px;
+      color: #121212; margin: 0;
+    }
+    .empty-subtitle {
+      font-size: 16px; font-weight: 500; line-height: 24px;
+      letter-spacing: -0.048px; color: #121212; margin: 0;
+    }
+
+    /* ── Content state (insight loaded) ── */
+    .content-state {
+      position: absolute;
+      left: 85px; top: 80px; width: 694px;
+      display: flex; flex-direction: column; gap: 24px;
+    }
+    .insight-label { display: flex; align-items: center; gap: 8px; }
+    .insight-label img { width: 32px; height: 32px; object-fit: contain; }
+    .insight-label-text {
+      font-size: 14px; font-weight: 600; line-height: 22px;
+      color: var(--text); white-space: nowrap;
+    }
+    .insight-text {
+      font-size: 16px; font-weight: 500; line-height: 24px;
+      letter-spacing: -0.048px; color: #121212; margin: 0;
+      white-space: pre-line;
+    }
+    @keyframes insight-pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+    .insight-text.loading {
+      animation: insight-pulse 1.4s ease-in-out infinite;
+      color: #9e8f82;
+    }
+
+    /* ══ TABLET ══ */
+    @media (min-width: 768px) and (max-width: 1199px) {
+      .close-btn { left: auto; right: 24px; top: 72px; }
+      .char-top { left: calc(50% - 133.5px); }
+      .insight-card { width: calc(100% - 76px); }
+      .empty-state { left: 50%; transform: translateX(-50%); width: calc(100% - 170px); }
+      .content-state { left: 40px; width: calc(100% - 80px); }
+      .cloud-right { left: calc(66.67% + 4px); top: 130px; width: 296px; height: 178px; }
+    }
+
+    /* ══ MOBILE ══ */
+    @media (max-width: 767px) {
+      .page-root { min-height: max(100vh, 860px); background: #768758; }
+      .cloud-left  { left: -87px; top: -4px; width: 255px; height: 154px; }
+      .cloud-right { left: calc(50% + 51.5px); top: 60px; width: 169px; height: 102px; }
+      .close-btn { left: auto; right: 16px; top: 16px; }
+      .char-top { left: calc(50% - 90px); top: 56px; width: 180px; height: 176px; }
+      .landscape-wrap { top: 160px; width: 1200px; height: 465px; }
+      .insight-card { top: 254px; width: calc(100% - 32px); height: auto; min-height: 400px; padding-bottom: 40px; }
+      .empty-state { position: relative; left: auto; top: auto; transform: none; width: auto; margin: 40px 24px 0; }
+      .content-state { position: relative; left: auto; top: auto; width: auto; margin: 32px 24px 0; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-root">
+
+  <div class="gradient-band"></div>
+
+  <!-- Clouds -->
+  <div class="cloud cloud-left">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/d760016f-e1f1-4707-9938-cff633a17162" />
+  </div>
+  <div class="cloud cloud-right">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/d760016f-e1f1-4707-9938-cff633a17162" />
+  </div>
+
+  <!-- Close button -->
+  <a class="close-btn" href="index.html" aria-label="ปิด">
+    <img alt="ปิด" src="assets/icons/c9692b6f-ebb5-4fb4-b1f4-537656a97c07.svg" />
+  </a>
+
+  <!-- Character reading (above card) -->
+  <div class="char-top">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/61cb9cc6-a491-478a-b26d-7b3ac2d3bb20" />
+  </div>
+
+  <!-- Green hill landscape -->
+  <div class="landscape-wrap">
+    <img alt="" src="https://www.figma.com/api/mcp/asset/a8109c71-a68e-416c-82ea-7aa20b8d3d8e" />
+  </div>
+
+  <!-- Main card -->
+  <div class="insight-card">
+    <div class="card-border"></div>
+
+    <!-- Empty state: not enough entries -->
+    <div class="empty-state" id="empty-state">
+      <div class="char-small">
+        <img alt="" src="https://www.figma.com/api/mcp/asset/61cb9cc6-a491-478a-b26d-7b3ac2d3bb20" />
+      </div>
+      <div class="empty-text">
+        <p class="empty-title">ยังมีข้อมูลไม่พอสำหรับการสังเกต</p>
+        <p class="empty-subtitle">หมั่นบันทึกคำตอบของคุณไว้นะ แล้วแง้งขิงจะคอยสังเกตการณ์ให้ (-:<br>โดยปกติแง่งขิงจะใช้เวลา 7 วัน ในการสะสมข้อความฮะ</p>
+      </div>
+    </div>
+
+    <!-- Content state: insight text -->
+    <div class="content-state" id="content-state" style="display:none;">
+      <div class="insight-label">
+        <img alt="" src="assets/icons/icon-insight.svg" />
+        <span class="insight-label-text">สังเกตการณ์จากแง่งขิง</span>
+      </div>
+      <p class="insight-text loading" id="insight-text">กำลังวิเคราะห์…</p>
+    </div>
+  </div>
+
+</div>
+<script>
+  var CACHE_KEY = 'littlebylittle_insight_cache';
+  var CACHE_TTL = 30 * 60 * 1000;
+  var MIN_ENTRIES = 7;
+
+  var entries = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
+
+  if (entries.length >= MIN_ENTRIES) {
+    document.getElementById('empty-state').style.display = 'none';
+    document.getElementById('content-state').style.display = 'flex';
+    fetchInsight();
+  }
+
+  function fetchInsight() {
+    var el = document.getElementById('insight-text');
+
+    try {
+      var cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      if (cached && (Date.now() - cached.ts) < CACHE_TTL) {
+        el.textContent = cached.text;
+        el.classList.remove('loading');
+        return;
+      }
+    } catch (e) {}
+
+    fetch('/api/insight', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ entries: entries })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data.insight) {
+        el.textContent = data.insight;
+        el.classList.remove('loading');
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), text: data.insight }));
+      }
+    })
+    .catch(function () {
+      el.textContent = 'ไม่สามารถโหลดข้อมูลได้ในขณะนี้';
+      el.classList.remove('loading');
+    });
+  }
+</script>
+</body>
+</html>
