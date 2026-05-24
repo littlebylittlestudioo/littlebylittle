@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Little by Little — ส่งกำลังใจ</title>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;600&family=Playwrite+US+Trad&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;600&family=Chonburi&display=swap" rel="stylesheet" />
   <style>
     @font-face {
       font-family: 'PG Picasso';
@@ -82,17 +82,38 @@
       display: flex; flex-direction: column; gap: 24px;
     }
     .logo-section { display: flex; flex-direction: column; gap: 32px; }
-    .logo-wrap { position: relative; display: inline-block; }
+    .logo-wrap {
+      display: inline-grid;
+      grid-template-columns: max-content;
+      grid-template-rows: max-content;
+      place-items: start;
+      position: relative;
+      line-height: 0;
+    }
     .logo-text {
-      font-family: 'Playwrite US Trad', cursive;
-      font-size: 25.749px; font-weight: 400;
-      line-height: 27.895px; color: #000;
-      display: block; margin-top: 22.4px; width: 105px;
+      grid-column: 1; grid-row: 1;
+      font-family: 'Chonburi', sans-serif;
+      font-size: 24px; font-weight: 400;
+      line-height: 20.349px; color: #000;
+      text-align: center; width: 105px;
+      margin-top: 44px; margin-left: 0;
+      white-space: pre-wrap;
     }
-    .logo-bird {
-      position: absolute; top: 0; left: 60px;
-      width: 38px; height: 51px; display: block;
+    .logo-text p { margin: 0; }
+    .logo-vector {
+      grid-column: 1; grid-row: 1;
+      width: 29px; height: 34px;
+      margin-left: 35.5px; margin-top: 4px;
+      position: relative;
     }
+    .logo-vector img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .logo-group {
+      grid-column: 1; grid-row: 1;
+      width: 85px; height: 41px;
+      margin-left: 7.6px; margin-top: 0;
+      position: relative;
+    }
+    .logo-group img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
     .book-heading {
       font-size: 32px; font-weight: 600;
       line-height: 40px; color: var(--text); margin: 0;
@@ -249,8 +270,9 @@
     <div class="left-page">
       <div class="logo-section">
         <div class="logo-wrap">
-          <span class="logo-text">little<br>by little</span>
-          <img class="logo-bird" alt="" src="assets/icons/d597ef9e-bf34-4b84-a3f9-1cd2f8530dd0.svg" />
+          <div class="logo-text"><p>little </p><p>by little</p></div>
+          <div class="logo-vector"><img alt="" src="https://www.figma.com/api/mcp/asset/109c223f-b349-4e31-829d-fef2124b4e6f" /></div>
+          <div class="logo-group"><img alt="" src="https://www.figma.com/api/mcp/asset/cf79c05e-345d-4c96-be9b-113d37cb62cc" /></div>
         </div>
         <h1 class="book-heading">ส่งกำลังใจเล็ก ๆ<br>ให้เราเติบโตต่อไป</h1>
       </div>
