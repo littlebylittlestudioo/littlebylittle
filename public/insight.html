@@ -25,12 +25,12 @@
     .page-root {
       position: relative;
       width: 100%;
-      min-height: 1283px;
+      min-height: max(1283px, 100vh);
       overflow-x: hidden;
       background: linear-gradient(to bottom, #aacae5, #edeef0);
     }
     /* expand only when showing entries */
-    .page-root.has-entries { min-height: 1650px; }
+    .page-root.has-entries { min-height: max(1650px, 100vh); }
 
     /* ── Clouds ── */
     .cloud { position: absolute; overflow: hidden; pointer-events: none; z-index: 1; }
@@ -53,7 +53,7 @@
        ══════════════════════════════════════════ */
     .page-header {
       position: absolute;
-      left: calc(16.67% + 102px); top: 88px; width: 813px;
+      left: calc(50% - 378px); top: 88px; width: 813px;
       display: flex; align-items: center; justify-content: space-between;
       z-index: 10;
     }
@@ -67,7 +67,7 @@
        ══════════════════════════════════════════ */
     .week-nav {
       position: absolute;
-      left: calc(16.67% + 45px); top: 144px; width: 870px;
+      left: calc(50% - 435px); top: 144px; width: 870px;
       display: flex; align-items: center; gap: 16px;
       z-index: 10;
     }
@@ -100,7 +100,7 @@
     .empty-state,
     .not-today-state {
       position: absolute;
-      left: calc(16.67% + 133px); top: 485px; width: 694px;
+      left: calc(50% - 347px); top: 485px; width: 694px;
       z-index: 10; text-align: center; color: #121212;
     }
     .not-today-state {
@@ -116,7 +116,7 @@
     }
     .empty-state {
       position: absolute;
-      left: calc(16.67% + 133px); top: 485px; width: 694px;
+      left: calc(50% - 347px); top: 485px; width: 694px;
       display: flex; flex-direction: column; align-items: center; gap: 48px;
       z-index: 10;
     }
@@ -188,7 +188,7 @@
     /* Journal entry cards */
     .entries-list {
       position: absolute;
-      left: calc(16.67% + 101px); top: 573px; width: 758px;
+      left: calc(50% - 379px); top: 573px; width: 758px;
       display: flex; flex-direction: column; gap: 16px;
       z-index: 10;
     }
@@ -263,22 +263,7 @@
       transform: translateX(-50%) translateY(0);
     }
 
-  /* ══════════════════════════════════════════
-     LARGE SCREEN CENTERING (> 1440 px)
-     At 1440 px every element already sits at
-     calc(50% – halfWidth), so the rules below
-     are a no-op there and kick in only for wider
-     viewports (e.g. iMac 24" ~2240 CSS px).
-     ══════════════════════════════════════════ */
-  @media (min-width: 1441px) {
-    .page-header     { left: calc(50% - 378px); }
-    .week-nav        { left: calc(50% - 435px); }
-    .empty-state,
-    .not-today-state { left: calc(50% - 347px); }
-    .entries-list    { left: calc(50% - 379px); }
-  }
-
-  /* ══════════════════════════════════════════
+/* ══════════════════════════════════════════
      MOBILE  ≤ 767px
      ══════════════════════════════════════════ */
   @media (max-width: 767px) {
