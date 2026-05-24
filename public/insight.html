@@ -277,6 +277,47 @@
     .not-today-state { left: calc(50% - 347px); }
     .entries-list    { left: calc(50% - 379px); }
   }
+
+  /* ══════════════════════════════════════════
+     MOBILE  ≤ 767px
+     ══════════════════════════════════════════ */
+  @media (max-width: 767px) {
+    .page-root { min-height: max(100vh, 924px); }
+    .page-root.has-entries { min-height: max(100vh, 1100px); }
+
+    /* clouds */
+    .cloud-left  { left: -87px; top: -4px; width: 255px; height: 154px; }
+    .cloud-right { left: calc(50% + 51.5px); top: 60px; width: 169px; height: 102px; }
+
+    /* header */
+    .page-header { left: 16px; top: 78px; width: calc(100% - 32px); }
+    .month-title { font-size: 32px; line-height: 40px; }
+
+    /* week nav: no arrows, compact strip */
+    .week-nav { left: 8px; top: 134px; width: calc(100% - 16px); }
+    .week-nav .icon-btn { display: none; }
+    .week-strip { height: 92px; border-radius: 16px; padding: 13px 14px; gap: 4px; }
+    .day-cell  { height: 66px; border-radius: 8px; }
+    .day-name  { font-size: 12px; line-height: 20px; }
+    .day-num   { font-size: 20px; line-height: 28px; }
+
+    /* no insight band on mobile */
+    .insight-band { display: none !important; }
+
+    /* empty / not-today states */
+    .empty-state,
+    .not-today-state { left: 16px; top: 242px; width: calc(100% - 32px); }
+
+    /* entry cards */
+    .entries-list { left: 16px; width: calc(100% - 32px); }
+    .entry-question { font-size: 20px; line-height: 28px; letter-spacing: 0; }
+    .entry-answer   { font-size: 14px; font-weight: 600; line-height: 22px; letter-spacing: 0; }
+
+    /* landscape */
+    .landscape-wrap { left: calc(37.5% + 18.88px); width: 551px; height: 213px; }
+    .landscape-empty   { top: 600px; }
+    .landscape-content { top: 800px; }
+  }
   </style>
 </head>
 <body>
@@ -429,8 +470,11 @@
     renderWeek();
   }
 
+  var _isMobile = window.innerWidth < 768;
+
   /* ── AI Insight: fetch from local proxy, cache for 30 min ── */
   function fetchInsight() {
+    if (_isMobile) return;
     var CACHE_KEY = 'littlebylittle_insight_cache';
     var CACHE_TTL = 30 * 60 * 1000; /* 30 minutes */
 
@@ -479,7 +523,7 @@
     document.getElementById('not-today-state').style.display = state === 'not-today'    ? 'flex' : 'none';
     document.getElementById('insight-band').style.display    = 'none'; /* hidden until AI responds */
     document.getElementById('entries-list').style.display    = state === 'content' ? 'flex' : 'none';
-    document.getElementById('entries-list').style.top        = '282px'; /* reset: right below calendar */
+    document.getElementById('entries-list').style.top        = _isMobile ? '242px' : '282px';
     var landscape = document.getElementById('landscape');
     var root      = document.getElementById('page-root');
     if (state === 'content') {
