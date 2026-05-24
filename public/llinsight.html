@@ -23,15 +23,15 @@
       overflow-x: hidden;
     }
 
-    /* Cream vertical gradient band */
+    /* Cream vertical gradient band — matches Figma rotated gradient:
+       transparent at top, full cream at ~99% of viewport height */
     .gradient-band {
       position: absolute;
-      inset: 0;
+      left: 0; top: 0;
+      width: 100%; height: max(1024px, 100vh);
       background: linear-gradient(to bottom,
-        transparent 0%,
-        rgba(248,235,219,0.45) 30%,
-        rgba(248,235,219,0.45) 70%,
-        transparent 100%);
+        rgba(248,235,219,0) 0%,
+        rgba(248,235,219,1) 98.847%);
       pointer-events: none;
       z-index: 0;
     }
