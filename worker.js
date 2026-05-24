@@ -111,9 +111,10 @@ async function handleInsight(request, env) {
   }
 
   const userContent = entries.map(function (e) {
-    const dateStr = new Date(e.date).toLocaleDateString('th-TH', {
-      year: 'numeric', month: 'long', day: 'numeric'
-    });
+    const d = new Date(e.date);
+    const dateStr = isNaN(d.getTime())
+      ? 'ไม่ระบุวันที่'
+      : d.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
     const prompt = (e.prompt || '').replace(/<br>/gi, ' ').replace(/<[^>]*>/g, '');
     return 'วันที่: ' + dateStr + '\nคำถาม: ' + prompt + '\nคำตอบ: ' + (e.answer || '');
   }).join('\n\n---\n\n');
