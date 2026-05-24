@@ -66,7 +66,9 @@ async function callClaude(apiKey, userMessage) {
     throw new Error((err.error && err.error.message) || 'Claude API error');
   }
   const data = await res.json();
-  return data.content[0].text;
+  const text = data.content?.[0]?.text;
+  if (!text) throw new Error('Claude returned empty response');
+  return text;
 }
 
 async function callDeepSeek(apiKey, userMessage) {
@@ -90,7 +92,9 @@ async function callDeepSeek(apiKey, userMessage) {
     throw new Error((err.error && err.error.message) || 'DeepSeek API error');
   }
   const data = await res.json();
-  return data.choices[0].message.content;
+  const text = data.choices?.[0]?.message?.content;
+  if (!text) throw new Error('DeepSeek returned empty response');
+  return text;
 }
 
 export async function onRequestPost(context) {
