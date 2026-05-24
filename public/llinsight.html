@@ -135,19 +135,21 @@
     /* ── Content state (insight loaded) ── */
     .content-state {
       position: absolute;
-      left: 85px; top: 80px; width: 694px;
-      display: flex; flex-direction: column; gap: 24px;
+      left: 40px; top: 40px; width: 784px;
+      display: flex; flex-direction: column; gap: 40px;
     }
-    .insight-label { display: flex; align-items: center; gap: 8px; }
-    .insight-label img { width: 32px; height: 32px; object-fit: contain; }
-    .insight-label-text {
-      font-size: 14px; font-weight: 600; line-height: 22px;
-      color: var(--text); white-space: nowrap;
+    .insight-header { display: flex; flex-direction: column; gap: 1px; }
+    .insight-heading {
+      font-size: 40px; font-weight: 600; line-height: 48px;
+      color: #000; margin: 0;
     }
-    .insight-text {
+    .insight-date {
       font-size: 16px; font-weight: 500; line-height: 24px;
       letter-spacing: -0.048px; color: #121212; margin: 0;
-      white-space: pre-line;
+    }
+    .insight-text {
+      font-size: 18px; font-weight: 600; line-height: 26px;
+      color: #121212; margin: 0; white-space: pre-line;
     }
     @keyframes insight-pulse {
       0%, 100% { opacity: 1; }
@@ -164,7 +166,8 @@
       .char-top { left: calc(50% - 133.5px); }
       .insight-card { width: calc(100% - 76px); }
       .empty-state { left: 50%; transform: translateX(-50%); width: calc(100% - 170px); }
-      .content-state { left: 40px; width: calc(100% - 80px); }
+      .content-state { left: 40px; top: 40px; width: calc(100% - 80px); }
+      .insight-heading { font-size: 32px; line-height: 40px; }
       .cloud-right { left: calc(66.67% + 4px); top: 130px; width: 296px; height: 178px; }
     }
 
@@ -178,7 +181,9 @@
       .landscape-wrap { top: 160px; width: 1200px; height: 465px; }
       .insight-card { top: 254px; width: calc(100% - 32px); height: auto; min-height: 400px; padding-bottom: 40px; }
       .empty-state { position: relative; left: auto; top: auto; transform: none; width: auto; margin: 40px 24px 0; }
-      .content-state { position: relative; left: auto; top: auto; width: auto; margin: 32px 24px 0; }
+      .content-state { position: relative; left: auto; top: auto; width: auto; margin: 24px 24px 0; }
+      .insight-heading { font-size: 28px; line-height: 36px; }
+      .insight-text { font-size: 16px; line-height: 24px; }
     }
   </style>
 </head>
@@ -227,9 +232,9 @@
 
     <!-- Content state: insight text -->
     <div class="content-state" id="content-state" style="display:none;">
-      <div class="insight-label">
-        <img alt="" src="assets/icons/icon-insight.svg" />
-        <span class="insight-label-text">สังเกตการณ์จากแง่งขิง</span>
+      <div class="insight-header">
+        <h2 class="insight-heading">จากที่แง่งขิงสังเกต..</h2>
+        <p class="insight-date" id="insight-date"></p>
       </div>
       <p class="insight-text loading" id="insight-text">กำลังวิเคราะห์…</p>
     </div>
@@ -243,9 +248,24 @@
 
   var entries = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
 
+  function getDateRange(entries) {
+    var months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.',
+                  'ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    var dates = entries.map(function(e){ return new Date(e.date); })
+                       .sort(function(a,b){ return a - b; });
+    var first = dates[0], last = dates[dates.length - 1];
+    var yy = String(last.getFullYear() + 543).slice(-2);
+    if (first.getMonth() === last.getMonth() && first.getFullYear() === last.getFullYear()) {
+      return first.getDate() + ' - ' + last.getDate() + ' ' + months[last.getMonth()] + ' ' + yy;
+    }
+    return first.getDate() + ' ' + months[first.getMonth()] + ' - ' +
+           last.getDate()  + ' ' + months[last.getMonth()]  + ' ' + yy;
+  }
+
   if (entries.length >= MIN_ENTRIES) {
     document.getElementById('empty-state').style.display = 'none';
     document.getElementById('content-state').style.display = 'flex';
+    document.getElementById('insight-date').textContent = getDateRange(entries);
     fetchInsight();
   }
 
