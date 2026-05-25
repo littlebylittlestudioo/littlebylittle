@@ -89,8 +89,9 @@
       transition: background 0.15s ease;
     }
     .day-cell.selected { background: var(--cream-200); }
-    .day-name { font-size: 14px; font-weight: 600; line-height: 22px; color: var(--text); }
+    .day-name { font-size: 14px; font-weight: 600; line-height: 22px; color: var(--text); display: flex; align-items: center; justify-content: center; gap: 3px; }
     .day-num  { font-size: 40px; font-weight: 600; line-height: 48px; color: var(--text); }
+    .day-dot  { width: 6px; height: 6px; border-radius: 50%; background: #d94f3d; flex-shrink: 0; }
 
     /* ══════════════════════════════════════════
        EMPTY STATE  (no entries ever)
@@ -458,15 +459,17 @@
     var strip    = document.getElementById('week-strip');
     strip.innerHTML = '';
     var todayStr = today.toDateString();
+    var allEntries = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
 
     for (var i = 0; i < 7; i++) {
       var day = new Date(monday);
       day.setDate(monday.getDate() + i);
-      var isToday = day.toDateString() === todayStr;
+      var isToday   = day.toDateString() === todayStr;
+      var hasEntry  = allEntries.some(function (e) { return new Date(e.date).toDateString() === day.toDateString(); });
       var cell = document.createElement('div');
       cell.className = 'day-cell' + (isToday ? ' selected' : '');
       cell.innerHTML =
-        '<span class="day-name">' + _thaiDays[day.getDay()] + '</span>' +
+        '<span class="day-name">' + _thaiDays[day.getDay()] + (hasEntry ? '<span class="day-dot"></span>' : '') + '</span>' +
         '<span class="day-num">'  + day.getDate()            + '</span>';
       cell.dataset.date = day.toDateString();
       cell.addEventListener('click', function () {
