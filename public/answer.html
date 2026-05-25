@@ -617,11 +617,16 @@
       _editIndex = idx;
       var entries = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
       var entry   = entries[idx];
-      if (entry && ta) {
-        ta.value        = entry.answer;
-        _originalAnswer = entry.answer; /* remember original to detect changes */
-        ta.style.height = 'auto';
-        ta.style.height = ta.scrollHeight + 'px';
+      if (entry) {
+        /* show the original prompt, not the current random one */
+        var qEl = document.querySelector('.question-text');
+        if (qEl && entry.prompt) qEl.innerHTML = entry.prompt;
+        if (ta) {
+          ta.value        = entry.answer;
+          _originalAnswer = entry.answer;
+          ta.style.height = 'auto';
+          ta.style.height = ta.scrollHeight + 'px';
+        }
       }
       var delLink = document.getElementById('delete-link');
       if (delLink) delLink.style.display = 'block';
