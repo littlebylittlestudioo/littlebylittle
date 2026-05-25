@@ -420,8 +420,19 @@
       cursor: pointer;
       animation: ll-float 3s ease-in-out infinite;
     }
-    @media (max-width: 1199px) {
-      .ll-insight-wrap { display: none; }
+    /* mobile: wide banner layout */
+    @media (max-width: 767px) {
+      .ll-insight-wrap {
+        display: flex;
+        left: 16px; top: 609px;
+        animation: none;
+      }
+      .ll-insight-card { width: 343px; height: 133px; }
+      .ll-insight-gradient { left: -50px; width: 393px; height: 165px; }
+      .ll-insight-char-bg { display: none; }
+      .ll-insight-char-fg { left: 0; top: 7px; width: 129px; height: 126px; }
+      .ll-insight-label { left: 229px; top: 50%; transform: translateY(-50%); gap: 6px; }
+      .ll-insight-label-text { font-size: 16px; line-height: 24px; white-space: normal; max-width: 96px; }
     }
     .ll-insight-card {
       width: 222px; height: 221px;
