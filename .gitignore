@@ -22,6 +22,10 @@ node_modules/
 *.jpg
 *.zip
 *.HEIC
+
+# Allow app images inside public/
+!public/assets/images/*.png
+!public/assets/images/*.jpg
 BG/
 test-claude/
 The terrace/
