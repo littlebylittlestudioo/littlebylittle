@@ -33,8 +33,8 @@
       position: relative;
       width: 100%;
       overflow-x: hidden; /* hide wide landscape/cloud overflow */
-      /* mobile: tall enough to scroll to bottom on short phones (SE=667px, S8+=740px) */
-      min-height: max(100vh, 870px);
+      /* mobile: tall enough to contain content down to ~1096px */
+      min-height: max(100vh, 1096px);
       background: linear-gradient(to bottom, #a9cae5, #e4e7e8);
     }
 
@@ -208,8 +208,8 @@
     .feature-label p { text-decoration: underline; margin: 0; font-size: 14px; line-height: 22px; }
 
     /* mobile positions */
-    .feature-left  { left: 16px;               top: 622px; }
-    .feature-right { left: calc(50% + 20.5px); top: 644px; }
+    .feature-left  { left: 16px;               top: 794px; }
+    .feature-right { left: calc(50% + 20.5px); top: 816px; }
 
     /* ══════════════════════════════════════════
        LANDSCAPE  (z:5, below characters)
@@ -221,7 +221,7 @@
       /* full-width wrapper — image centered inside avoids iOS Safari left-clip bug */
       left: 0; right: 0; width: 100%;
       /* mobile: height 213px */
-      top: 711px; height: 213px;
+      top: 883px; height: 213px;
     }
     .landscape-wrap img {
       /* center the fixed-width image inside the full-width wrapper */
@@ -238,11 +238,11 @@
     .char img { position: absolute; max-width: none; }
 
     /* mobile blob: 144×120 */
-    .char-blob { left: 0; top: 672px; width: 144px; height: 120px; }
+    .char-blob { left: 0; top: 844px; width: 144px; height: 120px; }
     .char-blob img { width: 303.37%; height: 643.22%; left: -17.13%; top: -35.01%; }
 
     /* mobile cactus: 80×123 */
-    .char-cactus { left: calc(75% + 6.75px); top: 688px; width: 80px; height: 123px; }
+    .char-cactus { left: calc(75% + 6.75px); top: 860px; width: 80px; height: 123px; }
     .char-cactus img { width: 715.23%; height: 834.78%; left: -439.07%; top: -604.13%; }
 
 
@@ -251,11 +251,11 @@
        Push bottom section to the actual bottom of the screen.
        ══════════════════════════════════════════ */
     @media (max-width: 767px) and (min-height: 920px) {
-      .feature-left  { top: calc(100vh - 310px); }
-      .feature-right { top: calc(100vh - 288px); }
-      .landscape-wrap { top: calc(100vh - 221px); }
-      .char-blob   { top: calc(100vh - 260px); }
-      .char-cactus { top: calc(100vh - 244px); }
+      .feature-left  { top: calc(100vh - 138px); }
+      .feature-right { top: calc(100vh - 116px); }
+      .landscape-wrap { top: calc(100vh - 49px); }
+      .char-blob   { top: calc(100vh - 88px); }
+      .char-cactus { top: calc(100vh - 72px); }
     }
 
     /* ══════════════════════════════════════════
