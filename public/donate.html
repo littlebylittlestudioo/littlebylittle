@@ -230,36 +230,46 @@
     /* ══ MOBILE ══ */
     @media (max-width: 767px) {
       .page-root {
-        min-height: max(100vh, 900px);
+        min-height: 1310px;
         background: linear-gradient(to bottom, #a9cae5, #e4e7e8);
       }
       .cloud-left  { left: -87px; top: -4px; width: 255px; height: 154px; }
       .cloud-right { left: calc(50% + 51.5px); top: 60px; width: 169px; height: 102px; }
 
-      .close-btn { left: auto; right: 16px; top: 16px; }
+      .close-btn { left: auto; right: 16px; top: 24px; }
 
       .book-card {
         left: 16px; right: 16px;
         transform: none; width: auto;
-        height: auto; top: 72px;
-        border-radius: 16px;
-        overflow: visible;
+        height: auto; top: 80px;
+        border-radius: 24px;
+        overflow: hidden;
       }
-      .book-border { inset: 8px; border-radius: 8px; }
-      .left-page { position: relative; left: auto; top: auto; width: auto; padding: 24px 24px 0; }
+      .book-border { inset: 16px; border-radius: 12.667px; }
+      .book-spine { display: none; }
+
+      /* Single-column centered: logo → heading → body */
+      .left-page {
+        position: relative; left: auto; top: auto;
+        width: auto; padding: 40px 32px 0;
+        display: flex; flex-direction: column;
+        align-items: center; gap: 24px;
+      }
+      .logo-section { align-items: center; }
+      .book-heading { text-align: center; font-size: 24px; line-height: 32px; letter-spacing: -0.3px; }
+      .book-body { text-align: center; }
+
+      /* QR + thanks centered below */
       .right-page {
-        position: relative; left: auto; top: auto; transform: none;
-        width: auto; padding: 16px 24px;
+        position: relative; left: auto; right: auto;
+        top: auto; transform: none;
+        width: auto; padding: 24px 32px 40px;
         align-items: center;
       }
-      .qr-image { width: 100%; max-width: 280px; border-radius: 12px; }
-      .book-spine { display: none; }
-      .thanks-text {
-        position: relative; left: auto; right: auto; bottom: auto;
-        padding: 0 24px 24px; text-align: center; display: block;
-      }
+      .qr-image { width: 100%; max-width: 250px; border-radius: 16px; }
+      .thanks-text { text-align: center; font-size: 14px; }
 
-      .landscape-wrap { top: 730px; height: 213px; }
+      .landscape-wrap { top: 1090px; height: 213px; }
       .landscape-wrap img { width: 551px; height: 100%; object-fit: fill; }
     }
   </style>
