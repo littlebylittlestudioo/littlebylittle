@@ -388,7 +388,25 @@
     window.location.href = 'answer.html';
   }
 
-  /* ── Change question: cycles to next set, updates prompt + reflection ── */
+  /* Returns the index of the first unanswered prompt starting from `from`.
+     Skips any prompt whose text already exists in the user's saved entries.
+     If every prompt has been answered, falls back to `from` so the user
+     can still browse and re-answer. */
+  function _nextUnanswered(from) {
+    var entries  = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
+    var answered = entries.map(function (e) { return e.prompt; });
+    for (var offset = 0; offset < _sets.length; offset++) {
+      var idx = (from + offset) % _sets.length;
+      if (answered.indexOf(_sets[idx].prompt) === -1) {
+        localStorage.setItem(_LIFT_KEY, String(idx));
+        return idx;
+      }
+    }
+    localStorage.setItem(_LIFT_KEY, String(from));
+    return from;
+  }
+
+  /* ── Change question: skip to next unanswered prompt ── */
   var _flipping = false;
 
   function changeQuestion() {
@@ -401,7 +419,7 @@
     card.style.animation = 'card-flip-out 0.28s ease-in forwards';
 
     setTimeout(function () {
-      var s = _sets[_liftNext()];
+      var s = _sets[_nextUnanswered((_liftIdx() + 1) % _sets.length)];
       qEl.innerHTML = s.prompt;
       rEl.innerHTML = s.reflection;
 
@@ -415,9 +433,9 @@
     }, 280);
   }
 
-  /* Init prompt + reflection from the current shared set on load */
+  /* Init: start at first unanswered prompt from current index */
   (function () {
-    var s = _sets[_liftIdx()];
+    var s = _sets[_nextUnanswered(_liftIdx())];
     document.querySelector('.prompt-question').innerHTML = s.prompt;
     document.querySelector('.prompt-body').innerHTML     = s.reflection;
   })();
