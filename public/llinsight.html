@@ -257,24 +257,17 @@
     return new Date(e.date).toDateString() === yesterdayStr;
   });
 
-  function getDateRange(entries) {
+  function getTodayLabel() {
     var months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.',
                   'ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
-    var dates = entries.map(function(e){ return new Date(e.date); })
-                       .sort(function(a,b){ return a - b; });
-    var first = dates[0], last = dates[dates.length - 1];
-    var yy = String(last.getFullYear() + 543).slice(-2);
-    if (first.getMonth() === last.getMonth() && first.getFullYear() === last.getFullYear()) {
-      return first.getDate() + ' - ' + last.getDate() + ' ' + months[last.getMonth()] + ' ' + yy;
-    }
-    return first.getDate() + ' ' + months[first.getMonth()] + ' - ' +
-           last.getDate()  + ' ' + months[last.getMonth()]  + ' ' + yy;
+    var yy = String(_today.getFullYear() + 543).slice(-2);
+    return _today.getDate() + ' ' + months[_today.getMonth()] + ' ' + yy;
   }
 
   if (wroteYesterday) {
     document.getElementById('empty-state').style.display = 'none';
     document.getElementById('content-state').style.display = 'flex';
-    document.getElementById('insight-date').textContent = getDateRange(entries);
+    document.getElementById('insight-date').textContent = getTodayLabel();
     fetchInsight();
   }
 
