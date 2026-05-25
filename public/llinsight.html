@@ -225,8 +225,8 @@
         <img alt="" src="https://www.figma.com/api/mcp/asset/61cb9cc6-a491-478a-b26d-7b3ac2d3bb20" />
       </div>
       <div class="empty-text">
-        <p class="empty-title">ยังมีข้อมูลไม่พอสำหรับการสังเกต</p>
-        <p class="empty-subtitle">หมั่นบันทึกคำตอบของคุณไว้นะ แล้วแง้งขิงจะคอยสังเกตการณ์ให้ (-:<br>โดยปกติแง่งขิงจะใช้เวลา 7 วัน ในการสะสมข้อความฮะ</p>
+        <p class="empty-title">ยังไม่มีการบันทึกเมื่อวาน (-:</p>
+        <p class="empty-subtitle">ลองบันทึกความรู้สึกของคุณในวันนี้ดูนะ<br>แล้วพรุ่งนี้เช้าแง่งขิงจะคอยสังเกตการณ์ให้</p>
       </div>
     </div>
 
@@ -242,11 +242,20 @@
 
 </div>
 <script>
-  var CACHE_KEY = 'littlebylittle_insight_cache';
-  var CACHE_TTL = 30 * 60 * 1000;
-  var MIN_ENTRIES = 7;
-
   var entries = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
+
+  /* Cache key is per-day so insight refreshes automatically each morning */
+  var _today = new Date();
+  var CACHE_KEY = 'littlebylittle_insight_' +
+    _today.getFullYear() + '-' + (_today.getMonth() + 1) + '-' + _today.getDate();
+
+  /* Gate: show insight only if the user wrote anything yesterday */
+  var yesterday = new Date(_today);
+  yesterday.setDate(_today.getDate() - 1);
+  var yesterdayStr = yesterday.toDateString();
+  var wroteYesterday = entries.some(function (e) {
+    return new Date(e.date).toDateString() === yesterdayStr;
+  });
 
   function getDateRange(entries) {
     var months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.',
@@ -262,7 +271,7 @@
            last.getDate()  + ' ' + months[last.getMonth()]  + ' ' + yy;
   }
 
-  if (entries.length >= MIN_ENTRIES) {
+  if (wroteYesterday) {
     document.getElementById('empty-state').style.display = 'none';
     document.getElementById('content-state').style.display = 'flex';
     document.getElementById('insight-date').textContent = getDateRange(entries);
@@ -272,9 +281,10 @@
   function fetchInsight() {
     var el = document.getElementById('insight-text');
 
+    /* Show cached insight if it was generated today */
     try {
       var cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-      if (cached && (Date.now() - cached.ts) < CACHE_TTL) {
+      if (cached && cached.text) {
         el.textContent = cached.text;
         el.classList.remove('loading');
         return;
@@ -291,7 +301,7 @@
       if (data.insight) {
         el.textContent = data.insight;
         el.classList.remove('loading');
-        localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), text: data.insight }));
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ text: data.insight }));
       }
     })
     .catch(function () {
