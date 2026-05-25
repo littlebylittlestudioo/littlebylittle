@@ -107,8 +107,8 @@
     /* ── Empty state ── */
     .empty-state {
       position: absolute;
-      left: 85px; top: 183px; width: 694px;
-      display: flex; flex-direction: column; align-items: center; gap: 16px;
+      left: 85px; top: 135px; width: 694px;
+      display: flex; flex-direction: column; align-items: center; gap: 48px;
     }
     .char-small {
       width: 156px; height: 167px;
@@ -130,6 +130,15 @@
     .empty-subtitle {
       font-size: 16px; font-weight: 500; line-height: 24px;
       letter-spacing: -0.048px; color: #121212; margin: 0;
+    }
+    .btn-prompt {
+      width: 343px; height: 48px;
+      background: #000; color: #fff;
+      border: none; border-radius: 100px; cursor: pointer;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      font-size: 14px; font-weight: 600; line-height: 22px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      flex-shrink: 0;
     }
 
     /* ── Content state (insight loaded) ── */
@@ -180,7 +189,8 @@
       .char-top { left: calc(50% - 90px); top: 56px; width: 180px; height: 176px; }
       .landscape-wrap { top: 160px; width: 1200px; height: 465px; }
       .insight-card { top: 254px; width: calc(100% - 32px); height: auto; min-height: 400px; padding-bottom: 40px; }
-      .empty-state { position: relative; left: auto; top: auto; transform: none; width: auto; margin: 40px 24px 0; }
+      .empty-state { position: relative; left: auto; top: auto; transform: none; width: auto; margin: 40px 24px 0; gap: 32px; }
+      .btn-prompt { width: 100%; }
       .content-state { position: relative; left: auto; top: auto; width: auto; margin: 24px 24px 0; }
       .insight-heading { font-size: 28px; line-height: 36px; }
       .insight-text { font-size: 16px; line-height: 24px; }
@@ -219,15 +229,18 @@
   <div class="insight-card">
     <div class="card-border"></div>
 
-    <!-- Empty state: not enough entries -->
+    <!-- Empty state: no entry yesterday -->
     <div class="empty-state" id="empty-state">
-      <div class="char-small">
-        <img alt="" src="assets/images/61cb9cc6-a491-478a-b26d-7b3ac2d3bb20.png" />
+      <div style="display:flex; flex-direction:column; align-items:center; width:100%;">
+        <div class="char-small">
+          <img alt="" src="assets/images/61cb9cc6-a491-478a-b26d-7b3ac2d3bb20.png" />
+        </div>
+        <div class="empty-text">
+          <p class="empty-title">ยังมีข้อมูลไม่พอสำหรับการสังเกต</p>
+          <p class="empty-subtitle">หมั่นบันทึกคำตอบของคุณไว้นะ แล้วแง่งขิงจะคอยสังเกตการณ์ให้ (-:<br>แค่คุณบันทึกวันนี้ พรุ่งนี้เช้าคุณก็จะได้รับการสังเกตการณ์จากเราแล้ว</p>
+        </div>
       </div>
-      <div class="empty-text">
-        <p class="empty-title">ยังไม่มีการบันทึกเมื่อวาน (-:</p>
-        <p class="empty-subtitle">ลองบันทึกความรู้สึกของคุณในวันนี้ดูนะ<br>แล้วพรุ่งนี้เช้าแง่งขิงจะคอยสังเกตการณ์ให้</p>
-      </div>
+      <button class="btn-prompt" onclick="window.location.href='prompt.html'">สุ่มคำถามประจำวัน</button>
     </div>
 
     <!-- Content state: insight text -->
