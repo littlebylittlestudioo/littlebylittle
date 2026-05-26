@@ -429,6 +429,30 @@
   </div>
 </div>
 
+<!-- Lightbox -->
+<div id="lightbox" style="
+  display:none; position:fixed; inset:0; z-index:9999;
+  background:rgba(0,0,0,0.88);
+  align-items:center; justify-content:center;
+" onclick="closeLightbox()">
+  <img id="lightbox-img" alt="" style="
+    max-width:92vw; max-height:92vh;
+    border-radius:12px; object-fit:contain;
+    pointer-events:none; display:block;
+  " />
+  <button onclick="closeLightbox()" style="
+    position:fixed; top:20px; right:20px;
+    width:40px; height:40px; border-radius:100px;
+    background:white; border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 20px rgba(0,0,0,0.2);
+  ">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 2L14 14M14 2L2 14" stroke="#1e1e1e" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </button>
+</div>
+
 <script>
   /* ── User name & page title ── */
   var _userName = '';
@@ -549,7 +573,7 @@
     var grid = document.getElementById('photo-grid');
     grid.innerHTML = photos.map(function(src, i) {
       return '<div class="photo-thumb">' +
-        '<img src="' + src + '" alt="" />' +
+        '<img src="' + src + '" alt="" onclick="openLightbox(\'' + src.replace(/'/g, "\\'") + '\')" style="cursor:pointer;" />' +
         '<button class="remove-photo" onclick="removePhoto(' + i + ')" aria-label="ลบรูป">' +
         '<svg width="10" height="10" viewBox="0 0 10 10" fill="none">' +
         '<path d="M1 1l8 8M9 1L1 9" stroke="white" stroke-width="1.5" stroke-linecap="round"/>' +
@@ -645,6 +669,20 @@
 
   /* ── Init ── */
   repositionLayout();
+
+  function openLightbox(src) {
+    var lb = document.getElementById('lightbox');
+    document.getElementById('lightbox-img').src = src;
+    lb.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeLightbox();
+  });
 </script>
 </body>
 </html>
