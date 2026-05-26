@@ -40,8 +40,8 @@ Output Structure (write as flowing, natural paragraphs — not headers or bullet
 Tone: warm, emotionally intelligent, soft, calm, poetic but simple, non-judgmental, compassionate.
 Avoid: sounding robotic, clinical, motivational, self-help-y, or overly dramatic.
 
-IMPORTANT: Respond entirely in Thai language. Keep the total response to 3-5 short paragraphs.
-The user should feel: "I understand myself a little more now."
+IMPORTANT: Respond entirely in Thai language.
+Write as many paragraphs as the content truly calls for — short if the user shared little, deeper if they shared a lot. Never pad, never cut short. The user should feel: "I understand myself a little more now."
 `.trim();
 
 async function callClaude(apiKey, userMessage) {
@@ -54,7 +54,7 @@ async function callClaude(apiKey, userMessage) {
     },
     body: JSON.stringify({
       model: CLAUDE_MODEL,
-      max_tokens: 500,
+      max_tokens: 1024,
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: userMessage }]
     })
@@ -78,7 +78,7 @@ async function callDeepSeek(apiKey, userMessage) {
     },
     body: JSON.stringify({
       model: DEEPSEEK_MODEL,
-      max_tokens: 500,
+      max_tokens: 1024,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user',   content: userMessage }
@@ -145,7 +145,8 @@ async function handleInsight(request, env) {
     '',
     'กรุณาสร้าง insight ที่อ่อนโยนและอบอุ่น โดยเขียนเป็นภาษาไทย',
     'ตามโครงสร้าง: Observation → Reflection → Gentle Reframe → Tiny Invitation (optional)',
-    'เขียนเป็นย่อหน้าสั้น ๆ ที่ไหลต่อเนื่อง อย่าใช้หัวข้อหรือ bullet points',
+    'เขียนเป็นย่อหน้าที่ไหลต่อเนื่อง อย่าใช้หัวข้อหรือ bullet points',
+    'ความยาวให้เหมาะสมกับเนื้อหาที่ผู้ใช้เล่ามา — ถ้าผู้ใช้เล่าน้อย ให้เขียนสั้นและอบอุ่น ถ้าผู้ใช้เล่ามาก ให้เขียนลึกขึ้นได้ แต่ไม่ควรยาวจนอ่านเหนื่อย',
     'ให้ผู้ใช้รู้สึกว่า "ฉันเข้าใจตัวเองมากขึ้นหน่อยแล้ว"'
   ].join('\n');
 
