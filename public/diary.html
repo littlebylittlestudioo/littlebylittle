@@ -386,13 +386,29 @@
 </div>
 
 <script>
-  /* ── User name ── */
+  /* ── User name & page title ── */
+  var _userName = '';
   (function() {
     try {
       var user = JSON.parse(localStorage.getItem('littlebylittle_user') || '{}');
-      if (user.name) document.getElementById('page-title').textContent = 'วันนี้ของ, ' + user.name;
+      if (user.name) _userName = user.name;
     } catch(e) {}
   })();
+
+  var _thaiMonths = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.',
+                     'ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  function setPageTitle(date) {
+    var prefix;
+    if (date.toDateString() === new Date().toDateString()) {
+      prefix = 'วันนี้';
+    } else {
+      var yy = String(date.getFullYear() + 543).slice(-2);
+      prefix = date.getDate() + ' ' + _thaiMonths[date.getMonth()] + ' ' + yy;
+    }
+    document.getElementById('page-title').textContent =
+      prefix + 'ของ, ' + (_userName || 'ฉัน');
+  }
+  setPageTitle(new Date());
 
   /* ── Auto-resize textareas + reflow ── */
   document.querySelectorAll('.card-input').forEach(function(ta) {
@@ -430,6 +446,7 @@
       if (targetIndex >= 0) {
         _todayEntryIndex = targetIndex;
         var e = entries[targetIndex];
+        setPageTitle(new Date(e.date));
         var storyEl = document.getElementById('input-story');
         var gratEl  = document.getElementById('input-gratitude');
         var careEl  = document.getElementById('input-care');
