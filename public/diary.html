@@ -406,6 +406,30 @@
   /* ── Photo handling ── */
   var photos = [];
 
+  /* ── Load today's existing entry (if any) ── */
+  var _todayStr = new Date().toDateString();
+  var _todayEntryIndex = -1;
+  (function() {
+    try {
+      var entries = JSON.parse(localStorage.getItem('littlebylittle_diary') || '[]');
+      for (var i = 0; i < entries.length; i++) {
+        if (new Date(entries[i].date).toDateString() === _todayStr) {
+          _todayEntryIndex = i;
+          var e = entries[i];
+          var storyEl = document.getElementById('input-story');
+          var gratEl  = document.getElementById('input-gratitude');
+          var careEl  = document.getElementById('input-care');
+          if (e.story)     { storyEl.value = e.story;     storyEl.style.height = storyEl.scrollHeight + 'px'; }
+          if (e.gratitude) { gratEl.value  = e.gratitude; gratEl.style.height  = gratEl.scrollHeight  + 'px'; }
+          if (e.care)      { careEl.value  = e.care;      careEl.style.height  = careEl.scrollHeight  + 'px'; }
+          if (Array.isArray(e.photos)) { photos = e.photos.slice(); renderPhotos(); }
+          break;
+        }
+      }
+    } catch(ex) {}
+    repositionLayout();
+  })();
+
   /* ── Exit popup ── */
   function hasContent() {
     return document.getElementById('input-story').value.trim() ||
@@ -499,16 +523,20 @@
       return;
     }
 
-    var entry = {
-      date:      new Date().toISOString(),
-      story:     story,
-      gratitude: gratitude,
-      care:      care,
-      photos:    photos.slice()
-    };
     try {
       var entries = JSON.parse(localStorage.getItem('littlebylittle_diary') || '[]');
-      entries.unshift(entry);
+      var entry = {
+        date:      _todayEntryIndex >= 0 ? entries[_todayEntryIndex].date : new Date().toISOString(),
+        story:     story,
+        gratitude: gratitude,
+        care:      care,
+        photos:    photos.slice()
+      };
+      if (_todayEntryIndex >= 0) {
+        entries[_todayEntryIndex] = entry;
+      } else {
+        entries.unshift(entry);
+      }
       localStorage.setItem('littlebylittle_diary', JSON.stringify(entries));
     } catch(e) {}
     window.location.href = 'index.html';
