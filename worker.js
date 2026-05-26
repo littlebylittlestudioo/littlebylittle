@@ -106,11 +106,13 @@ async function handleInsight(request, env) {
     return Response.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  if (!Array.isArray(entries) || entries.length === 0) {
+  const diaryEntries = Array.isArray(body.diaryEntries) ? body.diaryEntries : [];
+
+  if ((!Array.isArray(entries) || entries.length === 0) && diaryEntries.length === 0) {
     return Response.json({ error: 'No entries provided' }, { status: 400 });
   }
 
-  const userContent = entries.map(function (e) {
+  const promptContent = (Array.isArray(entries) ? entries : []).map(function (e) {
     const d = new Date(e.date);
     const dateStr = isNaN(d.getTime())
       ? 'ไม่ระบุวันที่'
@@ -118,6 +120,23 @@ async function handleInsight(request, env) {
     const prompt = (e.prompt || '').replace(/<br>/gi, ' ').replace(/<[^>]*>/g, '');
     return 'วันที่: ' + dateStr + '\nคำถาม: ' + prompt + '\nคำตอบ: ' + (e.answer || '');
   }).join('\n\n---\n\n');
+
+  const diaryContent = diaryEntries.map(function (e) {
+    const d = new Date(e.date);
+    const dateStr = isNaN(d.getTime())
+      ? 'ไม่ระบุวันที่'
+      : d.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+    const parts = [];
+    if (e.story)     parts.push('เรื่องเล็ก ๆ ของวัน: ' + e.story);
+    if (e.gratitude) parts.push('สิ่งที่ขอบคุณ: ' + e.gratitude);
+    if (e.care)      parts.push('การดูแลตัวเอง: ' + e.care);
+    return 'วันที่: ' + dateStr + '\n' + parts.join('\n');
+  }).join('\n\n---\n\n');
+
+  const sections = [];
+  if (promptContent) sections.push('[ บันทึกคำถามประจำวัน ]\n' + promptContent);
+  if (diaryContent)  sections.push('[ บันทึกประจำวัน ]\n' + diaryContent);
+  const userContent = sections.join('\n\n═══\n\n');
 
   const userMessage = [
     'นี่คือบันทึกความรู้สึกของผู้ใช้:',

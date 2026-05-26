@@ -255,20 +255,21 @@
 
 </div>
 <script>
-  var entries = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
+  var entries      = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
+  var diaryEntries = JSON.parse(localStorage.getItem('littlebylittle_diary')   || '[]');
 
   /* Cache key is per-day so insight refreshes automatically each morning */
   var _today = new Date();
   var CACHE_KEY = 'littlebylittle_insight_' +
     _today.getFullYear() + '-' + (_today.getMonth() + 1) + '-' + _today.getDate();
 
-  /* Gate: show insight only if the user wrote anything yesterday */
+  /* Gate: show insight if the user wrote anything yesterday (either prompt or diary) */
   var yesterday = new Date(_today);
   yesterday.setDate(_today.getDate() - 1);
   var yesterdayStr = yesterday.toDateString();
-  var wroteYesterday = entries.some(function (e) {
-    return new Date(e.date).toDateString() === yesterdayStr;
-  });
+  var wroteYesterday =
+    entries.some(function (e) { return new Date(e.date).toDateString() === yesterdayStr; }) ||
+    diaryEntries.some(function (e) { return new Date(e.date).toDateString() === yesterdayStr; });
 
   function getTodayLabel() {
     var months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.',
@@ -300,7 +301,7 @@
     fetch('/api/insight', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ entries: entries })
+      body:    JSON.stringify({ entries: entries, diaryEntries: diaryEntries })
     })
     .then(function (r) { return r.json(); })
     .then(function (data) {
