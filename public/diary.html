@@ -139,6 +139,24 @@
     }
     .save-btn:active { opacity: 0.85; }
 
+    /* ── Delete button ── */
+    .delete-btn-wrap {
+      position: absolute;
+      left: 50%; transform: translateX(-50%);
+      z-index: 10;
+    }
+    .delete-btn {
+      width: 650px; height: 48px;
+      background: transparent; border-radius: 100px;
+      border: 1.5px solid #d94f3d; cursor: pointer;
+      font-size: 14px; font-weight: 600; color: #d94f3d;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+    }
+    .delete-btn:active { opacity: 0.75; }
+    @media (max-width: 767px) {
+      .delete-btn { width: calc(100vw - 48px); }
+    }
+
     /* ── Modal overlay ── */
     .modal-overlay {
       position: fixed; inset: 0;
@@ -350,6 +368,11 @@
     <button class="save-btn" onclick="saveDiary()">บันทึกวันนี้ไว้</button>
   </div>
 
+  <!-- Delete button (shown only when editing an existing entry) -->
+  <div class="delete-btn-wrap" id="delete-btn-wrap" style="display:none;">
+    <button class="delete-btn" onclick="deleteDiary()">ลบบันทึกนี้</button>
+  </div>
+
   <!-- Character -->
   <div class="character-wrap" id="character-wrap">
     <img alt="" src="assets/images/diary-character.png" />
@@ -454,6 +477,9 @@
         if (e.gratitude) { gratEl.value  = e.gratitude; gratEl.style.height  = gratEl.scrollHeight  + 'px'; }
         if (e.care)      { careEl.value  = e.care;      careEl.style.height  = careEl.scrollHeight  + 'px'; }
         if (Array.isArray(e.photos)) { photos = e.photos.slice(); renderPhotos(); }
+        if (editParam >= 0) {
+          document.getElementById('delete-btn-wrap').style.display = 'block';
+        }
       }
     } catch(ex) {}
     repositionLayout();
@@ -514,21 +540,28 @@
 
   /* ── Dynamic layout repositioning ── */
   function repositionLayout() {
-    var grid       = document.getElementById('diary-grid');
-    var btnWrap    = document.getElementById('save-btn-wrap');
-    var charWrap   = document.getElementById('character-wrap');
-    var landscape  = document.getElementById('landscape-wrap');
-    var pageRoot   = document.getElementById('page-root');
+    var grid          = document.getElementById('diary-grid');
+    var btnWrap       = document.getElementById('save-btn-wrap');
+    var deleteBtnWrap = document.getElementById('delete-btn-wrap');
+    var charWrap      = document.getElementById('character-wrap');
+    var landscape     = document.getElementById('landscape-wrap');
+    var pageRoot      = document.getElementById('page-root');
 
-    var gridBottom = grid.offsetTop + grid.offsetHeight;
-    var btnTop     = gridBottom + 24;
-    var btnBottom  = btnTop + 48;
-    var charTop    = Math.max(btnBottom + 16, 797);
-    var landTop    = Math.max(837, charTop + 40);
+    var gridBottom  = grid.offsetTop + grid.offsetHeight;
+    var btnTop      = gridBottom + 24;
+    var btnBottom   = btnTop + 48;
 
-    btnWrap.style.top   = btnTop  + 'px';
-    charWrap.style.top  = charTop + 'px';
-    landscape.style.top = landTop + 'px';
+    var showDelete  = deleteBtnWrap.style.display !== 'none';
+    var deleteTop   = btnBottom + 40;
+    var lastBottom  = showDelete ? deleteTop + 48 : btnBottom;
+
+    var charTop  = Math.max(lastBottom + 16, 797);
+    var landTop  = Math.max(837, charTop + 40);
+
+    btnWrap.style.top       = btnTop    + 'px';
+    deleteBtnWrap.style.top = deleteTop + 'px';
+    charWrap.style.top      = charTop   + 'px';
+    landscape.style.top     = landTop   + 'px';
     pageRoot.style.minHeight = Math.max(1460, landTop + 500) + 'px';
   }
 
@@ -569,6 +602,18 @@
       localStorage.setItem('littlebylittle_diary', JSON.stringify(entries));
     } catch(e) {}
     window.location.href = 'index.html';
+  }
+
+  /* ── Delete diary entry ── */
+  function deleteDiary() {
+    try {
+      var entries = JSON.parse(localStorage.getItem('littlebylittle_diary') || '[]');
+      if (_todayEntryIndex >= 0) {
+        entries.splice(_todayEntryIndex, 1);
+        localStorage.setItem('littlebylittle_diary', JSON.stringify(entries));
+      }
+    } catch(e) {}
+    window.location.href = 'insight.html';
   }
 
   /* ── Init ── */
