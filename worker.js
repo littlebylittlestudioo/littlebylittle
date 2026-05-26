@@ -98,14 +98,14 @@ async function callDeepSeek(apiKey, userMessage) {
 async function handleInsight(request, env) {
   const provider = env.AI_PROVIDER === 'deepseek' ? 'deepseek' : 'claude';
 
-  let entries;
+  let body;
   try {
-    const body = await request.json();
-    entries = body.entries;
+    body = await request.json();
   } catch {
     return Response.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
+  const entries = body.entries;
   const diaryEntries = Array.isArray(body.diaryEntries) ? body.diaryEntries : [];
 
   if ((!Array.isArray(entries) || entries.length === 0) && diaryEntries.length === 0) {
