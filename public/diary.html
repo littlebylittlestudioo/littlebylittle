@@ -573,7 +573,7 @@
     var grid = document.getElementById('photo-grid');
     grid.innerHTML = photos.map(function(src, i) {
       return '<div class="photo-thumb">' +
-        '<img src="' + src + '" alt="" onclick="openLightbox(\'' + src.replace(/'/g, "\\'") + '\')" style="cursor:pointer;" />' +
+        '<img src="' + src + '" alt="" class="photo-thumb-img" style="cursor:pointer;" />' +
         '<button class="remove-photo" onclick="removePhoto(' + i + ')" aria-label="ลบรูป">' +
         '<svg width="10" height="10" viewBox="0 0 10 10" fill="none">' +
         '<path d="M1 1l8 8M9 1L1 9" stroke="white" stroke-width="1.5" stroke-linecap="round"/>' +
@@ -669,6 +669,11 @@
 
   /* ── Init ── */
   repositionLayout();
+
+  document.getElementById('photo-grid').addEventListener('click', function (e) {
+    var img = e.target.closest('.photo-thumb-img');
+    if (img) openLightbox(img.src);
+  });
 
   function openLightbox(src) {
     var lb = document.getElementById('lightbox');
