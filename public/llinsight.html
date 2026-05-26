@@ -152,8 +152,9 @@
     /* ── Content state (insight loaded) ── */
     .content-state {
       position: absolute;
-      left: 40px; top: 40px; width: 784px;
+      left: 40px; top: 40px; right: 40px; bottom: 40px;
       display: flex; flex-direction: column; gap: 40px;
+      overflow-y: auto;
     }
     .insight-header { display: flex; flex-direction: column; gap: 1px; }
     .insight-heading {
@@ -183,7 +184,7 @@
       .char-top { left: calc(50% - 133.5px); }
       .insight-card { width: calc(100% - 48px); }
       .empty-state { left: 50%; transform: translateX(-50%); width: calc(100% - 144px); }
-      .content-state { left: 24px; top: 40px; width: calc(100% - 48px); }
+      .content-state { left: 24px; top: 40px; right: 24px; bottom: 40px; }
       .insight-heading { font-size: 32px; line-height: 40px; }
       .cloud-right { left: calc(66.67% + 4px); top: 130px; width: 296px; height: 178px; }
     }
