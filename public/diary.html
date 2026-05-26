@@ -467,11 +467,7 @@
            photos.length > 0;
   }
   function tryClose() {
-    if (hasContent()) {
-      document.getElementById('modal-overlay').classList.add('show');
-    } else {
-      window.location.href = 'index.html';
-    }
+    window.location.href = 'index.html';
   }
   function closeModal() {
     document.getElementById('modal-overlay').classList.remove('show');
