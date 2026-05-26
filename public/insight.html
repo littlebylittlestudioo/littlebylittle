@@ -232,6 +232,17 @@
       letter-spacing: -0.048px; color: #121212; margin: 0;
     }
 
+    /* Diary entry cards */
+    .diary-section { display: flex; flex-direction: column; gap: 4px; }
+    .diary-section-label {
+      font-family: 'PG Picasso', sans-serif;
+      font-size: 13px; color: var(--cream-200); line-height: 20px;
+    }
+    .diary-section-text {
+      font-size: 16px; font-weight: 500; line-height: 24px;
+      letter-spacing: -0.048px; color: #121212; margin: 0;
+    }
+
     /* Landscape */
     .landscape-wrap {
       position: absolute; overflow: hidden; z-index: 5;
@@ -460,13 +471,15 @@
     var strip    = document.getElementById('week-strip');
     strip.innerHTML = '';
     var todayStr = today.toDateString();
-    var allEntries = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
+    var allEntries      = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
+    var allDiaryEntries = JSON.parse(localStorage.getItem('littlebylittle_diary')   || '[]');
 
     for (var i = 0; i < 7; i++) {
       var day = new Date(monday);
       day.setDate(monday.getDate() + i);
       var isToday   = day.toDateString() === todayStr;
-      var hasEntry  = allEntries.some(function (e) { return new Date(e.date).toDateString() === day.toDateString(); });
+      var hasEntry  = allEntries.some(function (e) { return new Date(e.date).toDateString() === day.toDateString(); }) ||
+                      allDiaryEntries.some(function (e) { return new Date(e.date).toDateString() === day.toDateString(); });
       var cell = document.createElement('div');
       cell.className = 'day-cell' + (isToday ? ' selected' : '');
       cell.innerHTML =
@@ -529,13 +542,14 @@
       }
     } catch (e) { /* ignore */ }
 
-    var entries = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
-    if (!entries.length) return;
+    var entries      = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
+    var diaryEntries = JSON.parse(localStorage.getItem('littlebylittle_diary')   || '[]');
+    if (!entries.length && !diaryEntries.length) return;
 
     fetch('/api/insight', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ entries: entries })
+      body:    JSON.stringify({ entries: entries, diaryEntries: diaryEntries })
     })
     .then(function (r) { return r.json(); })
     .then(function (data) {
@@ -570,28 +584,32 @@
   /* ── Day view: pick the right state for the selected date ── */
   function renderDayView() {
     var all        = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
+    var allDiary   = JSON.parse(localStorage.getItem('littlebylittle_diary')   || '[]');
     var dayEntries = all.filter(function (e) {
       return new Date(e.date).toDateString() === _selectedDate;
     });
-    if (dayEntries.length === 0) {
+    var dayDiary = allDiary.filter(function (e) {
+      return new Date(e.date).toDateString() === _selectedDate;
+    });
+    if (dayEntries.length === 0 && dayDiary.length === 0) {
       var isToday = _selectedDate === new Date().toDateString();
       showSection(isToday ? 'global-empty' : 'not-today');
     } else {
       showSection('content');
-      renderEntries(all, dayEntries);
+      renderEntries(all, dayEntries, dayDiary);
     }
   }
 
-  /* ── Entry cards (receives pre-filtered entries) ── */
-  function renderEntries(all, saved) {
+  /* ── Entry cards (receives pre-filtered prompt + diary entries) ── */
+  function renderEntries(all, saved, savedDiary) {
     var archSrc = 'assets/images/2e527e8e-7555-469c-86e6-e12bf543b7f1.png';
     var editSrc = 'assets/icons/068231a2-f61b-401c-9a40-1efa21f89a84.svg';
 
     var list = document.getElementById('entries-list');
     list.innerHTML = '';
 
+    /* Prompt/answer cards */
     saved.forEach(function (entry) {
-      /* Find the index in the full (unfiltered) array so the edit page can look it up */
       var origIndex = all.findIndex(function (e) { return e.date === entry.date; });
       var editUrl   = 'answer.html?edit=' + origIndex;
 
@@ -614,6 +632,23 @@
             '</div>' +
             '<p class="entry-answer">' + entry.answer + '</p>' +
           '</div>' +
+        '</div>';
+      list.appendChild(card);
+    });
+
+    /* Diary cards */
+    savedDiary.forEach(function (entry) {
+      var sections = '';
+      if (entry.story)     sections += '<div class="diary-section"><span class="diary-section-label">Your little story</span><p class="diary-section-text">' + entry.story     + '</p></div>';
+      if (entry.gratitude) sections += '<div class="diary-section"><span class="diary-section-label">Your gratitude</span><p class="diary-section-text">'     + entry.gratitude + '</p></div>';
+      if (entry.care)      sections += '<div class="diary-section"><span class="diary-section-label">Your gentle care</span><p class="diary-section-text">'    + entry.care      + '</p></div>';
+      if (!sections) return;
+
+      var card = document.createElement('div');
+      card.className = 'entry-card';
+      card.innerHTML =
+        '<div class="entry-inner-border">' +
+          '<div class="entry-content">' + sections + '</div>' +
         '</div>';
       list.appendChild(card);
     });
