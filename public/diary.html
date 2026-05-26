@@ -383,6 +383,29 @@
 
 </div>
 
+<!-- Delete confirmation popup -->
+<div class="modal-overlay" id="delete-modal-overlay" onclick="closeDeleteModal()">
+  <div class="popup-card" onclick="event.stopPropagation()">
+    <div class="popup-cloud popup-cloud-left">
+      <img alt="" src="assets/images/cb1fe19d-d7ba-4c32-a438-6df8aed7b4b9.png" />
+    </div>
+    <div class="popup-cloud popup-cloud-right">
+      <img alt="" src="assets/images/cb1fe19d-d7ba-4c32-a438-6df8aed7b4b9.png" />
+    </div>
+    <div class="popup-char">
+      <img alt="" src="assets/images/373572ec-48c9-44fe-a426-8f94bf31e6d3.png" />
+    </div>
+    <div class="popup-body">
+      <h3 class="popup-title">ต้องการลบบันทึก<br>ประจำวันนี้หรือไม่?</h3>
+      <p class="popup-desc">ข้อมูลจะถูกลบออกจากระบบ ไม่สามารถย้อนกลับหรือแก้ไขได้อีก</p>
+      <div class="popup-btns">
+        <button class="popup-btn-outline" onclick="confirmDelete()">ยืนยัน</button>
+        <button class="popup-btn-fill"    onclick="closeDeleteModal()">ยกเลิก</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Exit confirmation popup — outside page-root to avoid overflow-x clipping -->
 <div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
   <div class="popup-card" onclick="event.stopPropagation()">
@@ -604,6 +627,12 @@
 
   /* ── Delete diary entry ── */
   function deleteDiary() {
+    document.getElementById('delete-modal-overlay').classList.add('show');
+  }
+  function closeDeleteModal() {
+    document.getElementById('delete-modal-overlay').classList.remove('show');
+  }
+  function confirmDelete() {
     try {
       var entries = JSON.parse(localStorage.getItem('littlebylittle_diary') || '[]');
       if (_todayEntryIndex >= 0) {
