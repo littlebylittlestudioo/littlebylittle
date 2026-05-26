@@ -460,8 +460,9 @@
 
     var gridBottom = grid.offsetTop + grid.offsetHeight;
     var btnTop     = gridBottom + 24;
-    var charTop    = Math.max(btnTop + 60, btnTop + 60);
-    var landTop    = Math.max(837, charTop + 30);
+    var btnBottom  = btnTop + 48;
+    var charTop    = Math.max(btnBottom + 16, 797);
+    var landTop    = Math.max(837, charTop + 40);
 
     btnWrap.style.top   = btnTop  + 'px';
     charWrap.style.top  = charTop + 'px';
