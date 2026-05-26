@@ -76,33 +76,43 @@
       font-size: 24px; font-weight: 600; line-height: 32px;
       color: var(--text); margin: 0; flex: 1;
     }
+
+    /* ── Text input area ── */
     .card-input-wrap { margin-top: 12px; }
     .card-input {
       width: 100%; background: none; border: none; outline: none;
       resize: none; overflow: hidden;
-      font-size: 14px; font-weight: 400; line-height: 22px;
+      font-size: 16px; font-weight: 500; line-height: 24px;
       font-family: 'IBM Plex Sans Thai', sans-serif;
-      color: var(--text); padding: 0;
-      min-height: 22px;
+      color: #111111; padding: 0;
+      min-height: 24px;
     }
-    .card-input::placeholder { color: var(--cream-200); }
+    .card-input::placeholder { color: var(--cream-200); font-weight: 400; font-size: 14px; }
     .card-line { width: 100%; height: 1px; background: var(--cream-200); margin-top: 6px; }
 
-    /* ── Memory card upload ── */
+    /* ── Memory card ── */
     .upload-label {
       display: inline-flex; align-items: center; gap: 6px;
       cursor: pointer; margin-top: 12px;
     }
-    .upload-label svg { flex-shrink: 0; }
-    .upload-label span {
-      font-size: 14px; font-weight: 600; color: var(--text);
-      line-height: 22px;
-    }
+    .upload-label span { font-size: 14px; font-weight: 600; color: var(--text); line-height: 22px; }
     .upload-label input { display: none; }
-    .upload-preview {
-      margin-top: 8px; width: 100%; max-height: 80px;
-      object-fit: cover; border-radius: 8px;
-      display: none;
+
+    .photo-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .photo-thumb {
+      width: 80px; height: 80px;
+      background: var(--cream-200);
+      border-radius: 8px;
+      position: relative; overflow: hidden; flex-shrink: 0;
+    }
+    .photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo-thumb .remove-photo {
+      position: absolute; top: 4px; right: 4px;
+      width: 20px; height: 20px;
+      background: rgba(0,0,0,0.45); border: none; cursor: pointer;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0;
     }
 
     /* ── Save button ── */
@@ -117,7 +127,6 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.15);
       font-size: 14px; font-weight: 600; color: white;
       font-family: 'IBM Plex Sans Thai', sans-serif;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
     }
     .save-btn:active { opacity: 0.85; }
 
@@ -128,7 +137,7 @@
       width: 205px; height: 213px;
       z-index: 6; pointer-events: none;
     }
-    .character-wrap img { width: 100%; height: 100%; object-fit: contain; }
+    .character-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
 
     /* ── Landscape ── */
     .landscape-wrap {
@@ -144,21 +153,18 @@
 
     /* ══ TABLET ══ */
     @media (min-width: 768px) and (max-width: 1199px) {
-      .page-root { min-height: max(1460px, calc(837px + 31vw)); }
       .cloud-left  { left: -66px; top: 0; width: 432px; height: 260px; }
       .cloud-right { left: calc(66.67% + 4px); top: 130px; width: 296px; height: 178px; }
       .page-header { width: calc(100% - 48px); top: 80px; }
       .page-title  { font-size: 28px; }
       .diary-grid  { width: calc(100% - 48px); top: 140px; grid-template-columns: 1fr 1fr; gap: 12px; }
-      .save-btn-wrap { top: 740px; }
-      .save-btn { width: min(650px, calc(100vw - 48px)); }
-      .landscape-wrap { top: calc(100vh - 220px); height: 446px; }
+      .save-btn    { width: min(650px, calc(100vw - 48px)); }
+      .landscape-wrap { height: 446px; }
       .landscape-wrap img { width: 1151px; object-fit: fill; }
     }
 
     /* ══ MOBILE ══ */
     @media (max-width: 767px) {
-      .page-root { min-height: max(1700px, calc(837px + 31vw)); }
       .cloud-left  { left: -87px; top: -4px; width: 255px; height: 154px; }
       .cloud-right { left: calc(50% + 51.5px); top: 60px; width: 169px; height: 102px; }
       .page-header { width: calc(100% - 32px); top: 16px; }
@@ -166,16 +172,15 @@
       .diary-grid  { width: calc(100% - 32px); top: 76px; grid-template-columns: 1fr; gap: 12px; }
       .diary-card  { min-height: 200px; }
       .card-question { font-size: 20px; }
-      .save-btn-wrap { top: 1040px; }
-      .save-btn { width: calc(100vw - 48px); }
-      .character-wrap { left: 50%; transform: translateX(-50%); top: 1120px; }
-      .landscape-wrap { top: calc(100vh - 213px); height: 213px; }
+      .save-btn    { width: calc(100vw - 48px); }
+      .character-wrap { left: 50%; transform: translateX(-50%); }
+      .landscape-wrap { height: 213px; }
       .landscape-wrap img { width: 551px; object-fit: fill; }
     }
   </style>
 </head>
 <body>
-<div class="page-root">
+<div class="page-root" id="page-root">
 
   <!-- Clouds -->
   <div class="cloud cloud-left">
@@ -194,7 +199,7 @@
   </div>
 
   <!-- 2×2 diary cards -->
-  <div class="diary-grid">
+  <div class="diary-grid" id="diary-grid">
 
     <!-- Card 1: Your little story -->
     <div class="diary-card">
@@ -239,84 +244,121 @@
           <path d="M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2M8 2v8M5 5l3-3 3 3" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <span>ภาพถ่ายของวันนี้</span>
-        <input type="file" id="input-photo" accept="image/*" onchange="previewPhoto(this)" />
+        <input type="file" id="input-photo" accept="image/*" multiple onchange="addPhotos(this)" />
       </label>
-      <img class="upload-preview" id="photo-preview" alt="photo preview" />
+      <div class="photo-grid" id="photo-grid"></div>
     </div>
 
   </div>
 
   <!-- Save button -->
-  <div class="save-btn-wrap">
+  <div class="save-btn-wrap" id="save-btn-wrap">
     <button class="save-btn" onclick="saveDiary()">บันทึกวันนี้ไว้</button>
   </div>
 
   <!-- Character -->
-  <div class="character-wrap">
+  <div class="character-wrap" id="character-wrap">
     <img alt="" src="assets/images/diary-character.png" />
   </div>
 
   <!-- Green mountain -->
-  <div class="landscape-wrap">
+  <div class="landscape-wrap" id="landscape-wrap">
     <img alt="" src="assets/images/966dadc1-42f4-4ab7-b169-2e91c12b6f7b.png" />
   </div>
 
 </div>
 
 <script>
-  /* ── Load user name ── */
+  /* ── User name ── */
   (function() {
     try {
       var user = JSON.parse(localStorage.getItem('littlebylittle_user') || '{}');
-      var name = user.name || '';
-      if (name) document.getElementById('page-title').textContent = 'วันนี้ของ, ' + name;
+      if (user.name) document.getElementById('page-title').textContent = 'วันนี้ของ, ' + user.name;
     } catch(e) {}
   })();
 
-  /* ── Auto-resize textareas ── */
+  /* ── Auto-resize textareas + reflow ── */
   document.querySelectorAll('.card-input').forEach(function(ta) {
     ta.addEventListener('input', function() {
       this.style.height = 'auto';
       this.style.height = this.scrollHeight + 'px';
+      repositionLayout();
     });
   });
 
-  /* ── Photo preview ── */
-  function previewPhoto(input) {
-    var preview = document.getElementById('photo-preview');
-    if (input.files && input.files[0]) {
+  /* ── Photo handling ── */
+  var photos = [];
+
+  function addPhotos(input) {
+    Array.from(input.files).forEach(function(file) {
+      if (photos.length >= 4) return;
       var reader = new FileReader();
       reader.onload = function(e) {
-        preview.src = e.target.result;
-        preview.style.display = 'block';
+        photos.push(e.target.result);
+        renderPhotos();
       };
-      reader.readAsDataURL(input.files[0]);
-    }
+      reader.readAsDataURL(file);
+    });
+    input.value = '';
+  }
+
+  function removePhoto(idx) {
+    photos.splice(idx, 1);
+    renderPhotos();
+  }
+
+  function renderPhotos() {
+    var grid = document.getElementById('photo-grid');
+    grid.innerHTML = photos.map(function(src, i) {
+      return '<div class="photo-thumb">' +
+        '<img src="' + src + '" alt="" />' +
+        '<button class="remove-photo" onclick="removePhoto(' + i + ')" aria-label="ลบรูป">' +
+        '<svg width="10" height="10" viewBox="0 0 10 10" fill="none">' +
+        '<path d="M1 1l8 8M9 1L1 9" stroke="white" stroke-width="1.5" stroke-linecap="round"/>' +
+        '</svg></button>' +
+        '</div>';
+    }).join('');
+    repositionLayout();
+  }
+
+  /* ── Dynamic layout repositioning ── */
+  function repositionLayout() {
+    var grid       = document.getElementById('diary-grid');
+    var btnWrap    = document.getElementById('save-btn-wrap');
+    var charWrap   = document.getElementById('character-wrap');
+    var landscape  = document.getElementById('landscape-wrap');
+    var pageRoot   = document.getElementById('page-root');
+
+    var gridBottom = grid.offsetTop + grid.offsetHeight;
+    var btnTop     = gridBottom + 24;
+    var charTop    = Math.max(btnTop + 60, btnTop + 60);
+    var landTop    = Math.max(837, charTop + 30);
+
+    btnWrap.style.top   = btnTop  + 'px';
+    charWrap.style.top  = charTop + 'px';
+    landscape.style.top = landTop + 'px';
+    pageRoot.style.minHeight = Math.max(1460, landTop + 500) + 'px';
   }
 
   /* ── Save diary entry ── */
   function saveDiary() {
-    var story     = document.getElementById('input-story').value.trim();
-    var gratitude = document.getElementById('input-gratitude').value.trim();
-    var care      = document.getElementById('input-care').value.trim();
-    var photo     = document.getElementById('photo-preview').src || '';
-
     var entry = {
-      date: new Date().toISOString(),
-      story: story,
-      gratitude: gratitude,
-      care: care,
-      photo: photo.startsWith('data:') ? photo : ''
+      date:      new Date().toISOString(),
+      story:     document.getElementById('input-story').value.trim(),
+      gratitude: document.getElementById('input-gratitude').value.trim(),
+      care:      document.getElementById('input-care').value.trim(),
+      photos:    photos.slice()
     };
-
     try {
       var entries = JSON.parse(localStorage.getItem('littlebylittle_diary') || '[]');
       entries.unshift(entry);
       localStorage.setItem('littlebylittle_diary', JSON.stringify(entries));
     } catch(e) {}
-
     window.location.href = 'index.html';
   }
+
+  /* ── Init ── */
+  repositionLayout();
 </script>
 </body>
 </html>
