@@ -333,29 +333,6 @@
 
   </div>
 
-  <!-- Exit confirmation popup -->
-  <div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
-    <div class="popup-card" onclick="event.stopPropagation()">
-      <div class="popup-cloud popup-cloud-left">
-        <img alt="" src="assets/images/cb1fe19d-d7ba-4c32-a438-6df8aed7b4b9.png" />
-      </div>
-      <div class="popup-cloud popup-cloud-right">
-        <img alt="" src="assets/images/cb1fe19d-d7ba-4c32-a438-6df8aed7b4b9.png" />
-      </div>
-      <div class="popup-char">
-        <img alt="" src="assets/images/373572ec-48c9-44fe-a426-8f94bf31e6d3.png" />
-      </div>
-      <div class="popup-body">
-        <h3 class="popup-title">ต้องออกจากการ<br>บันทึกประจำวัน</h3>
-        <p class="popup-desc">ข้อมูลจะถูกลบออกจากระบบ ไม่สามารถย้อนกลับหรือแก้ไขได้อีก</p>
-        <div class="popup-btns">
-          <button class="popup-btn-outline" onclick="confirmExit()">ยืนยัน</button>
-          <button class="popup-btn-fill"    onclick="closeModal()">ยกเลิก</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Toast -->
   <div class="toast-warning" id="toast" role="alert" aria-live="polite">คุณยังไม่ได้เขียนบันทึกประจำวัน (-:</div>
 
@@ -376,7 +353,50 @@
 
 </div>
 
+<!-- Exit confirmation popup — outside page-root to avoid overflow-x clipping -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
+  <div class="popup-card" onclick="event.stopPropagation()">
+    <div class="popup-cloud popup-cloud-left">
+      <img alt="" src="assets/images/cb1fe19d-d7ba-4c32-a438-6df8aed7b4b9.png" />
+    </div>
+    <div class="popup-cloud popup-cloud-right">
+      <img alt="" src="assets/images/cb1fe19d-d7ba-4c32-a438-6df8aed7b4b9.png" />
+    </div>
+    <div class="popup-char">
+      <img alt="" src="assets/images/373572ec-48c9-44fe-a426-8f94bf31e6d3.png" />
+    </div>
+    <div class="popup-body">
+      <h3 class="popup-title">ต้องออกจากการ<br>บันทึกประจำวัน</h3>
+      <p class="popup-desc">ข้อมูลจะถูกลบออกจากระบบ ไม่สามารถย้อนกลับหรือแก้ไขได้อีก</p>
+      <div class="popup-btns">
+        <button class="popup-btn-outline" onclick="confirmExit()">ยืนยัน</button>
+        <button class="popup-btn-fill"    onclick="closeModal()">ยกเลิก</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
+  /* ── User name ── */
+  (function() {
+    try {
+      var user = JSON.parse(localStorage.getItem('littlebylittle_user') || '{}');
+      if (user.name) document.getElementById('page-title').textContent = 'วันนี้ของ, ' + user.name;
+    } catch(e) {}
+  })();
+
+  /* ── Auto-resize textareas + reflow ── */
+  document.querySelectorAll('.card-input').forEach(function(ta) {
+    ta.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = this.scrollHeight + 'px';
+      repositionLayout();
+    });
+  });
+
+  /* ── Photo handling ── */
+  var photos = [];
+
   /* ── Exit popup ── */
   function hasContent() {
     return document.getElementById('input-story').value.trim() ||
@@ -397,26 +417,6 @@
   function confirmExit() {
     window.location.href = 'index.html';
   }
-
-  /* ── User name ── */
-  (function() {
-    try {
-      var user = JSON.parse(localStorage.getItem('littlebylittle_user') || '{}');
-      if (user.name) document.getElementById('page-title').textContent = 'วันนี้ของ, ' + user.name;
-    } catch(e) {}
-  })();
-
-  /* ── Auto-resize textareas + reflow ── */
-  document.querySelectorAll('.card-input').forEach(function(ta) {
-    ta.addEventListener('input', function() {
-      this.style.height = 'auto';
-      this.style.height = this.scrollHeight + 'px';
-      repositionLayout();
-    });
-  });
-
-  /* ── Photo handling ── */
-  var photos = [];
 
   function addPhotos(input) {
     Array.from(input.files).forEach(function(file) {
