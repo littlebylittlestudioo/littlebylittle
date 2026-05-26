@@ -642,6 +642,12 @@
       if (entry.story)     sections += '<div class="diary-section"><span class="diary-section-label">Your little story</span><p class="diary-section-text">' + entry.story     + '</p></div>';
       if (entry.gratitude) sections += '<div class="diary-section"><span class="diary-section-label">Your gratitude</span><p class="diary-section-text">'     + entry.gratitude + '</p></div>';
       if (entry.care)      sections += '<div class="diary-section"><span class="diary-section-label">Your gentle care</span><p class="diary-section-text">'    + entry.care      + '</p></div>';
+      if (Array.isArray(entry.photos) && entry.photos.length > 0) {
+        var photoHtml = entry.photos.map(function (src) {
+          return '<img src="' + src + '" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0;" />';
+        }).join('');
+        sections += '<div class="diary-section"><span class="diary-section-label">Your memory</span><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">' + photoHtml + '</div></div>';
+      }
       if (!sections) return;
 
       var origIndex = allDiary.findIndex(function (e) { return e.date === entry.date; });
