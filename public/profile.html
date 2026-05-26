@@ -63,10 +63,11 @@
       width: 120px; height: 120px;
       border-radius: 100px;
       overflow: hidden;
+      background: #efcca4;
     }
     .photo-wrap img#profile-photo {
       width: 100%; height: 100%;
-      object-fit: cover; display: block;
+      object-fit: cover; display: none;
       border-radius: 100px;
     }
     .edit-icon {
@@ -228,7 +229,7 @@
 
     <!-- Profile photo + edit icon -->
     <div class="photo-wrap" onclick="document.getElementById('photo-input').click()" style="cursor:pointer;">
-      <img id="profile-photo" alt="profile" src="" />
+      <img id="profile-photo" alt="" />
       <div class="edit-icon">
         <img alt="edit" src="assets/icons/961b6604-0bb3-45ae-be2d-e6fca1b98098.svg" />
       </div>
@@ -293,7 +294,9 @@
         var user = JSON.parse(raw);
         document.getElementById('profile-name').textContent = user.name || '—';
         if (user.photo) {
-          document.getElementById('profile-photo').src = user.photo;
+          var photo = document.getElementById('profile-photo');
+          photo.src = user.photo;
+          photo.style.display = 'block';
         }
       } catch (e) { isGuest = true; }
     }
@@ -321,7 +324,9 @@
         canvas.height = Math.round(img.height * scale);
         canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
         var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-        document.getElementById('profile-photo').src = dataUrl;
+        var photo = document.getElementById('profile-photo');
+        photo.src = dataUrl;
+        photo.style.display = 'block';
         try {
           var raw  = localStorage.getItem('littlebylittle_user');
           var user = raw ? JSON.parse(raw) : {};
