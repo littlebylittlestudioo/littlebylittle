@@ -130,6 +130,24 @@
     }
     .save-btn:active { opacity: 0.85; }
 
+    /* ── Toast ── */
+    .toast-warning {
+      position: fixed;
+      top: 48px; left: 50%; transform: translateX(-50%) translateY(-12px);
+      z-index: 200;
+      background: #e88b4e; color: white;
+      border-radius: 100px; padding: 8px 24px;
+      font-size: 16px; font-weight: 500;
+      line-height: 24px; letter-spacing: -0.048px;
+      white-space: nowrap;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .toast-warning.show {
+      opacity: 1; pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
     /* ── Character ── */
     .character-wrap {
       position: absolute;
@@ -251,6 +269,9 @@
 
   </div>
 
+  <!-- Toast -->
+  <div class="toast-warning" id="toast" role="alert" aria-live="polite">คุณยังไม่ได้ตอบคำถามประจำวัน (-:</div>
+
   <!-- Save button -->
   <div class="save-btn-wrap" id="save-btn-wrap">
     <button class="save-btn" onclick="saveDiary()">บันทึกวันนี้ไว้</button>
@@ -340,13 +361,31 @@
     pageRoot.style.minHeight = Math.max(1460, landTop + 500) + 'px';
   }
 
+  /* ── Toast ── */
+  var _toastTimer = null;
+  function showToast() {
+    var toast = document.getElementById('toast');
+    toast.classList.add('show');
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(function() { toast.classList.remove('show'); }, 3000);
+  }
+
   /* ── Save diary entry ── */
   function saveDiary() {
+    var story     = document.getElementById('input-story').value.trim();
+    var gratitude = document.getElementById('input-gratitude').value.trim();
+    var care      = document.getElementById('input-care').value.trim();
+
+    if (!story && !gratitude && !care && photos.length === 0) {
+      showToast();
+      return;
+    }
+
     var entry = {
       date:      new Date().toISOString(),
-      story:     document.getElementById('input-story').value.trim(),
-      gratitude: document.getElementById('input-gratitude').value.trim(),
-      care:      document.getElementById('input-care').value.trim(),
+      story:     story,
+      gratitude: gratitude,
+      care:      care,
       photos:    photos.slice()
     };
     try {
