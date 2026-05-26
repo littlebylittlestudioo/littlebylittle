@@ -3,153 +3,178 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Little by Little — วันนี้เป็นไงบ้าง</title>
+  <title>Little by Little — วันนี้ของฉัน</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
-    @font-face {
-      font-family: 'PG Picasso';
-      src: url('fonts/PG PicassoV2.ttf') format('truetype');
-    }
-
-    :root { --text: #1e1e1e; }
+    :root { --cream-100: #f8ebdb; --cream-200: #efcca4; --text: #1e1e1e; }
     * { font-family: 'IBM Plex Sans Thai', sans-serif; box-sizing: border-box; }
     body { margin: 0; }
 
-    /* ══ PAGE ROOT ══ */
     .page-root {
-      position: relative;
-      width: 100%;
-      overflow-x: hidden;
-      min-height: max(1283px, calc(837px + 31vw));
+      position: relative; width: 100%; overflow-x: hidden;
+      min-height: max(1460px, calc(837px + 31vw));
       background: linear-gradient(to bottom, #aacae5, #edeef0);
     }
 
-    /* ══ CLOUDS ══ */
+    /* ── Clouds ── */
     .cloud { position: absolute; overflow: hidden; pointer-events: none; z-index: 1; }
     .cloud img { position: absolute; max-width: none; width: 292.24%; height: 861.86%; left: -172.98%; top: -256.19%; }
     .cloud-left  { left: -66px; top: -14px; width: 532px; height: 320px; }
     .cloud-right { left: calc(75% + 39px); top: 146px; width: 352px; height: 213px; transform: scaleX(-1); }
 
-    /* ══ CLOSE BUTTON ══ */
-    .close-btn {
+    /* ── Header ── */
+    .page-header {
       position: absolute;
-      left: calc(75% + 34px); top: 120px;
-      width: 40px; height: 40px;
+      top: 123px; left: 50%; transform: translateX(-50%);
+      width: 865px;
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 10;
+    }
+    .page-title {
+      font-size: 32px; font-weight: 600; line-height: 40px;
+      color: var(--text); margin: 0;
+    }
+    .close-btn {
+      width: 40px; height: 40px; flex-shrink: 0;
       background: white; border-radius: 100px;
       box-shadow: 0 4px 40px rgba(0,0,0,0.1);
       border: none; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      z-index: 20;
     }
     .close-btn img { width: 24px; height: 24px; object-fit: contain; display: block; }
 
-    /* ══ CENTRED EMPTY STATE ══ */
-    .empty-wrap {
+    /* ── Card grid ── */
+    .diary-grid {
       position: absolute;
-      left: 50%; top: 50%;
-      transform: translate(-50%, calc(-50% - 40px));
-      display: flex; flex-direction: column;
-      align-items: center; gap: 16px;
-      width: 694px;
+      top: 179px; left: 50%; transform: translateX(-50%);
+      width: 865px;
+      display: grid;
+      grid-template-columns: 424px 424px;
+      gap: 16px 17px;
       z-index: 10;
     }
 
-    /* Blob character sprite */
-    .blob-wrap {
+    .diary-card {
+      background: var(--cream-100);
+      border-radius: 24px;
+      padding: 32px;
       position: relative;
-      width: 222px; height: 237px;
-      overflow: hidden; flex-shrink: 0;
-      pointer-events: none;
+      min-height: 230px;
+      display: flex; flex-direction: column;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.06);
     }
-    .blob-wrap img {
-      position: absolute; max-width: none;
-      width: 438.86%; height: 273.8%;
-      left: -164%; top: -34.22%;
+    .card-border {
+      position: absolute; inset: 16px;
+      border: 2px solid var(--cream-200);
+      border-radius: 14px; pointer-events: none;
+    }
+    .card-label {
+      font-size: 14px; font-weight: 400; color: var(--cream-200);
+      line-height: 21px; display: block; margin-bottom: 8px;
+    }
+    .card-question {
+      font-size: 24px; font-weight: 600; line-height: 32px;
+      color: var(--text); margin: 0; flex: 1;
+    }
+    .card-input-wrap { margin-top: 12px; }
+    .card-input {
+      width: 100%; background: none; border: none; outline: none;
+      resize: none; overflow: hidden;
+      font-size: 14px; font-weight: 400; line-height: 22px;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      color: var(--text); padding: 0;
+      min-height: 22px;
+    }
+    .card-input::placeholder { color: var(--cream-200); }
+    .card-line { width: 100%; height: 1px; background: var(--cream-200); margin-top: 6px; }
+
+    /* ── Memory card upload ── */
+    .upload-label {
+      display: inline-flex; align-items: center; gap: 6px;
+      cursor: pointer; margin-top: 12px;
+    }
+    .upload-label svg { flex-shrink: 0; }
+    .upload-label span {
+      font-size: 14px; font-weight: 600; color: var(--text);
+      line-height: 22px;
+    }
+    .upload-label input { display: none; }
+    .upload-preview {
+      margin-top: 8px; width: 100%; max-height: 80px;
+      object-fit: cover; border-radius: 8px;
+      display: none;
     }
 
-    /* Text + button column */
-    .empty-body {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 48px;
-      width: 100%;
-    }
-    .empty-texts {
-      display: flex; flex-direction: column;
-      gap: 8px; text-align: center; color: #121212;
-      width: 100%;
-    }
-    .empty-title {
-      font-size: 32px; font-weight: 600;
-      line-height: 40px; margin: 0;
-    }
-    .empty-subtitle {
-      font-size: 16px; font-weight: 500;
-      line-height: 24px; letter-spacing: -0.048px; margin: 0;
-    }
-    .share-btn {
-      background: #000;
-      width: 343px; height: 48px;
-      border-radius: 100px; border: none; cursor: pointer;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .share-btn span {
-      font-size: 14px; font-weight: 600;
-      line-height: 22px; color: white;
-      white-space: nowrap;
-    }
-
-    /* ══ LANDSCAPE ══ */
-    .landscape-wrap {
+    /* ── Save button ── */
+    .save-btn-wrap {
       position: absolute;
-      left: 0; right: 0; width: 100%;
+      top: 679px; left: 50%; transform: translateX(-50%);
+      z-index: 10;
+    }
+    .save-btn {
+      width: 650px; height: 48px;
+      background: #000; border-radius: 100px; border: none; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      font-size: 14px; font-weight: 600; color: white;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .save-btn:active { opacity: 0.85; }
+
+    /* ── Character ── */
+    .character-wrap {
+      position: absolute;
+      left: calc(50% - 335px); top: 796px;
+      width: 205px; height: 213px;
+      z-index: 6; pointer-events: none;
+    }
+    .character-wrap img { width: 100%; height: 100%; object-fit: contain; }
+
+    /* ── Landscape ── */
+    .landscape-wrap {
+      position: absolute; left: 0; right: 0; width: 100%;
       overflow: hidden; z-index: 5;
       top: 837px; height: max(446px, 31vw);
     }
     .landscape-wrap img {
-      position: absolute;
-      top: 0; left: 50%; transform: translateX(-50%);
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
       width: max(1151px, 80vw); height: 100%;
       object-fit: fill; pointer-events: none;
     }
 
     /* ══ TABLET ══ */
     @media (min-width: 768px) and (max-width: 1199px) {
-      .page-root {
-        min-height: 100vh;
-        background: linear-gradient(to bottom, #abcbe6, #ebedef);
-      }
+      .page-root { min-height: max(1460px, calc(837px + 31vw)); }
       .cloud-left  { left: -66px; top: 0; width: 432px; height: 260px; }
       .cloud-right { left: calc(66.67% + 4px); top: 130px; width: 296px; height: 178px; }
-      .close-btn { left: calc(83.33% - 13px); top: 88px; }
-      .empty-wrap { width: 90%; max-width: 600px; transform: translate(-50%, -55%); }
+      .page-header { width: calc(100% - 48px); top: 80px; }
+      .page-title  { font-size: 28px; }
+      .diary-grid  { width: calc(100% - 48px); top: 140px; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .save-btn-wrap { top: 740px; }
+      .save-btn { width: min(650px, calc(100vw - 48px)); }
       .landscape-wrap { top: calc(100vh - 220px); height: 446px; }
       .landscape-wrap img { width: 1151px; object-fit: fill; }
     }
 
     /* ══ MOBILE ══ */
     @media (max-width: 767px) {
-      .page-root {
-        min-height: max(100vh, 870px);
-        background: linear-gradient(to bottom, #a9cae5, #e4e7e8);
-      }
+      .page-root { min-height: max(1700px, calc(837px + 31vw)); }
       .cloud-left  { left: -87px; top: -4px; width: 255px; height: 154px; }
       .cloud-right { left: calc(50% + 51.5px); top: 60px; width: 169px; height: 102px; }
-      .close-btn { left: auto; right: 16px; top: 16px; }
-      .empty-wrap { width: calc(100% - 32px); transform: translate(-50%, -55%); gap: 12px; }
-      .blob-wrap { width: 160px; height: 170px; }
-      .blob-wrap img { width: 438.86%; height: 273.8%; }
-      .empty-title { font-size: 24px; line-height: 32px; }
-      .share-btn { width: 280px; }
-      .empty-body { gap: 32px; }
+      .page-header { width: calc(100% - 32px); top: 16px; }
+      .page-title  { font-size: 24px; }
+      .diary-grid  { width: calc(100% - 32px); top: 76px; grid-template-columns: 1fr; gap: 12px; }
+      .diary-card  { min-height: 200px; }
+      .card-question { font-size: 20px; }
+      .save-btn-wrap { top: 1040px; }
+      .save-btn { width: calc(100vw - 48px); }
+      .character-wrap { left: 50%; transform: translateX(-50%); top: 1120px; }
       .landscape-wrap { top: calc(100vh - 213px); height: 213px; }
       .landscape-wrap img { width: 551px; object-fit: fill; }
     }
   </style>
 </head>
 <body>
-
 <div class="page-root">
 
   <!-- Clouds -->
@@ -160,28 +185,75 @@
     <img alt="" src="assets/images/cb1fe19d-d7ba-4c32-a438-6df8aed7b4b9.png" />
   </div>
 
-  <!-- Close → back to Desktop1 -->
-  <button class="close-btn" onclick="window.location.href='index.html'" aria-label="ปิด">
-    <img alt="close" src="assets/icons/35bf4632-c3e6-442b-a180-b2c58c5fa1b1.svg" />
-  </button>
+  <!-- Header -->
+  <div class="page-header">
+    <p class="page-title" id="page-title">วันนี้ของ, ฉัน</p>
+    <button class="close-btn" onclick="window.location.href='index.html'" aria-label="ปิด">
+      <img alt="close" src="assets/icons/35bf4632-c3e6-442b-a180-b2c58c5fa1b1.svg" />
+    </button>
+  </div>
 
-  <!-- Empty state (centred) -->
-  <div class="empty-wrap">
-    <!-- Blob character -->
-    <div class="blob-wrap">
-      <img alt="" src="assets/images/9b2780ec-e959-4c6b-a6ba-9b71da7718e8.png" />
-    </div>
+  <!-- 2×2 diary cards -->
+  <div class="diary-grid">
 
-    <!-- Text + button -->
-    <div class="empty-body">
-      <div class="empty-texts">
-        <p class="empty-title">ฟีเจอร์นี้ยังไม่เปิดใช้งาน..</p>
-        <p class="empty-subtitle">ถ้าคุณมีไอเดียอยากเสริมตรงไหนบอกเราได้นะ (-:</p>
+    <!-- Card 1: Your little story -->
+    <div class="diary-card">
+      <div class="card-border"></div>
+      <span class="card-label">Your little story</span>
+      <p class="card-question">เราอยู่ตรงนี้นะ<br>จะเล่าอะไรก็ได้เลย</p>
+      <div class="card-input-wrap">
+        <textarea class="card-input" id="input-story" placeholder="ลองเล่าจากเรื่องเล็ก ๆ ก็พอ" rows="1"></textarea>
+        <div class="card-line"></div>
       </div>
-      <button class="share-btn" onclick="window.open('https://forms.gle/Bg4tTuAvMZqPfoMW9', '_blank')">
-        <span>แชร์ความเห็นของคุณ</span>
-      </button>
     </div>
+
+    <!-- Card 2: Your gratitude -->
+    <div class="diary-card">
+      <div class="card-border"></div>
+      <span class="card-label">Your gratitude</span>
+      <p class="card-question">วันนี้ฉันยังขอบคุณ<br>อะไรได้หนึ่งอย่าง?</p>
+      <div class="card-input-wrap">
+        <textarea class="card-input" id="input-gratitude" placeholder="หนึ่งสิ่งเล็ก ๆ ที่ยังดีอยู่ในวันนี้" rows="1"></textarea>
+        <div class="card-line"></div>
+      </div>
+    </div>
+
+    <!-- Card 3: Your gentle care -->
+    <div class="diary-card">
+      <div class="card-border"></div>
+      <span class="card-label">Your gentle care</span>
+      <p class="card-question">สิ่งเล็ก ๆ ที่ฉันจะทำ<br>เพื่อตัวเองคืออะไร?</p>
+      <div class="card-input-wrap">
+        <textarea class="card-input" id="input-care" placeholder="สิ่งเล็ก ๆ ที่อยากทำเพื่อตัวเอง" rows="1"></textarea>
+        <div class="card-line"></div>
+      </div>
+    </div>
+
+    <!-- Card 4: Your memory -->
+    <div class="diary-card">
+      <div class="card-border"></div>
+      <span class="card-label">Your memory</span>
+      <p class="card-question">ภาพถ่ายความ<br>ทรงจำของวันนี้</p>
+      <label class="upload-label">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2M8 2v8M5 5l3-3 3 3" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>ภาพถ่ายของวันนี้</span>
+        <input type="file" id="input-photo" accept="image/*" onchange="previewPhoto(this)" />
+      </label>
+      <img class="upload-preview" id="photo-preview" alt="photo preview" />
+    </div>
+
+  </div>
+
+  <!-- Save button -->
+  <div class="save-btn-wrap">
+    <button class="save-btn" onclick="saveDiary()">บันทึกวันนี้ไว้</button>
+  </div>
+
+  <!-- Character -->
+  <div class="character-wrap">
+    <img alt="" src="assets/images/diary-character.png" />
   </div>
 
   <!-- Green mountain -->
@@ -190,5 +262,61 @@
   </div>
 
 </div>
+
+<script>
+  /* ── Load user name ── */
+  (function() {
+    try {
+      var user = JSON.parse(localStorage.getItem('littlebylittle_user') || '{}');
+      var name = user.name || '';
+      if (name) document.getElementById('page-title').textContent = 'วันนี้ของ, ' + name;
+    } catch(e) {}
+  })();
+
+  /* ── Auto-resize textareas ── */
+  document.querySelectorAll('.card-input').forEach(function(ta) {
+    ta.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = this.scrollHeight + 'px';
+    });
+  });
+
+  /* ── Photo preview ── */
+  function previewPhoto(input) {
+    var preview = document.getElementById('photo-preview');
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  /* ── Save diary entry ── */
+  function saveDiary() {
+    var story     = document.getElementById('input-story').value.trim();
+    var gratitude = document.getElementById('input-gratitude').value.trim();
+    var care      = document.getElementById('input-care').value.trim();
+    var photo     = document.getElementById('photo-preview').src || '';
+
+    var entry = {
+      date: new Date().toISOString(),
+      story: story,
+      gratitude: gratitude,
+      care: care,
+      photo: photo.startsWith('data:') ? photo : ''
+    };
+
+    try {
+      var entries = JSON.parse(localStorage.getItem('littlebylittle_diary') || '[]');
+      entries.unshift(entry);
+      localStorage.setItem('littlebylittle_diary', JSON.stringify(entries));
+    } catch(e) {}
+
+    window.location.href = 'index.html';
+  }
+</script>
 </body>
 </html>
