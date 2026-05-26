@@ -439,6 +439,30 @@
 
 </div>
 
+<!-- Lightbox -->
+<div id="lightbox" style="
+  display:none; position:fixed; inset:0; z-index:9999;
+  background:rgba(0,0,0,0.88);
+  align-items:center; justify-content:center;
+" onclick="closeLightbox()">
+  <img id="lightbox-img" alt="" style="
+    max-width:92vw; max-height:92vh;
+    border-radius:12px; object-fit:contain;
+    pointer-events:none; display:block;
+  " />
+  <button onclick="closeLightbox()" style="
+    position:fixed; top:20px; right:20px;
+    width:40px; height:40px; border-radius:100px;
+    background:white; border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 20px rgba(0,0,0,0.2);
+  ">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 2L14 14M14 2L2 14" stroke="#1e1e1e" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </button>
+</div>
+
 <script src="sets.js"></script>
 <script>
   var _thaiDays   = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
@@ -644,7 +668,7 @@
       if (entry.care)      sections += '<div class="diary-section"><span class="diary-section-label">Your gentle care</span><p class="diary-section-text">'    + entry.care      + '</p></div>';
       if (Array.isArray(entry.photos) && entry.photos.length > 0) {
         var photoHtml = entry.photos.map(function (src) {
-          return '<img src="' + src + '" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0;" />';
+          return '<img src="' + src + '" alt="" onclick="openLightbox(\'' + src.replace(/'/g, "\\'") + '\')" style="width:64px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0;cursor:pointer;" />';
         }).join('');
         sections += '<div class="diary-section"><span class="diary-section-label">Your memory</span><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">' + photoHtml + '</div></div>';
       }
@@ -699,6 +723,20 @@
       }
     }
   })();
+
+  function openLightbox(src) {
+    var lb = document.getElementById('lightbox');
+    document.getElementById('lightbox-img').src = src;
+    lb.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeLightbox();
+  });
 </script>
 </body>
 </html>
