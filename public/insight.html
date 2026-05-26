@@ -359,6 +359,9 @@
   <div class="toast-success" id="toast-deleted" role="status" aria-live="polite">
     ลบคำถามสำเร็จ (-:
   </div>
+  <div class="toast-success" id="toast-diary-saved" role="status" aria-live="polite">
+    บันทึกสำเร็จ (-:
+  </div>
 
   <!-- ── Clouds ── -->
   <div class="cloud cloud-left">
@@ -679,8 +682,9 @@
   (function () {
     var params    = new URLSearchParams(window.location.search);
     var toastType = params.get('toast');
-    var toastId   = toastType === 'saved'   ? 'toast-saved'   :
-                    toastType === 'deleted' ? 'toast-deleted' : null;
+    var toastId   = toastType === 'saved'        ? 'toast-saved'        :
+                    toastType === 'deleted'      ? 'toast-deleted'      :
+                    toastType === 'diary-saved'  ? 'toast-diary-saved'  : null;
     if (toastId) {
       var toast = document.getElementById(toastId);
       if (toast) {
