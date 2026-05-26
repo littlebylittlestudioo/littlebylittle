@@ -406,25 +406,37 @@
   /* ── Photo handling ── */
   var photos = [];
 
-  /* ── Load today's existing entry (if any) ── */
+  /* ── Load entry for editing (today's or a specific past entry via ?edit=index) ── */
   var _todayStr = new Date().toDateString();
   var _todayEntryIndex = -1;
   (function() {
     try {
       var entries = JSON.parse(localStorage.getItem('littlebylittle_diary') || '[]');
-      for (var i = 0; i < entries.length; i++) {
-        if (new Date(entries[i].date).toDateString() === _todayStr) {
-          _todayEntryIndex = i;
-          var e = entries[i];
-          var storyEl = document.getElementById('input-story');
-          var gratEl  = document.getElementById('input-gratitude');
-          var careEl  = document.getElementById('input-care');
-          if (e.story)     { storyEl.value = e.story;     storyEl.style.height = storyEl.scrollHeight + 'px'; }
-          if (e.gratitude) { gratEl.value  = e.gratitude; gratEl.style.height  = gratEl.scrollHeight  + 'px'; }
-          if (e.care)      { careEl.value  = e.care;      careEl.style.height  = careEl.scrollHeight  + 'px'; }
-          if (Array.isArray(e.photos)) { photos = e.photos.slice(); renderPhotos(); }
-          break;
+      var params  = new URLSearchParams(window.location.search);
+      var editParam = params.has('edit') ? parseInt(params.get('edit'), 10) : -1;
+
+      var targetIndex = -1;
+      if (editParam >= 0 && entries[editParam]) {
+        targetIndex = editParam;
+      } else {
+        for (var i = 0; i < entries.length; i++) {
+          if (new Date(entries[i].date).toDateString() === _todayStr) {
+            targetIndex = i;
+            break;
+          }
         }
+      }
+
+      if (targetIndex >= 0) {
+        _todayEntryIndex = targetIndex;
+        var e = entries[targetIndex];
+        var storyEl = document.getElementById('input-story');
+        var gratEl  = document.getElementById('input-gratitude');
+        var careEl  = document.getElementById('input-care');
+        if (e.story)     { storyEl.value = e.story;     storyEl.style.height = storyEl.scrollHeight + 'px'; }
+        if (e.gratitude) { gratEl.value  = e.gratitude; gratEl.style.height  = gratEl.scrollHeight  + 'px'; }
+        if (e.care)      { careEl.value  = e.care;      careEl.style.height  = careEl.scrollHeight  + 'px'; }
+        if (Array.isArray(e.photos)) { photos = e.photos.slice(); renderPhotos(); }
       }
     } catch(ex) {}
     repositionLayout();

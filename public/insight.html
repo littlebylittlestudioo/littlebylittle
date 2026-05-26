@@ -596,12 +596,12 @@
       showSection(isToday ? 'global-empty' : 'not-today');
     } else {
       showSection('content');
-      renderEntries(all, dayEntries, dayDiary);
+      renderEntries(all, dayEntries, allDiary, dayDiary);
     }
   }
 
   /* ── Entry cards (receives pre-filtered prompt + diary entries) ── */
-  function renderEntries(all, saved, savedDiary) {
+  function renderEntries(all, saved, allDiary, savedDiary) {
     var archSrc = 'assets/images/2e527e8e-7555-469c-86e6-e12bf543b7f1.png';
     var editSrc = 'assets/icons/068231a2-f61b-401c-9a40-1efa21f89a84.svg';
 
@@ -644,11 +644,22 @@
       if (entry.care)      sections += '<div class="diary-section"><span class="diary-section-label">Your gentle care</span><p class="diary-section-text">'    + entry.care      + '</p></div>';
       if (!sections) return;
 
+      var origIndex = allDiary.findIndex(function (e) { return e.date === entry.date; });
+      var editUrl   = 'diary.html?edit=' + origIndex;
+
       var card = document.createElement('div');
       card.className = 'entry-card';
       card.innerHTML =
         '<div class="entry-inner-border">' +
-          '<div class="entry-content">' + sections + '</div>' +
+          '<div class="entry-content">' +
+            '<div class="entry-question-row" style="margin-bottom:8px;">' +
+              '<span style="font-size:14px;font-weight:600;color:var(--text);">บันทึกประจำวัน</span>' +
+              '<button class="icon-btn" aria-label="แก้ไข" onclick="window.location.href=\'' + editUrl + '\'">' +
+                '<img alt="แก้ไข" src="' + editSrc + '" />' +
+              '</button>' +
+            '</div>' +
+            sections +
+          '</div>' +
         '</div>';
       list.appendChild(card);
     });
