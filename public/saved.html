@@ -50,7 +50,7 @@
       position: absolute;
       left: 50%; transform: translateX(-50%);
       top: 200px;
-      width: 461px;
+      width: 572px;
       display: flex; flex-direction: column; gap: 16px;
       z-index: 10;
     }
@@ -68,8 +68,8 @@
       border-radius: 14px; pointer-events: none;
     }
     .quote-text {
-      font-size: 18px; font-weight: 600;
-      line-height: 28px; color: var(--cream-400);
+      font-size: 24px; font-weight: 600;
+      line-height: 34px; color: #1e1e1e;
       margin: 0 0 16px 0;
     }
     .remove-btn {
@@ -84,15 +84,15 @@
     .empty-state {
       position: absolute;
       left: 50%; transform: translateX(-50%);
-      top: 260px; width: 340px;
+      top: 480px; width: min(694px, calc(100% - 48px));
       display: none; flex-direction: column;
-      align-items: center; gap: 12px; text-align: center;
+      align-items: center; gap: 8px; text-align: center;
       z-index: 10;
     }
     .empty-state.visible { display: flex; }
     .empty-title {
-      font-size: 24px; font-weight: 600;
-      line-height: 32px; color: #121212; margin: 0;
+      font-size: 32px; font-weight: 600;
+      line-height: 40px; color: #121212; margin: 0;
     }
     .empty-sub {
       font-size: 16px; font-weight: 500;
@@ -131,7 +131,7 @@
       .close-btn { left: auto; right: 16px; top: 16px; }
       .page-title { top: 20px; font-size: 24px; }
       .cards-wrap { width: calc(100% - 32px); top: 80px; }
-      .empty-state { top: 160px; width: calc(100% - 48px); }
+      .empty-state { top: 300px; }
       .landscape-wrap { top: calc(100vh - 213px); height: 213px; }
       .landscape-wrap img { width: 551px; object-fit: fill; }
     }
@@ -157,8 +157,8 @@
 
   <!-- Empty state -->
   <div class="empty-state" id="empty-state">
-    <p class="empty-title">ยังไม่มีข้อความที่บันทึก (-:</p>
-    <p class="empty-sub">กลับไปกดบันทึกข้อความที่ชอบได้เลยนะ</p>
+    <p class="empty-title">ยังไม่มีข้อความที่บันทึกไว้ (-:</p>
+    <p class="empty-sub">หากคุณชอบข้อความไหน สามารถบันทึกไว้ดูวันหลังได้นะ</p>
   </div>
 
   <!-- Bookmarked quote cards -->
