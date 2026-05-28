@@ -292,6 +292,9 @@
 
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="/db.js"></script>
 <script>
   /* ── Load user info from localStorage ── */
   (function () {
@@ -381,11 +384,27 @@
     } catch (e) {}
   }
 
-  /* ── Logout ── */
+  /* ── Logout: clear session + local data, sign out of Firebase ── */
   function logout() {
     localStorage.removeItem('littlebylittle_logged_in');
     localStorage.removeItem('littlebylittle_user');
     localStorage.removeItem('littlebylittle_provider');
+    localStorage.removeItem('littlebylittle_entries');
+    localStorage.removeItem('littlebylittle_diary');
+    localStorage.removeItem('littlebylittle_has_entries');
+    localStorage.removeItem('littlebylittle_insight_cache');
+    /* Sign out of Firebase Auth so SDK doesn't auto-restore session */
+    try {
+      if (typeof firebase !== 'undefined') {
+        fetch('/api/config')
+          .then(function (r) { return r.json(); })
+          .then(function (cfg) {
+            if (!firebase.apps.length) firebase.initializeApp(cfg.firebase);
+            return firebase.auth().signOut();
+          })
+          .catch(function () {});
+      }
+    } catch (e) {}
     window.location.href = 'index.html';
   }
 </script>
