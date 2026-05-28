@@ -283,6 +283,22 @@
       </div>
     </div>
 
+    <!-- Login row (guests only, hidden for logged-in users) -->
+    <div class="logout-row" id="login-row" onclick="window.location.href='login.html'" style="display:none;">
+      <div class="logout-icon">
+        <img alt="login" src="assets/icons/003dd41d-af02-4a6f-9618-fe5d4029f9f6.svg" />
+      </div>
+      <p class="logout-label">เข้าสู่ระบบ</p>
+    </div>
+
+    <!-- Logout row (logged-in users only) -->
+    <div class="logout-row" id="logout-row" onclick="logout()" style="display:none;">
+      <div class="logout-icon">
+        <img alt="logout" src="assets/icons/003dd41d-af02-4a6f-9618-fe5d4029f9f6.svg" />
+      </div>
+      <p class="logout-label">ออกจากระบบ</p>
+    </div>
+
   </div>
 
   <!-- Green mountain -->
@@ -314,8 +330,9 @@
 
     if (isGuest) {
       document.getElementById('profile-name').textContent = 'ผู้ใช้ทั่วไป';
-      var row = document.querySelector('.logout-row');
-      if (row) row.style.display = 'none';
+      document.getElementById('login-row').style.display = 'flex';
+    } else {
+      document.getElementById('logout-row').style.display = 'flex';
     }
   })();
 
