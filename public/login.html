@@ -17,6 +17,8 @@
   <!-- ══ Firebase SDK (Google + Facebook) ══ -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="/db.js"></script>
   <!-- ══ LINE LIFF SDK ══ -->
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
@@ -204,6 +206,43 @@
 
 </div>
 
+<!-- Migration modal: shown when user has local data -->
+<div id="migration-modal" style="
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.7);
+  z-index:100; align-items:center; justify-content:center;
+  padding:24px;
+">
+  <div style="
+    background:var(--cream-100); border-radius:25px;
+    padding:32px 24px; max-width:380px; width:100%;
+    box-shadow:0 6px 60px rgba(0,0,0,0.15);
+    border:2px solid var(--cream-200);
+  ">
+    <p style="font-size:20px;font-weight:600;line-height:28px;color:var(--text);margin:0 0 8px;">
+      คุณมีบันทึกในเครื่องนี้
+    </p>
+    <p style="font-size:14px;font-weight:400;line-height:22px;color:var(--text);margin:0 0 24px;">
+      ต้องการย้ายข้อมูลไปเก็บไว้ในบัญชีนี้ไหม?<br>
+      หากย้าย ข้อมูลเก่าในบัญชีจะถูกแทนที่
+    </p>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <button id="btn-migrate" style="
+        width:100%;height:48px;background:#000;color:#fff;
+        border:none;border-radius:100px;cursor:pointer;
+        font-family:'IBM Plex Sans Thai',sans-serif;
+        font-size:14px;font-weight:600;
+      ">ย้ายข้อมูลไปยังบัญชี</button>
+      <button id="btn-cancel-login" style="
+        width:100%;height:48px;background:transparent;color:var(--text);
+        border:1.5px solid #ccc;border-radius:100px;cursor:pointer;
+        font-family:'IBM Plex Sans Thai',sans-serif;
+        font-size:14px;font-weight:500;
+      ">ยกเลิกการเข้าสู่ระบบ</button>
+    </div>
+  </div>
+</div>
+
 <!-- Error toast -->
 <div id="login-error" style="
   display:none; position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
@@ -225,10 +264,44 @@
     setTimeout(function () { el.style.display = 'none'; }, 4000);
   }
 
-  /* ── Persist user and redirect ── */
-  function _afterLogin(user, provider) {
+  /* ── Check for local journal data (entries or diary) ── */
+  function _hasLocalData() {
+    try {
+      var entries = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
+      var diary   = JSON.parse(localStorage.getItem('littlebylittle_diary')   || '[]');
+      return entries.length > 0 || diary.length > 0;
+    } catch (e) { return false; }
+  }
+
+  /* ── Show migration modal, returns Promise<'migrate'|'cancel'> ── */
+  function _showMigrationModal() {
+    return new Promise(function (resolve) {
+      var modal = document.getElementById('migration-modal');
+      modal.style.display = 'flex';
+      document.getElementById('btn-migrate').onclick = function () {
+        modal.style.display = 'none';
+        resolve('migrate');
+      };
+      document.getElementById('btn-cancel-login').onclick = function () {
+        modal.style.display = 'none';
+        resolve('cancel');
+      };
+    });
+  }
+
+  /* ── Clear local data keys (keep session/bookmark keys) ── */
+  function _clearLocalData() {
+    localStorage.removeItem('littlebylittle_entries');
+    localStorage.removeItem('littlebylittle_diary');
+    localStorage.removeItem('littlebylittle_has_entries');
+    localStorage.removeItem('littlebylittle_insight_cache');
+  }
+
+  /* ── Write session keys and redirect ── */
+  function _completeLogin(user, provider) {
     localStorage.setItem('littlebylittle_logged_in', '1');
     localStorage.setItem('littlebylittle_user', JSON.stringify({
+      uid:      user.uid   || '',
       name:     user.name  || '',
       email:    user.email || '',
       photo:    user.photo || '',
@@ -238,6 +311,39 @@
     localStorage.removeItem('littlebylittle_redirect');
     localStorage.removeItem('littlebylittle_back');
     window.location.href = redirect;
+  }
+
+  /* ── Persist user and redirect (async — checks for migration) ── */
+  async function _afterLogin(user, provider) {
+    _setBtnsDisabled(true);
+
+    /* LINE uses LIFF (not Firebase Auth) — skip Firestore sync */
+    var isFirebaseProvider = (provider === 'google' || provider === 'facebook');
+
+    if (isFirebaseProvider && _hasLocalData()) {
+      var choice = await _showMigrationModal();
+
+      if (choice === 'cancel') {
+        try { await firebase.auth().signOut(); } catch (e) {}
+        _setBtnsDisabled(false);
+        return;
+      }
+
+      /* choice === 'migrate': upload local data to Firestore */
+      try {
+        await DB.init();
+        var uid     = user.uid;
+        var entries = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
+        var diary   = JSON.parse(localStorage.getItem('littlebylittle_diary')   || '[]');
+        await DB.saveAllEntries(uid, entries);
+        await DB.saveAllDiary(uid, diary);
+        _clearLocalData();
+      } catch (e) {
+        console.warn('Migration to Firestore failed, proceeding anyway', e);
+      }
+    }
+
+    _completeLogin(user, provider);
   }
 
   /* ── Disable / re-enable buttons while loading ── */
@@ -270,6 +376,7 @@
             if (liff.isLoggedIn()) {
               liff.getProfile().then(function (profile) {
                 _afterLogin({
+                  uid:   profile.userId,
                   name:  profile.displayName,
                   email: '',
                   photo: profile.pictureUrl
@@ -330,11 +437,12 @@
     firebase.auth().signInWithPopup(provider)
       .then(function (result) {
         var u = result.user;
-        _afterLogin({ name: u.displayName, email: u.email, photo: u.photoURL }, 'google');
+        return _afterLogin({ uid: u.uid, name: u.displayName, email: u.email, photo: u.photoURL }, 'google');
       })
       .catch(function (e) {
         console.error(e);
         _showError('Google Login ล้มเหลว: ' + e.message);
+        _setBtnsDisabled(false);
       });
   }
 
@@ -348,11 +456,12 @@
     firebase.auth().signInWithPopup(provider)
       .then(function (result) {
         var u = result.user;
-        _afterLogin({ name: u.displayName, email: u.email, photo: u.photoURL }, 'facebook');
+        return _afterLogin({ uid: u.uid, name: u.displayName, email: u.email, photo: u.photoURL }, 'facebook');
       })
       .catch(function (e) {
         console.error(e);
         _showError('Facebook Login ล้มเหลว: ' + e.message);
+        _setBtnsDisabled(false);
       });
   }
 

@@ -283,6 +283,22 @@
       </div>
     </div>
 
+    <!-- Login row (guests only, hidden for logged-in users) -->
+    <div class="logout-row" id="login-row" onclick="window.location.href='login.html'" style="display:none;">
+      <div class="logout-icon">
+        <img alt="เข้าสู่ระบบ" src="assets/icons/003dd41d-af02-4a6f-9618-fe5d4029f9f6.svg" />
+      </div>
+      <p class="logout-label">เข้าสู่ระบบ</p>
+    </div>
+
+    <!-- Logout row (logged-in users only) -->
+    <div class="logout-row" id="logout-row" onclick="logout()" style="display:none;">
+      <div class="logout-icon">
+        <img alt="ออกจากระบบ" src="assets/icons/003dd41d-af02-4a6f-9618-fe5d4029f9f6.svg" />
+      </div>
+      <p class="logout-label">ออกจากระบบ</p>
+    </div>
+
   </div>
 
   <!-- Green mountain -->
@@ -292,6 +308,8 @@
 
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script>
   /* ── Load user info from localStorage ── */
   (function () {
@@ -312,8 +330,9 @@
 
     if (isGuest) {
       document.getElementById('profile-name').textContent = 'ผู้ใช้ทั่วไป';
-      var row = document.querySelector('.logout-row');
-      if (row) row.style.display = 'none';
+      document.getElementById('login-row').style.display = 'flex';
+    } else {
+      document.getElementById('logout-row').style.display = 'flex';
     }
   })();
 
@@ -381,12 +400,31 @@
     } catch (e) {}
   }
 
-  /* ── Logout ── */
+  /* ── Logout: clear session + local data, sign out of Firebase ── */
   function logout() {
     localStorage.removeItem('littlebylittle_logged_in');
     localStorage.removeItem('littlebylittle_user');
     localStorage.removeItem('littlebylittle_provider');
-    window.location.href = 'index.html';
+    localStorage.removeItem('littlebylittle_entries');
+    localStorage.removeItem('littlebylittle_diary');
+    localStorage.removeItem('littlebylittle_has_entries');
+    localStorage.removeItem('littlebylittle_insight_cache');
+    /* Sign out of Firebase Auth, then redirect so IndexedDB session is cleared first */
+    var doRedirect = function () { window.location.href = 'index.html'; };
+    try {
+      if (typeof firebase !== 'undefined') {
+        fetch('/api/config')
+          .then(function (r) { return r.json(); })
+          .then(function (cfg) {
+            if (!firebase.apps.length) firebase.initializeApp(cfg.firebase);
+            return firebase.auth().signOut();
+          })
+          .then(doRedirect)
+          .catch(doRedirect);
+        return;
+      }
+    } catch (e) {}
+    doRedirect();
   }
 </script>
 </body>

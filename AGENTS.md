@@ -18,8 +18,9 @@ Liftapp is a Thai emotional wellness app. It's a multi-page HTML/JS app with a s
 
 ### File Organization
 - **Public assets:** `public/` — all HTML, CSS, JS accessible to users
+- **`public/db.js`** — Firestore CRUD utility; loaded as a plain `<script>` tag; exposes `window.DB`
 - **Server functions:** `functions/api/` — Cloudflare Pages Functions only
-- **Shared utilities:** `src/` — client-side helper modules
+- **Shared utilities:** `src/` — client-side helper modules (ES module format, not currently loaded by HTML pages)
 - **Never modify:** `server.js` (legacy local-only), `.dev.vars` (secrets)
 
 ### Testing & Verification
@@ -43,8 +44,32 @@ Liftapp is a Thai emotional wellness app. It's a multi-page HTML/JS app with a s
 ### Auth (Firebase)
 - Client-side only — no backend auth required
 - Use `localStorage` to persist login state
-- Keys: `liftapp_logged_in`, `liftapp_user`
-- Firebase SDK is loaded in HTML — never modify auth keys or endpoints
+- Correct storage keys: `littlebylittle_logged_in`, `littlebylittle_user`
+- `littlebylittle_user` stores `{uid, name, email, photo, provider}` — `uid` is the Firebase UID (or LINE userId for LINE logins)
+- Firebase SDK scripts are loaded inline in each HTML page — do not modify SDK URLs
+
+### Data Persistence (Firestore)
+- **`public/db.js`** is the shared Firestore utility module. It must be loaded after the three Firebase compat SDK scripts and before any page script that calls `DB.*` functions.
+- **Required script order** for any page that uses Firestore:
+  ```html
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="/db.js"></script>
+  ```
+- **`DB.init()`** fetches `/api/config`, initializes Firebase (guarded against double-init), creates the Firestore instance, and waits for Firebase Auth to restore the session. Always `await DB.init()` (or chain `.then()`) before any other `DB.*` call.
+- **`DB.isLoggedIn()`** returns true when `littlebylittle_logged_in === '1'` AND `littlebylittle_user.uid` is set.
+- **Write-through pattern:** all saves/deletes write to `localStorage` first (synchronously), then call the appropriate `DB.*` function in a `.then()` chain (best-effort, async). Firestore failures are caught and logged with `console.warn` — never block the user.
+- **Firestore document IDs** for entries and diary are `YYYY-MM-DD` strings derived from the entry's `date` ISO string (one document per day).
+- **Security rules** require `request.auth.uid == uid` — only Google and Facebook users satisfy this (they authenticate through Firebase). LINE users (LIFF) are not Firebase-authenticated and do NOT sync to Firestore.
+- **localStorage data keys** (the ones that contain user journal data — clear on logout):
+  - `littlebylittle_entries` — prompt answer array
+  - `littlebylittle_diary` — diary entry array
+  - `littlebylittle_has_entries` — flag string
+  - `littlebylittle_insight_cache` — AI insight cache
+- **localStorage session keys** (keep across logout — navigation/auth only):
+  - `littlebylittle_logged_in`, `littlebylittle_user`, `littlebylittle_redirect`, `littlebylittle_back`, `littlebylittle_set_index`, `littlebylittle_bookmarks`
+- **Migration on login:** `login.html` checks for local data before completing sign-in for Google/Facebook. If found, shows a modal offering to transfer (upload local → Firestore, then clear local) or cancel (Firebase sign-out, stay on login page).
 
 ### When to Ask for Help
 - Unclear requirements or ambiguous instructions
