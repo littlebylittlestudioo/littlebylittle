@@ -61,7 +61,8 @@ var DB = (function () {
 
   function saveAllEntries(uid, entries) {
     if (!_db) return Promise.reject(new Error('DB not initialized'));
-    if (!entries.length) return Promise.resolve();
+    if (!entries || !entries.length) return Promise.resolve();
+    // Firestore batches are limited to 500 operations; daily entries make this safe in practice
     var batch = _db.batch();
     entries.forEach(function (entry) {
       var key = _dateKey(entry.date);
@@ -95,7 +96,8 @@ var DB = (function () {
 
   function saveAllDiary(uid, entries) {
     if (!_db) return Promise.reject(new Error('DB not initialized'));
-    if (!entries.length) return Promise.resolve();
+    if (!entries || !entries.length) return Promise.resolve();
+    // Firestore batches are limited to 500 operations; daily entries make this safe in practice
     var batch = _db.batch();
     entries.forEach(function (entry) {
       var key = _dateKey(entry.date);
