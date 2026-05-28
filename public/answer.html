@@ -577,6 +577,10 @@
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="/db.js"></script>
 <script src="analytics.js"></script>
 <script src="sets.js"></script>
 <script>
@@ -656,6 +660,12 @@
         if (entries[_editIndex]) {
           entries[_editIndex].answer = value;
           localStorage.setItem('littlebylittle_entries', JSON.stringify(entries));
+          var updated = entries[_editIndex];
+          if (DB.isLoggedIn()) {
+            DB.init().then(function () {
+              return DB.saveEntry(DB.getLoggedInUid(), updated);
+            }).catch(function (e) { console.warn('Firestore sync failed', e); });
+          }
         }
       } else {
         /* New entry */
@@ -664,6 +674,11 @@
         entries.unshift(entry);
         localStorage.setItem('littlebylittle_entries',     JSON.stringify(entries));
         localStorage.setItem('littlebylittle_has_entries', 'true');
+        if (DB.isLoggedIn()) {
+          DB.init().then(function () {
+            return DB.saveEntry(DB.getLoggedInUid(), entry);
+          }).catch(function (e) { console.warn('Firestore sync failed', e); });
+        }
       }
       trackEvent('submit_answer', {
         button_name:  'บันทึก',
@@ -688,9 +703,15 @@
   function confirmDelete() {
     try {
       var entries = JSON.parse(localStorage.getItem('littlebylittle_entries') || '[]');
+      var deleted = entries[_editIndex];
       entries.splice(_editIndex, 1);
       localStorage.setItem('littlebylittle_entries', JSON.stringify(entries));
       if (entries.length === 0) localStorage.removeItem('littlebylittle_has_entries');
+      if (deleted && DB.isLoggedIn()) {
+        DB.init().then(function () {
+          return DB.deleteEntry(DB.getLoggedInUid(), deleted.date);
+        }).catch(function (e) { console.warn('Firestore delete failed', e); });
+      }
       window.location.href = 'insight.html?toast=deleted';
     } catch (e) {
       closeDeleteModal();
