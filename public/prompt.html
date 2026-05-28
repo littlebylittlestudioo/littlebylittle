@@ -390,9 +390,15 @@
 
 </div>
 
+<script src="analytics.js"></script>
 <script src="sets.js"></script>
 <script>
   function goToAnswer() {
+    trackEvent('click_start_prompt', {
+      button_name:  'ตอบคำถาม',
+      prompt_index: _liftIdx(),
+      prompt_type:  'daily'
+    });
     window.location.href = 'answer.html';
   }
 
@@ -446,6 +452,11 @@
     var s = _sets[_nextUnanswered(_liftIdx())];
     document.querySelector('.prompt-question').innerHTML = s.prompt;
     document.querySelector('.prompt-body').innerHTML     = s.reflection;
+
+    trackEvent('view_prompt', {
+      prompt_index: _liftIdx(),
+      prompt_type:  'daily'
+    });
   })();
 </script>
 </body>

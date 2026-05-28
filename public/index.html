@@ -722,7 +722,7 @@
        DONATE BUTTON
        ══════════════════════════════════════════ -->
   <div class="donate-wrap">
-    <button class="donate-box" onclick="window.location.href='donate.html'">
+    <button class="donate-box" onclick="clickDonate()">
       <div class="donate-icon">
         <img alt="donate" src="assets/icons/c6825e8f-b6de-4bd7-ba2d-87c9df2ea92e.svg" />
       </div>
@@ -770,10 +770,16 @@
   กรุณาลองใหม่อีกครั้ง :-(
 </div>
 
+<script src="analytics.js"></script>
 <script src="sets.js"></script>
 <script>
   /* Flip card then navigate */
   function expandAndNavigate() {
+    trackEvent('click_start_prompt', {
+      button_name:  'คำถามประจำวัน',
+      prompt_index: _liftIdx(),
+      prompt_type:  'daily'
+    });
     var front = document.querySelector('.card-front');
     front.style.animation = 'card-flip 0.4s ease-in forwards';
     setTimeout(function () { window.location.href = 'prompt.html'; }, 400);
@@ -810,8 +816,14 @@
       var idx = _liftIdx();
       var list = _getBookmarks();
       var pos  = list.indexOf(idx);
-      if (pos === -1) { list.push(idx); _booked = true; }
-      else            { list.splice(pos, 1); _booked = false; }
+      if (pos === -1) {
+        list.push(idx);
+        _booked = true;
+        trackEvent('save_quote', { button_name: 'bookmark', quote_index: idx });
+      } else {
+        list.splice(pos, 1);
+        _booked = false;
+      }
       localStorage.setItem(_BOOKMARKS_KEY, JSON.stringify(list));
       document.getElementById('bookmark-icon').src = _booked ? _bookmarkBooked : _bookmarkNormal;
       _showToast(_booked ? 'toast-bookmark' : 'toast-unbookmark');
@@ -830,6 +842,12 @@
   /* Restore the active quote on load + sync bookmark state */
   document.querySelector('.subtitle').innerHTML = _sets[_liftIdx()].quote;
   _syncBookmarkIcon();
+
+  /* ── Donate button ── */
+  function clickDonate() {
+    trackEvent('click_donate', { button_name: 'อยากให้กำลังใจทีมงาน' });
+    window.location.href = 'donate.html';
+  }
 
   /* ── Non-login icon → go to login page ── */
   function goToLogin() {

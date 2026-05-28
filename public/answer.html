@@ -577,6 +577,7 @@
   </div>
 </div>
 
+<script src="analytics.js"></script>
 <script src="sets.js"></script>
 <script>
   /* Init question text from the current shared set on load */
@@ -664,6 +665,11 @@
         localStorage.setItem('littlebylittle_entries',     JSON.stringify(entries));
         localStorage.setItem('littlebylittle_has_entries', 'true');
       }
+      trackEvent('submit_answer', {
+        button_name:  'บันทึก',
+        prompt_index: _editIndex >= 0 ? _editIndex : _liftIdx(),
+        prompt_type:  _editIndex >= 0 ? 'edit' : 'daily'
+      });
       window.location.href = 'insight.html?toast=saved';
     } catch (e) {
       showErrorToast();

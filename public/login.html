@@ -211,6 +211,7 @@
   font-size:14px; font-weight:600; z-index:999; white-space:nowrap;
 ">เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง</div>
 
+<script src="analytics.js"></script>
 <script>
   var _firebaseReady = false;
   var _liffReady     = false;
@@ -297,6 +298,7 @@
   /* ══ LOGIN FUNCTIONS ══ */
 
   function loginWith(provider) {
+    trackEvent('click_login', { button_name: provider });
     /* If config hasn't loaded yet, queue the click */
     if (!_firebaseReady && !_liffReady && provider !== 'line') {
       _pendingLogin = provider; return;
