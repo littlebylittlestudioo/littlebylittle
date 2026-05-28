@@ -437,11 +437,12 @@
     firebase.auth().signInWithPopup(provider)
       .then(function (result) {
         var u = result.user;
-        _afterLogin({ uid: u.uid, name: u.displayName, email: u.email, photo: u.photoURL }, 'google');
+        return _afterLogin({ uid: u.uid, name: u.displayName, email: u.email, photo: u.photoURL }, 'google');
       })
       .catch(function (e) {
         console.error(e);
         _showError('Google Login ล้มเหลว: ' + e.message);
+        _setBtnsDisabled(false);
       });
   }
 
@@ -455,11 +456,12 @@
     firebase.auth().signInWithPopup(provider)
       .then(function (result) {
         var u = result.user;
-        _afterLogin({ uid: u.uid, name: u.displayName, email: u.email, photo: u.photoURL }, 'facebook');
+        return _afterLogin({ uid: u.uid, name: u.displayName, email: u.email, photo: u.photoURL }, 'facebook');
       })
       .catch(function (e) {
         console.error(e);
         _showError('Facebook Login ล้มเหลว: ' + e.message);
+        _setBtnsDisabled(false);
       });
   }
 
