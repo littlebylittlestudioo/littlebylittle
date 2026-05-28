@@ -294,7 +294,6 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="/db.js"></script>
 <script>
   /* ── Load user info from localStorage ── */
   (function () {
@@ -393,7 +392,8 @@
     localStorage.removeItem('littlebylittle_diary');
     localStorage.removeItem('littlebylittle_has_entries');
     localStorage.removeItem('littlebylittle_insight_cache');
-    /* Sign out of Firebase Auth so SDK doesn't auto-restore session */
+    /* Sign out of Firebase Auth, then redirect so IndexedDB session is cleared first */
+    var doRedirect = function () { window.location.href = 'index.html'; };
     try {
       if (typeof firebase !== 'undefined') {
         fetch('/api/config')
@@ -402,10 +402,12 @@
             if (!firebase.apps.length) firebase.initializeApp(cfg.firebase);
             return firebase.auth().signOut();
           })
-          .catch(function () {});
+          .then(doRedirect)
+          .catch(doRedirect);
+        return;
       }
     } catch (e) {}
-    window.location.href = 'index.html';
+    doRedirect();
   }
 </script>
 </body>
