@@ -461,6 +461,10 @@
   </button>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="/db.js"></script>
 <script>
   /* ── User name & page title ── */
   var _userName = '';
@@ -653,6 +657,11 @@
         entries.unshift(entry);
       }
       localStorage.setItem('littlebylittle_diary', JSON.stringify(entries));
+      if (DB.isLoggedIn()) {
+        DB.init().then(function () {
+          return DB.saveDiaryEntry(DB.getLoggedInUid(), entry);
+        }).catch(function (e) { console.warn('Firestore diary sync failed', e); });
+      }
     } catch(e) {}
     window.location.href = 'insight.html?toast=diary-saved';
   }
@@ -668,8 +677,14 @@
     try {
       var entries = JSON.parse(localStorage.getItem('littlebylittle_diary') || '[]');
       if (_todayEntryIndex >= 0) {
+        var deleted = entries[_todayEntryIndex];
         entries.splice(_todayEntryIndex, 1);
         localStorage.setItem('littlebylittle_diary', JSON.stringify(entries));
+        if (deleted && DB.isLoggedIn()) {
+          DB.init().then(function () {
+            return DB.deleteDiaryEntry(DB.getLoggedInUid(), deleted.date);
+          }).catch(function (e) { console.warn('Firestore diary delete failed', e); });
+        }
       }
     } catch(e) {}
     window.location.href = 'insight.html';
