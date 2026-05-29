@@ -4,3 +4,9 @@ compatibility_date = "2024-09-23"
 
 [assets]
 directory = "./public"
+
+[env.dev]
+name = "littlebylittle-dev"
+
+[env.dev.assets]
+directory = "./public"
